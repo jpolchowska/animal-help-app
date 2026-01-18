@@ -1,0 +1,18 @@
+.card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+  background-color: #fafafa;
+}
+
+.name {
+  margin: 0;
+  font-size: 18px;
+}
+
+.meta {
+  margin: 4px 0;
+  color: #555;
+  font-size: 14px;
+}
