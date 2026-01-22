@@ -19,6 +19,18 @@ const animals = [
     name: "Mruczek",
     type: "kot",
     status: "W trakcie leczenia"
+  },
+  {
+    id: 3,
+    name: "Perełka",
+    type: "świnka morska",
+    status: "Do adopcji"
+  },
+  {
+    id: 4,
+    name: "Lampo",
+    type: "pies",
+    status: "W trakcie leczenia"
   }
 ];
 
