@@ -1,4 +1,4 @@
-import styles from "./AnimalCard.module.css";
+import styles from "@/styles/AnimalCard.module.css";
 
 export default function AnimalCard({ animal }) {
   return (

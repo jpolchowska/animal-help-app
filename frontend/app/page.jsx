@@ -1,14 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import AnimalCard from "./components/AnimalCard";
+import AnimalCard from "@/components/AnimalCard";
 import styles from "./page.module.css";
-import Sidebar from "./components/Sidebar";
-
-// async function getAnimals() {
-//   const response = await fetch("http://localhost:3001/animals");
-//   return response.json();
-// }
 
 export default function HomePage() {
   const [animals, setAnimals] = useState([]);
@@ -22,10 +16,13 @@ export default function HomePage() {
 
   return (
     <main className={styles.container}>
-      <Sidebar
-        collapsed={collapsed}
-        onToggle={() => setCollapsed(c => !c)}
-      />
+      <section className={styles.wrapper}>
+        <h2>Witaj w Animal Help App</h2>
+        <p>
+          Jest to platforma demonstracyjna wspierająca adopcję,
+          wolontariat i zgłoszenia pomocy dla zwierząt.
+        </p>
+      </section>
 
       <div className={styles.title}>
         <h2 >Lista zwierząt</h2>
