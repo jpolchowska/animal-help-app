@@ -1,3 +1,7 @@
+:root {
+  --header-height: 64px;
+}
+
 * {
   box-sizing: border-box;
   padding: 0;
@@ -8,6 +12,8 @@ body {
   font-family: system-ui, sans-serif;
   background: #f8f9fb;
   color: #111827;
+  height: 100%;
+  overflow: hidden;
 }
 
 .app-root {
@@ -27,6 +33,7 @@ body {
   padding: 32px;
   background: #f8f9fb;
   overflow-y: auto;
+  min-height: 0;
 }
 
 @media (max-width: 768px) {
