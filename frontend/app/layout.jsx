@@ -2,6 +2,10 @@ import "./globals.css";
 import Sidebar from "@/components/ui/Sidebar";
 import Header from "@/components/ui/Header";
 
+export const metadata = {
+  title: "Animal Help App",
+};
+
 export default function RootLayout({ children }) {
   return (
     <html lang="pl">
@@ -12,16 +16,11 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body>
-        <div className="app-root">
-          <Header />
-
-          <div className="app-body">
-            <Sidebar />
-            <main className="app-content">
-              {children}
-            </main>
-          </div>
-        </div>
+        <Header />
+        <Sidebar />
+        <main className="app-content">
+          {children}
+        </main>
       </body>
     </html>
   );

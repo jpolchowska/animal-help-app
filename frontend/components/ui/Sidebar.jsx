@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import styles from "@/styles/Sidebar.module.css";
+import Link from "next/link";
 
 const ITEMS = [
-  { id: "home", icon: "fa-house", label: "Home" },
-  { id: "animals", icon: "fa-paw", label: "Zwierzęta" },
-  { id: "adoptions", icon: "fa-heart", label: "Adopcje" },
-  { id: "profile", icon: "fa-user", label: "Profil" },
+  { id: "home", icon: "fa-house", label: "Home", href: "/" },
+  { id: "animals", icon: "fa-paw", label: "Zwierzęta", href: "/animals" },
+  { id: "adoptions", icon: "fa-heart", label: "Adopcje", href: "/adoptions" },
+  { id: "profile", icon: "fa-user", label: "Profil", href: "/profile" },
 ];
 
 export default function Sidebar() {
@@ -21,6 +22,7 @@ export default function Sidebar() {
             key={item.id}
             icon={item.icon}
             label={item.label}
+            href={item.href}
             active={active === item.id}
             onClick={() => setActive(item.id)}
           />
@@ -30,14 +32,15 @@ export default function Sidebar() {
   );
 }
 
-function SidebarItem({ icon, label, active, onClick }) {
+function SidebarItem({ icon, label, href, active, onClick }) {
   return (
-    <div
-      className={`${styles.item} ${active ? styles.active : ""}`}
+    <Link
+      href={href}
       onClick={onClick}
+      className={`${styles.item} ${active ? styles.active : ""}`}
     >
       <i className={`fa-solid ${icon}`} />
       <span className={styles.label}>{label}</span>
-    </div>
+    </Link>
   );
 }

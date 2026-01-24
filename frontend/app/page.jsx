@@ -1,39 +1,32 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import AnimalCard from "@/components/AnimalCard";
 import styles from "./page.module.css";
 
 export default function HomePage() {
-  const [animals, setAnimals] = useState([]);
-  const [collapsed, setCollapsed] = useState(false);
-
-  useEffect(() => {
-    fetch("http://localhost:3001/animals")
-      .then(res => res.json())
-      .then(data => setAnimals(data));
-  }, []);
-
   return (
     <main className={styles.container}>
-      <section className={styles.wrapper}>
+      <section className={styles.hero}>
         <h2>Witaj w Animal Help App</h2>
         <p>
-          Jest to platforma demonstracyjna wspierająca adopcję,
-          wolontariat i zgłoszenia pomocy dla zwierząt.
+          Platforma demonstracyjna wspierająca adopcję,
+          wolontariat oraz zgłoszenia pomocy dla zwierząt.
         </p>
       </section>
 
-      <div className={styles.title}>
-        <h2 >Lista zwierząt</h2>
-        <span className={styles.count}>
-            {animals.length} {animals.length === 1 ? "zwierzę" : "zwierzęta"}
-        </span>
-      </div>
-      
-      {animals.map((animal) => (
-        <AnimalCard key={animal.id} animal={animal} />
-      ))}
+      <section className={styles.cards}>
+        <div className={styles.card}>
+          <h3>Zwierzęta</h3>
+          <p>Przeglądaj listę zwierząt wymagających pomocy lub adopcji.</p>
+        </div>
+
+        <div className={styles.card}>
+          <h3>Adopcje</h3>
+          <p>Zgłaszaj chęć adopcji i śledź status zgłoszeń.</p>
+        </div>
+
+        <div className={styles.card}>
+          <h3>Wolontariat</h3>
+          <p>Dołącz do wolontariuszy i pomagaj tam, gdzie potrzeba.</p>
+        </div>
+      </section>
     </main>
   );
 }

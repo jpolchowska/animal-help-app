@@ -1,12 +1,14 @@
 .sidebar {
-  width: 110px;
+  position: fixed;
+  top: var(--header-height);
+  left: 0;
+  width: var(--sidebar-width);
   height: calc(100vh - var(--header-height));
   background: #fafafa;
   border-right: 1px solid #e5e7eb;
   padding: 16px 8px;
   display: flex;
   justify-content: center;
-  flex-shrink: 0;
 }
 
 .nav {
@@ -27,6 +29,8 @@
   color: #6b7280;
   cursor: pointer;
   transition: background 0.2s ease, color 0.2s ease;
+  text-decoration: none;
+  color: inherit;
 }
 
 .item i {
@@ -65,3 +69,15 @@
   background: #3b82f6;
   box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
 }
+
+/* .item:visited {
+  color: inherit;
+}
+
+.item:active {
+  color: inherit;
+}
+
+.item:focus {
+  outline: none;
+} */

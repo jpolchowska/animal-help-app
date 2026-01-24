@@ -1,13 +1,17 @@
 .header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   height: var(--header-height);
   background: #ffffff;
   border-bottom: 1px solid #e5e7eb;
-
+  /* border-bottom: 1px solid lightgray; */
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   padding: 0 32px;
+  z-index: 1000;
 }
 
 .left {
@@ -32,10 +36,8 @@
   height: 32px;
   border-radius: 999px;
   background: #f3f4f6;
-
   display: grid;
   place-items: center;
-
   font-size: 14px;
   font-weight: 600;
 }
