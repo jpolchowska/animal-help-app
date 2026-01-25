@@ -81,3 +81,18 @@
 .item:focus {
   outline: none;
 } */
+
+.sidebar {
+  will-change: transform;
+}
+
+.item {
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.item:active {
+  transform: scale(0.96);
+}

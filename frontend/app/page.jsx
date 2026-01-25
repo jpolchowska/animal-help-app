@@ -2,11 +2,11 @@ import styles from "./page.module.css";
 
 export default function HomePage() {
   return (
-    <main className={styles.container}>
+    <main>
       <section className={styles.hero}>
-        <h2>Witaj w Animal Help App</h2>
+        <h2>Witaj w Animal Help App!</h2>
         <p>
-          Platforma demonstracyjna wspierająca adopcję,
+          Jest to platforma demonstracyjna wspierająca adopcję,
           wolontariat oraz zgłoszenia pomocy dla zwierząt.
         </p>
       </section>

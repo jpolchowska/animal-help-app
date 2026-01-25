@@ -6,7 +6,6 @@
   height: var(--header-height);
   background: #ffffff;
   border-bottom: 1px solid #e5e7eb;
-  /* border-bottom: 1px solid lightgray; */
   display: flex;
   align-items: center;
   justify-content: space-between;

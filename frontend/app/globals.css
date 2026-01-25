@@ -18,8 +18,9 @@ body {
 }
 
 .app-content {
-  padding: 32px;
-  background: #f8f9fb;
+  padding: 35px;
+  /* background: #f8f9fb; */
+  background: #f7f7f9;
   overflow-y: auto;
   margin-top: var(--header-height);
   margin-left: var(--sidebar-width);

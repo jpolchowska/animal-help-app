@@ -1,46 +1,40 @@
 "use client";
 
-import { useState } from "react";
 import styles from "@/styles/Sidebar.module.css";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const ITEMS = [
-  { id: "home", icon: "fa-house", label: "Home", href: "/" },
-  { id: "animals", icon: "fa-paw", label: "Zwierzęta", href: "/animals" },
-  { id: "adoptions", icon: "fa-heart", label: "Adopcje", href: "/adoptions" },
-  { id: "profile", icon: "fa-user", label: "Profil", href: "/profile" },
+  { icon: "fa-house", label: "Home", href: "/" },
+  { icon: "fa-paw", label: "Zwierzęta", href: "/animals" },
+  { icon: "fa-heart", label: "Adopcje", href: "/adoptions" },
+  { icon: "fa-user", label: "Profil", href: "/profile" },
 ];
 
 export default function Sidebar() {
-  const [active, setActive] = useState("home");
+  const pathname = usePathname();
 
   return (
     <aside className={styles.sidebar}>
       <nav className={styles.nav}>
-        {ITEMS.map(item => (
-          <SidebarItem
-            key={item.id}
-            icon={item.icon}
-            label={item.label}
-            href={item.href}
-            active={active === item.id}
-            onClick={() => setActive(item.id)}
-          />
-        ))}
+        {ITEMS.map(item => {
+          const isActive =
+            item.href === "/"
+              ? pathname === "/"
+              : pathname.startsWith(item.href);
+
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`${styles.item} ${isActive ? styles.active : ""}`}
+            >
+              <i className={`fa-solid ${item.icon}`} />
+              <span className={styles.label}>{item.label}</span>
+            </Link>
+          );
+        })}
       </nav>
     </aside>
-  );
-}
-
-function SidebarItem({ icon, label, href, active, onClick }) {
-  return (
-    <Link
-      href={href}
-      onClick={onClick}
-      className={`${styles.item} ${active ? styles.active : ""}`}
-    >
-      <i className={`fa-solid ${icon}`} />
-      <span className={styles.label}>{label}</span>
-    </Link>
   );
 }

@@ -11,7 +11,7 @@
 }
 
 .hero {
-  max-width: 700px;
+  margin-bottom: 30px;
 }
 
 .hero h2 {
@@ -34,7 +34,7 @@
 }
 
 .card {
-  background: #f9fafb;
+  background: white;
   border: 1px solid #e5e7eb;
   border-radius: 14px;
   padding: 20px;
