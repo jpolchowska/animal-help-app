@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const sqlite3 = require("sqlite3").verbose();
+const bcrypt = require("bcrypt");
 
 const app = express();
 const PORT = 3001;
@@ -17,6 +18,8 @@ const db = new sqlite3.Database("./database.db", err => {
   }
 });
 
+// ===== ENDPOINTY =====
+
 app.get("/animals", (req, res) => {
   db.all("SELECT * FROM animals", (err, rows) => {
     if (err) {
@@ -24,6 +27,35 @@ app.get("/animals", (req, res) => {
     }
     res.json(rows);
   });
+});
+
+app.post("/auth/register", async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password ) {
+    return res.status(400).json({ error: "Brak emailu lub hasła" });
+  }
+
+  try {
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    db.run(
+      "INSERT INTO users (email, password_hash) VALUES (?, ?)",
+      [email, passwordHash],
+      function (err) {
+        if (err) {
+          return res.status(400).json({ error: "Użytkownik już istnieje" });
+        }
+
+        res.status(201).json({
+          id: this.lastID,
+          email
+        });
+      }
+    );
+  } catch (err) {
+    res.status(500).json({ error: "Błąd serwera" });
+  }
 });
 
 app.listen(PORT, () => {
