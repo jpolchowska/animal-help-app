@@ -58,6 +58,39 @@ app.post("/auth/register", async (req, res) => {
   }
 });
 
+app.post("/auth/login", (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ error: "Brak emailu lub hasła" });
+  }
+
+  db.get(
+    "SELECT * FROM users WHERE email = ?",
+    [email],
+    async (err, user) => {
+      if (err) {
+        return res.status(500).json({ error: "Błąd serwera" });
+      }
+
+      if (!user) {
+        return res.status(401).json({ error: "Nieprawidłowy email lub hasło" });
+      }
+
+      const isValid = await bcrypt.compare(password, user.password_hash);
+
+      if (!isValid) {
+        return res.status(401).json({ error: "Nieprawidłowy email lub hasło" });
+      }
+
+      res.json({
+        id: user.id,
+        email: user.email
+      });
+    }
+  );
+});
+
 app.listen(PORT, () => {
   console.log(`Backend działa na http://localhost:${PORT}`);
 });
