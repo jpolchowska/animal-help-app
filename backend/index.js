@@ -2,6 +2,9 @@ const express = require("express");
 const cors = require("cors");
 const sqlite3 = require("sqlite3").verbose();
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+
+const JWT_SECRET = "change_this_secret_key";
 
 const app = express();
 const PORT = 3001;
@@ -17,6 +20,24 @@ const db = new sqlite3.Database("./database.db", err => {
     console.log("Połączono z SQLite");
   }
 });
+
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (!token) {
+    return res.status(401).json({ error: "Brak tokenu" });
+  }
+
+  jwt.verify(token, JWT_SECRET, (err, user) => {
+    if (err) {
+      return res.status(403).json({ error: "Nieprawidłowy token" });
+    }
+
+    req.user = user;
+    next();
+  });
+}
 
 // ===== ENDPOINTY =====
 
@@ -83,9 +104,49 @@ app.post("/auth/login", (req, res) => {
         return res.status(401).json({ error: "Nieprawidłowy email lub hasło" });
       }
 
+      const token = jwt.sign(
+        {
+          id: user.id,
+          role: user.role
+        },
+        JWT_SECRET,
+        { expiresIn: "1h" }
+      );
+
       res.json({
-        id: user.id,
-        email: user.email
+        token,
+        email: user.email,
+        role: user.role
+      });
+    }
+  );
+});
+
+app.post("/animals", authenticateToken, (req, res) => {
+  if (req.user.role !== "admin") {
+    return res.status(403).json({ error: "Brak uprawnień" });
+  }
+
+  const { name, type, status, image } = req.body;
+
+  if (!name || !type || !status) {
+    return res.status(400).json({ error: "Brak danych" });
+  }
+
+  db.run(
+    "INSERT INTO animals (name, type, status, image) VALUES (?, ?, ?, ?)",
+    [name, type, status, image],
+    function (err) {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+
+      res.status(201).json({
+        id: this.lastID,
+        name,
+        type,
+        status,
+        image
       });
     }
   );
