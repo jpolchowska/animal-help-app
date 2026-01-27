@@ -152,6 +152,62 @@ app.post("/animals", authenticateToken, (req, res) => {
   );
 });
 
+app.delete("/animals/:id", authenticateToken, (req, res) => {
+  if (req.user.role !== "admin") {
+    return res.status(403).json({ error: "Brak uprawnień" });
+  }
+
+  const { id } = req.params;
+
+  db.run(
+    "DELETE FROM animals WHERE id = ?",
+    [id],
+    function (err) {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+
+      if (this.changes === 0) {
+        return res.status(404).json({ error: "Nie znaleziono zwierzęcia" });
+      }
+
+      res.json({ message: "Zwierzę usunięte" });
+    }
+  );
+});
+
+app.put("/animals/:id", authenticateToken, (req, res) => {
+  if (req.user.role !== "admin") {
+    return res.status(403).json({ error: "Brak uprawnień" });
+  }
+
+  const { id } = req.params;
+  const { status } = req.body;
+
+  if (!status) {
+    return res.status(400).json({ error: "Brak statusu" });
+  }
+
+  db.run(
+    "UPDATE animals SET status = ? WHERE id = ?",
+    [status, id],
+    function (err) {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+
+      if (this.changes === 0) {
+        return res.status(404).json({ error: "Nie znaleziono zwierzęcia" });
+      }
+
+      res.json({
+        message: "Status zaktualizowany",
+        status
+      });
+    }
+  );
+});
+
 app.listen(PORT, () => {
   console.log(`Backend działa na http://localhost:${PORT}`);
 });
