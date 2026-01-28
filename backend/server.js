@@ -39,30 +39,30 @@ function authenticateToken(req, res, next) {
   });
 }
 
+function requireRole(roles) {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({ error: "Brak uprawnień" });
+    }
+    next();
+  };
+}
+
 // ===== ENDPOINTY =====
 
-app.get("/animals", (req, res) => {
-  db.all("SELECT * FROM animals", (err, rows) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    res.json(rows);
-  });
-});
-
 app.post("/auth/register", async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, name } = req.body;
 
-  if (!email || !password ) {
-    return res.status(400).json({ error: "Brak emailu lub hasła" });
+  if (!email || !password || !name) {
+    return res.status(400).json({ error: "Brak pełnych danych" });
   }
 
   try {
     const passwordHash = await bcrypt.hash(password, 10);
 
     db.run(
-      "INSERT INTO users (email, password_hash) VALUES (?, ?)",
-      [email, passwordHash],
+      "INSERT INTO users (email, password_hash, role, name) VALUES (?, ?, 'user', ?)",
+      [email, passwordHash, name],
       function (err) {
         if (err) {
           return res.status(400).json({ error: "Użytkownik już istnieje" });
@@ -70,7 +70,9 @@ app.post("/auth/register", async (req, res) => {
 
         res.status(201).json({
           id: this.lastID,
-          email
+          email,
+          role: "user",
+          name
         });
       }
     );
@@ -116,17 +118,23 @@ app.post("/auth/login", (req, res) => {
       res.json({
         token,
         email: user.email,
-        role: user.role
+        role: user.role,
+        name: user.name
       });
     }
   );
 });
 
-app.post("/animals", authenticateToken, (req, res) => {
-  if (req.user.role !== "admin") {
-    return res.status(403).json({ error: "Brak uprawnień" });
-  }
+app.get("/animals", (req, res) => {
+  db.all("SELECT * FROM animals", (err, rows) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json(rows);
+  });
+});
 
+app.post("/animals", authenticateToken, requireRole(["admin"]), (req, res) => {
   const { name, type, status, image } = req.body;
 
   if (!name || !type || !status) {
@@ -152,11 +160,7 @@ app.post("/animals", authenticateToken, (req, res) => {
   );
 });
 
-app.delete("/animals/:id", authenticateToken, (req, res) => {
-  if (req.user.role !== "admin") {
-    return res.status(403).json({ error: "Brak uprawnień" });
-  }
-
+app.delete("/animals/:id", authenticateToken, requireRole(["admin"]), (req, res) => {
   const { id } = req.params;
 
   db.run(
@@ -176,11 +180,7 @@ app.delete("/animals/:id", authenticateToken, (req, res) => {
   );
 });
 
-app.put("/animals/:id", authenticateToken, (req, res) => {
-  if (req.user.role !== "admin") {
-    return res.status(403).json({ error: "Brak uprawnień" });
-  }
-
+app.put("/animals/:id", authenticateToken, requireRole(["admin"]), (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
 
