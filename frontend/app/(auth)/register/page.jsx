@@ -5,40 +5,29 @@ import styles from "../auth.module.css";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
   const [error, setError] = useState("");
 
   async function handleSubmit(e) {
     e.preventDefault();
 
-    const res = await fetch("http://localhost:3001/auth/login", {
+    const res = await fetch("http://localhost:3001/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, password, name }),
     });
 
     const data = await res.json();
 
     if (!res.ok) {
-      setError(data.error || "Błąd logowania");
+      setError(data.error || "Błąd rejestracji");
       return;
     }
 
-    localStorage.setItem(
-      "auth",
-      JSON.stringify({
-        token: data.token,
-        user: {
-          email: data.email,
-          role: data.role,
-          name: data.name
-        }
-      })
-    );
-
-    window.location.href = "/";
+    window.location.href = "/login";
   }
 
   return (
@@ -47,9 +36,15 @@ export default function LoginPage() {
         <Image src="/logo.svg" width={40} height={40} alt="Logo" />
       </div>
 
-      <h2>Login</h2>
+      <h2>Rejestracja</h2>
 
       {error && <p className={styles.error}>{error}</p>}
+
+      <input
+        placeholder="Imię"
+        value={name}
+        onChange={e => setName(e.target.value)}
+      />
 
       <input
         type="email"
@@ -65,10 +60,10 @@ export default function LoginPage() {
         onChange={e => setPassword(e.target.value)}
       />
 
-      <button>Zaloguj</button>
+      <button>Zarejestruj się</button>
 
       <p className={styles.switch}>
-        Nie masz konta? <Link href="/register">Zarejestruj się</Link>
+        Masz już konto? <Link href="/login">Zaloguj się</Link>
       </p>
     </form>
   );
