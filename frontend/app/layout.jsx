@@ -1,6 +1,4 @@
 import "./globals.css";
-import Sidebar from "@/components/ui/Sidebar";
-import Header from "@/components/ui/Header";
 
 export const metadata = {
   title: "Animal Help App",
@@ -16,11 +14,7 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body>
-        <Header />
-        <Sidebar />
-        <main className="app-content">
-          {children}
-        </main>
+        {children}
       </body>
     </html>
   );

@@ -14,7 +14,7 @@
 }
 
 .photo {
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 3 / 2;
   /* background-size: cover;
   background-position: center; */
   overflow: hidden;
