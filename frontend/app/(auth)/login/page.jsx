@@ -26,10 +26,13 @@ export default function LoginPage() {
       return;
     }
 
+    const expiresAt = Date.now() + 60 * 60 * 1000; // 1h
+
     localStorage.setItem(
       "auth",
       JSON.stringify({
         token: data.token,
+        expiresAt,
         user: {
           email: data.email,
           role: data.role,

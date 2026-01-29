@@ -115,8 +115,13 @@ app.post("/auth/login", (req, res) => {
         { expiresIn: "1h" }
       );
 
+      res.cookie("token", token, {
+        httpOnly: true,
+        sameSite: "lax",
+        maxAge: 60 * 60 * 1000
+      });
+
       res.json({
-        token,
         email: user.email,
         role: user.role,
         name: user.name
