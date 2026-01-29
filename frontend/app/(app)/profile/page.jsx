@@ -2,11 +2,22 @@
 
 import styles from "./profile.module.css";
 
+function formatDate(date) {
+  if (!date) return "—";
+  return new Date(date).toLocaleDateString("pl-PL", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+
 export default function ProfilePage() {
   const auth = JSON.parse(localStorage.getItem("auth"));
   if (!auth) return null;
 
-  const { name, email, role } = auth.user;
+  const { name, email, role, createdAt, lastLoginAt } = auth.user;
 
   return (
     <section className={styles.container}>
@@ -30,12 +41,12 @@ export default function ProfilePage() {
         <div className={styles.infoGrid}>
           <div>
             <span>Data utworzenia</span>
-            <strong>—</strong>
+            <strong>{formatDate(createdAt)}</strong>
           </div>
 
           <div>
             <span>Ostatnie logowanie</span>
-            <strong>—</strong>
+            <strong>{formatDate(lastLoginAt)}</strong>
           </div>
         </div>
 

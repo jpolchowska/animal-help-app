@@ -115,16 +115,18 @@ app.post("/auth/login", (req, res) => {
         { expiresIn: "1h" }
       );
 
-      res.cookie("token", token, {
-        httpOnly: true,
-        sameSite: "lax",
-        maxAge: 60 * 60 * 1000
-      });
+      db.run(
+        "UPDATE users SET last_login_at = CURRENT_TIMESTAMP WHERE id = ?",
+        [user.id]
+      );
 
       res.json({
+        token,
         email: user.email,
         role: user.role,
-        name: user.name
+        name: user.name,
+        createdAt: user.created_at,
+        lastLoginAt: user.last_login_at
       });
     }
   );

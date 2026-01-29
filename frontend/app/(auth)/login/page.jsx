@@ -36,7 +36,9 @@ export default function LoginPage() {
         user: {
           email: data.email,
           role: data.role,
-          name: data.name
+          name: data.name,
+          createdAt: data.createdAt,
+          lastLoginAt: data.lastLoginAt
         }
       })
     );
