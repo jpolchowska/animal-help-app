@@ -25,6 +25,20 @@ const db = new sqlite3.Database("./database.db", err => {
   }
 });
 
+const multer = require("multer");
+const path = require("path");
+
+const storage = multer.diskStorage({
+  destination: "images",
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    const filename = Date.now() + ext;
+    cb(null, filename);
+  }
+});
+
+const upload = multer({ storage });
+
 const wss = new WebSocket.Server({ server });
 
 let onlineUsers = 0;
@@ -172,8 +186,12 @@ app.get("/animals", (req, res) => {
   });
 });
 
-app.post("/animals", authenticateToken, requireRole(["admin"]), (req, res) => {
-  const { name, type, status, image } = req.body;
+app.post("/animals", authenticateToken, requireRole(["admin"]), upload.single("image"), (req, res) => {
+  const { name, type, status } = req.body;
+
+  const image = req.file
+  ? `/images/${req.file.filename}`
+  : null;
 
   if (!name || !type || !status) {
     return res.status(400).json({ error: "Brak danych" });
