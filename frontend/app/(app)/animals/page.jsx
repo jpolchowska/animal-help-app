@@ -10,9 +10,9 @@ import AddAnimalModal from "@/components/animals/AddAnimalModal";
 const categories = ["Wszystkie", "pies", "kot"];
 
 export default function AnimalsPage() {
-  const [animals, setAnimals] = useState("");
+  const [animals, setAnimals] = useState([]);
   const [query, setQuery] = useState("");
-  const [category, setCategory] = useState("all");
+  const [category, setCategory] = useState("Wszystkie");
   const [showAddForm, setShowAddForm] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -69,6 +69,22 @@ export default function AnimalsPage() {
       .then(data => setAnimals(data));
   }, []);
 
+  const filteredAnimals = animals
+    .filter(animal => {
+      if (category !== "Wszystkie" && animal.type !== category) {
+        return false;
+      }
+
+      if (
+        query &&
+        !animal.name.toLowerCase().includes(query.toLowerCase())
+      ) {
+        return false;
+      }
+
+      return true;
+    });
+
   return (
     <>
       <div className={styles.filters}>
@@ -119,17 +135,17 @@ export default function AnimalsPage() {
         <div className={styles.listHeader}>
           <h2>Lista zwierząt</h2>
           <span className={styles.count}>
-            {animals.length} {pluralizeAnimals(animals.length)}
+            {filteredAnimals.length} {pluralizeAnimals(filteredAnimals.length)}
           </span>
         </div>
 
-        {animals.length === 0 ? (
+        {filteredAnimals.length === 0 ? (
           <p className={styles.empty}>
             Brak zgłoszonych zwierząt.
           </p>
         ) : (
           <div className={styles.grid}>
-            {animals.map(animal => (
+            {filteredAnimals.map(animal => (
               <AnimalCard key={animal.id} animal={animal} onDelete={handleDelete} onStatusChange={handleStatusChange} />
             ))}
           </div>
