@@ -1,15 +1,17 @@
-const http = require("http");
-const WebSocket = require("ws")
 const express = require("express");
 const cors = require("cors");
 const sqlite3 = require("sqlite3").verbose();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const http = require("http");
+const WebSocket = require("ws")
 
 const JWT_SECRET = "change_this_secret_key";
 
 const app = express();
 const PORT = 3001;
+
+const server = http.createServer(app);
 
 app.use(cors());
 app.use(express.json());
@@ -22,6 +24,33 @@ const db = new sqlite3.Database("./database.db", err => {
     console.log("Połączono z SQLite");
   }
 });
+
+const wss = new WebSocket.Server({ server });
+
+let onlineUsers = 0;
+
+wss.on("connection", ws => {
+  onlineUsers++;
+  broadcastOnlineUsers();
+
+  ws.on("close", () => {
+    onlineUsers--;
+    broadcastOnlineUsers();
+  });
+});
+
+function broadcastOnlineUsers() {
+  const message = JSON.stringify({
+    type: "ONLINE_USERS",
+    count: onlineUsers
+  });
+
+  wss.clients.forEach(client => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(message);
+    }
+  });
+}
 
 function authenticateToken(req, res, next) {
   const authHeader = req.headers["authorization"];
@@ -217,6 +246,7 @@ app.put("/animals/:id", authenticateToken, requireRole(["admin"]), (req, res) =>
   );
 });
 
-app.listen(PORT, () => {
+
+server.listen(PORT, () => {
   console.log(`Backend działa na http://localhost:${PORT}`);
 });

@@ -1,32 +1,24 @@
-import styles from "./page.module.css";
+"use client";
+
+import { useEffect, useState } from "react";
+import AdminDashboard from "@/components/admin/AdminDashboard";
+import UserPage from "@/components/user/UserPage";
 
 export default function HomePage() {
-  return (
-    <main>
-      <section className={styles.hero}>
-        <h2>Witaj w Animal Help App!</h2>
-        <p>
-          Jest to platforma demonstracyjna wspierająca adopcję,
-          wolontariat oraz zgłoszenia pomocy dla zwierząt.
-        </p>
-      </section>
+  const [role, setRole] = useState(null);
 
-      <section className={styles.cards}>
-        <div className={styles.card}>
-          <h3>Zwierzęta</h3>
-          <p>Przeglądaj listę zwierząt wymagających pomocy lub adopcji.</p>
-        </div>
+  useEffect(() => {
+    const auth = JSON.parse(localStorage.getItem("auth"));
+    if (auth) {
+      setRole(auth.user.role);
+    }
+  }, []);
 
-        <div className={styles.card}>
-          <h3>Adopcje</h3>
-          <p>Zgłaszaj chęć adopcji i śledź status zgłoszeń.</p>
-        </div>
+  if (!role) return null;
 
-        <div className={styles.card}>
-          <h3>Wolontariat</h3>
-          <p>Dołącz do wolontariuszy i pomagaj tam, gdzie potrzeba.</p>
-        </div>
-      </section>
-    </main>
-  );
+  if (role === "admin") {
+    return <AdminDashboard />;
+  }
+
+  return <UserPage />;
 }
