@@ -5,6 +5,9 @@ import styles from "./AdminDashboard.module.css";
 
 export default function AdminDashboard() {
   const [online, setOnline] = useState(0);
+  const [animalCount, setAnimalCount] = useState(0);
+  const [dogsCount, setDogsCount] = useState(0);
+  const [catsCount, setCatsCount] = useState(0);
 
   useEffect(() => {
     const ws = new WebSocket("ws://localhost:3001");
@@ -19,16 +22,34 @@ export default function AdminDashboard() {
     return () => ws.close();
   }, []);
 
+  useEffect(() => {
+    fetch("http://localhost:3001/animals")
+      .then(res => res.json())
+      .then(data => {
+        setAnimalCount(data.length);
+
+        const dogs = data.filter(a => a.type === "pies").length;
+        const cats = data.filter(a => a.type === "kot").length;
+
+        setDogsCount(dogs);
+        setCatsCount(cats);
+      })
+      .catch(() => {
+        setAnimalCount(0);
+        setDogsCount(0);
+        setCatsCount(0);
+      });
+  }, []);
+
   return (
     <section className={styles.container}>
-      {/* HEADER jak w innych widokach */}
       <div className={styles.header}>
         <h2>Panel administratora</h2>
         <span className={styles.badge}>Admin</span>
       </div>
 
-      {/* KARTY */}
       <div className={styles.grid}>
+        {/* UŻYTKOWNICY ONLINE */}
         <div className={styles.statCard}>
           <div className={styles.statLeft}>
             <span className={styles.label}>Użytkownicy online</span>
@@ -37,6 +58,40 @@ export default function AdminDashboard() {
 
           <div className={styles.icon}>
             <i className="fa-solid fa-users" />
+          </div>
+        </div>
+
+        {/* ZWIERZĘTA */}
+        <div className={styles.statCard}>
+          <div className={styles.statLeft}>
+            <span className={styles.label}>Zwierzęta w bazie</span>
+            <strong className={styles.value}>{animalCount}</strong>
+          </div>
+
+          <div className={styles.icon}>
+            <i className="fa-solid fa-paw" />
+          </div>
+        </div>
+
+        {/* PSY */}
+        <div className={styles.statCard}>
+          <div className={styles.statLeft}>
+            <span className={styles.label}>Psy</span>
+            <strong className={styles.value}>{dogsCount}</strong>
+          </div>
+          <div className={styles.icon}>
+            <i className="fa-solid fa-dog" />
+          </div>
+        </div>
+
+        {/* KOTY */}
+        <div className={styles.statCard}>
+          <div className={styles.statLeft}>
+            <span className={styles.label}>Koty</span>
+            <strong className={styles.value}>{catsCount}</strong>
+          </div>
+          <div className={styles.icon}>
+            <i className="fa-solid fa-cat" />
           </div>
         </div>
       </div>

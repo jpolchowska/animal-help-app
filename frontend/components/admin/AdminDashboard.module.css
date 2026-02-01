@@ -34,7 +34,6 @@
   border-radius: 16px;
   padding: 24px;
   border: 1px solid #e5e7eb;
-  /* box-shadow: 0 20px 40px rgba(0,0,0,0.06); */
 
   display: flex;
   align-items: center;
@@ -43,9 +42,13 @@
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-/* .statCard:hover {
+/* .statCard {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.statCard:hover {
   transform: translateY(-2px);
-  box-shadow: 0 25px 50px rgba(0,0,0,0.1);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.08);
 } */
 
 .statLeft {
