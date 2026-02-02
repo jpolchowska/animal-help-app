@@ -298,6 +298,133 @@ app.put("/animals/:id", authenticateToken, requireRole(["admin"]), (req, res) =>
   );
 });
 
+// CRUD - Adopcje
+
+app.post(
+  "/adoptions",
+  authenticateToken,
+  requireRole(["user", "volunteer"]),
+  (req, res) => {
+    const userId = req.user.id;
+    const { animalId } = req.body;
+
+    if (!animalId) {
+      return res.status(400).json({ error: "Brak animalId" });
+    }
+
+    db.run(
+      "INSERT INTO adoptions (user_id, animal_id) VALUES (?, ?)",
+      [userId, animalId],
+      function (err) {
+        if (err) {
+          return res.status(500).json({ error: err.message });
+        }
+
+        res.status(201).json({
+          id: this.lastID,
+          animalId,
+          status: "pending"
+        });
+      }
+    );
+  }
+);
+
+app.get(
+  "/adoptions/my",
+  authenticateToken,
+  requireRole(["user", "volunteer"]),
+  (req, res) => {
+    const userId = req.user.id;
+
+    db.all(
+      `
+      SELECT adoptions.*, animals.name AS animal_name
+      FROM adoptions
+      JOIN animals ON animals.id = adoptions.animal_id
+      WHERE adoptions.user_id = ?
+      ORDER BY adoptions.created_at DESC
+      `,
+      [userId],
+      (err, rows) => {
+        if (err) {
+          return res.status(500).json({ error: err.message });
+        }
+        res.json(rows);
+      }
+    );
+  }
+);
+
+app.get(
+  "/adoptions",
+  authenticateToken,
+  requireRole(["admin"]),
+  (req, res) => {
+    db.all(
+      `
+      SELECT adoptions.*, users.email, animals.name AS animal_name
+      FROM adoptions
+      JOIN users ON users.id = adoptions.user_id
+      JOIN animals ON animals.id = adoptions.animal_id
+      ORDER BY adoptions.created_at DESC
+      `,
+      (err, rows) => {
+        if (err) {
+          return res.status(500).json({ error: err.message });
+        }
+        res.json(rows);
+      }
+    );
+  }
+);
+
+app.put(
+  "/adoptions/:id",
+  authenticateToken,
+  requireRole(["admin"]),
+  (req, res) => {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!status) {
+      return res.status(400).json({ error: "Brak statusu" });
+    }
+
+    db.run(
+      "UPDATE adoptions SET status = ? WHERE id = ?",
+      [status, id],
+      function (err) {
+        if (err) {
+          return res.status(500).json({ error: err.message });
+        }
+
+        res.json({ message: "Status zaktualizowany" });
+      }
+    );
+  }
+);
+
+app.delete(
+  "/adoptions/:id",
+  authenticateToken,
+  requireRole(["admin"]),
+  (req, res) => {
+    const { id } = req.params;
+
+    db.run(
+      "DELETE FROM adoptions WHERE id = ?",
+      [id],
+      function (err) {
+        if (err) {
+          return res.status(500).json({ error: err.message });
+        }
+
+        res.json({ message: "Adopcja usunięta" });
+      }
+    );
+  }
+);
 
 server.listen(PORT, () => {
   console.log(`Backend działa na http://localhost:${PORT}`);
