@@ -177,8 +177,32 @@ app.post("/auth/login", (req, res) => {
   );
 });
 
+// app.get("/animals", (req, res) => {
+//   db.all("SELECT * FROM animals", (err, rows) => {
+//     if (err) {
+//       return res.status(500).json({ error: err.message });
+//     }
+//     res.json(rows);
+//   });
+// });
+
 app.get("/animals", (req, res) => {
-  db.all("SELECT * FROM animals", (err, rows) => {
+  const { search, type } = req.query;
+
+  let query = "SELECT * FROM animals WHERE 1=1"
+  const params = [];
+
+  if (search) {
+    query += " AND LOWER(name) LIKE ?";
+    params.push(`%${search.toLowerCase()}%`);
+  }
+
+  if (type && type !== "Wszystkie") {
+    query += " AND type = ?";
+    params.push(type);
+  }
+
+  db.all(query, params, (err, rows) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }

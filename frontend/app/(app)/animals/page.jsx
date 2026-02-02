@@ -63,27 +63,22 @@ export default function AnimalsPage() {
     }
   }, []);
 
+  // useEffect(() => {
+  //   fetch("http://localhost:3001/animals")
+  //     .then(res => res.json())
+  //     .then(data => setAnimals(data));
+  // }, []);
+
   useEffect(() => {
-    fetch("http://localhost:3001/animals")
+    const params = new URLSearchParams();
+
+    if (query) params.append("search", query);
+    if (category !== "Wszystkie") params.append("type", category);
+
+    fetch(`http://localhost:3001/animals?${params.toString()}`)
       .then(res => res.json())
       .then(data => setAnimals(data));
-  }, []);
-
-  const filteredAnimals = animals
-    .filter(animal => {
-      if (category !== "Wszystkie" && animal.type !== category) {
-        return false;
-      }
-
-      if (
-        query &&
-        !animal.name.toLowerCase().includes(query.toLowerCase())
-      ) {
-        return false;
-      }
-
-      return true;
-    });
+  }, [query, category]);
 
   return (
     <>
@@ -135,17 +130,17 @@ export default function AnimalsPage() {
         <div className={styles.listHeader}>
           <h2>Lista zwierząt</h2>
           <span className={styles.count}>
-            {filteredAnimals.length} {pluralizeAnimals(filteredAnimals.length)}
+            {animals.length} {pluralizeAnimals(animals.length)}
           </span>
         </div>
 
-        {filteredAnimals.length === 0 ? (
+        {animals.length === 0 ? (
           <p className={styles.empty}>
             Brak zgłoszonych zwierząt.
           </p>
         ) : (
           <div className={styles.grid}>
-            {filteredAnimals.map(animal => (
+            {animals.map(animal => (
               <AnimalCard key={animal.id} animal={animal} onDelete={handleDelete} onStatusChange={handleStatusChange} />
             ))}
           </div>
