@@ -1,0 +1,62 @@
+.card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: white;
+  margin-bottom: 12px;
+}
+
+.name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.status {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.pending {
+  background: rgba(245,158,11,0.18);
+  color: #92400e;
+}
+
+.approved {
+  background: rgba(16,185,129,0.15);
+  color: #047857;
+}
+
+.rejected {
+  background: rgba(239,68,68,0.15);
+  color: #991b1b;
+}
+
+.Header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.Header h2 {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0;
+  color: #111827;
+}
+
+.count {
+  font-size: 13px;
+  color: #6b7280;
+  background: #f3f4f6;
+  padding: 4px 10px;
+  border-radius: 999px;
+}

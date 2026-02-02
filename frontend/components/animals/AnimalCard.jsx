@@ -1,11 +1,14 @@
 "use client";
 
-import styles from "@/styles/AnimalCard.module.css";
+import styles from "./AnimalCard.module.css";
 import { authFetch, getAuth } from "@/utils/api";
 
 export default function AnimalCard({ animal, onDelete, onStatusChange }) {
   const auth = getAuth();
-  const isAdmin = auth?.user?.role === "admin";
+  const role = auth?.user?.role;
+
+  const isAdmin = role === "admin";
+  const canAdopt = role === "user" || role === "volunteer";
 
   return (
     <div className={styles.card}>
@@ -40,9 +43,43 @@ export default function AnimalCard({ animal, onDelete, onStatusChange }) {
 
       <div className={styles.content}>
         <h3 className={styles.name}>{animal.name}</h3>
-        <div className={styles.meta}>
-          <span>Typ: {animal.type}</span>
-          <span>Status: {animal.status}</span>
+
+        <div className={styles.footer}>
+          <div className={styles.meta}>
+            <div className={styles.type}>
+              {animal.type.toUpperCase()}
+            </div>
+
+            <span
+              className={`${styles.status} ${
+                animal.status === "Do adopcji"
+                  ? styles.available
+                  : animal.status === "W trakcie leczenia"
+                  ? styles.treatment
+                  : styles.adopted
+              }`}
+            >
+              {animal.status}
+            </span>
+          </div>
+
+          {canAdopt && animal.status === "Do adopcji" && (
+            <button
+              className={styles.adoptButton}
+              onClick={async e => {
+                e.stopPropagation();
+
+                await authFetch("http://localhost:3001/adoptions", {
+                  method: "POST",
+                  body: JSON.stringify({ animalId: animal.id })
+                });
+
+                alert("Zgłoszono adopcję");
+              }}
+            >
+              Adoptuj
+            </button>
+          )}
         </div>
       </div>
     </div>
