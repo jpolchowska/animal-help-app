@@ -160,19 +160,29 @@ app.post("/auth/login", (req, res) => {
         { expiresIn: "1h" }
       );
 
-      db.run(
-        "UPDATE users SET last_login_at = CURRENT_TIMESTAMP WHERE id = ?",
-        [user.id]
-      );
+      db.get(
+        "SELECT created_at, last_login_at FROM users WHERE id = ?",
+        [user.id],
+        (err, dates) => {
+          if (err) {
+            return res.status(500).json({ error: "Błąd dat" });
+          }
 
-      res.json({
-        token,
-        email: user.email,
-        role: user.role,
-        name: user.name,
-        createdAt: user.created_at,
-        lastLoginAt: user.last_login_at
-      });
+          db.run(
+            "UPDATE users SET last_login_at = CURRENT_TIMESTAMP WHERE id = ?",
+            [user.id]
+          );
+
+          res.json({
+            token,
+            email: user.email,
+            role: user.role,
+            name: user.name,
+            createdAt: dates.created_at,
+            lastLoginAt: dates.last_login_at
+          });
+        }
+      );
     }
   );
 });

@@ -4,7 +4,8 @@ import styles from "./profile.module.css";
 
 function formatDate(date) {
   if (!date) return "—";
-  return new Date(date).toLocaleDateString("pl-PL", {
+
+  return new Date(date + "Z").toLocaleString("pl-PL", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
