@@ -197,7 +197,7 @@ app.post("/auth/login", (req, res) => {
 // });
 
 app.get("/animals", (req, res) => {
-  const { search, type } = req.query;
+  const { search, type, status } = req.query;
 
   let query = "SELECT * FROM animals WHERE 1=1"
   const params = [];
@@ -210,6 +210,11 @@ app.get("/animals", (req, res) => {
   if (type && type !== "Wszystkie") {
     query += " AND type = ?";
     params.push(type);
+  }
+
+  if (status && status !== "Wszystkie") {
+    query += " AND status = ?";
+    params.push(status);
   }
 
   db.all(query, params, (err, rows) => {

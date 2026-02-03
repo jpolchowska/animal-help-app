@@ -9,6 +9,13 @@ import AddAnimalModal from "@/components/animals/AddAnimalModal";
 
 const categories = ["Wszystkie", "pies", "kot"];
 
+const statuses = [
+  "Wszystkie",
+  "Do adopcji",
+  "W trakcie leczenia",
+  "Zaadoptowane"
+];
+
 export default function AnimalsPage() {
   const [animals, setAnimals] = useState([]);
   const [query, setQuery] = useState("");
@@ -16,6 +23,7 @@ export default function AnimalsPage() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [status, setStatus] = useState("Wszystkie");
 
   async function handleDelete(id) {
     if (!confirm("Czy na pewno chcesz usunąć to zwierzę?")) return;
@@ -74,11 +82,12 @@ export default function AnimalsPage() {
 
     if (query) params.append("search", query);
     if (category !== "Wszystkie") params.append("type", category);
+    if (status !== "Wszystkie") params.append("status", status);
 
     fetch(`http://localhost:3001/animals?${params.toString()}`)
       .then(res => res.json())
       .then(data => setAnimals(data));
-  }, [query, category]);
+  }, [query, category, status]);
 
   return (
     <>
@@ -101,6 +110,20 @@ export default function AnimalsPage() {
             {categories.map(cat => (
               <option key={cat} value={cat}>
                 {cat === "Wszystkie" ? "Wszystkie kategorie" : cat}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className={styles.selectWrapper}>
+          <i className="fa-solid fa-heart-pulse" />
+          <select
+            value={status}
+            onChange={e => setStatus(e.target.value)}
+          >
+            {statuses.map(s => (
+              <option key={s} value={s}>
+                {s === "Wszystkie" ? "Wszystkie statusy" : s}
               </option>
             ))}
           </select>
