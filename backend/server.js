@@ -277,6 +277,11 @@ app.post("/animals", authenticateToken, requireRole(["admin"]), upload.single("i
         status,
         image
       });
+
+      sendSSE({
+        type: "ALERT",
+        message: `Dodano nowe zwierzę: ${name}`
+      });
     }
   );
 });
@@ -654,6 +659,28 @@ app.delete(
     );
   }
 );
+
+const sseClients = new Set();
+
+app.get("/sse", (req, res) => {
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+
+  sseClients.add(res);
+
+  req.on("close", () => {
+    sseClients.delete(res);
+  });
+});
+
+function sendSSE(data) {
+  const payload = `data: ${JSON.stringify(data)}\n\n`;
+
+  sseClients.forEach(res => {
+    res.write(payload);
+  });
+}
 
 server.listen(PORT, () => {
   console.log(`Backend działa na http://localhost:${PORT}`);

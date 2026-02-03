@@ -89,6 +89,22 @@ export default function AnimalsPage() {
       .then(data => setAnimals(data));
   }, [query, category, status]);
 
+  useEffect(() => {
+    const es = new EventSource("http://localhost:3001/sse");
+
+    es.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+
+      if (data.type === "ALERT") {
+        alert(data.message);
+      }
+    };
+
+    return () => {
+      es.close();
+    };
+  }, []);
+
   return (
     <>
       <div className={styles.filters}>

@@ -46,7 +46,6 @@ export default function AddAnimalForm({ onAdd, onClose }) {
     const data = await res.json();
 
     onAdd(data);
-    alert("Dodano zwierzę!");
     onClose()
   }
 
