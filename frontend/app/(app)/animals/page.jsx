@@ -71,12 +71,6 @@ export default function AnimalsPage() {
     }
   }, []);
 
-  // useEffect(() => {
-  //   fetch("http://localhost:3001/animals")
-  //     .then(res => res.json())
-  //     .then(data => setAnimals(data));
-  // }, []);
-
   useEffect(() => {
     const params = new URLSearchParams();
 

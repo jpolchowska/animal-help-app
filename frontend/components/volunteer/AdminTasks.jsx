@@ -90,6 +90,9 @@ export default function AdminTasks() {
 
   return (
     <section>
+      <div className={styles.header}>
+        <h2>Wolontariat</h2>
+      </div>
       <div className={styles.formColumn}>
         <input
           placeholder="Tytuł zadania"

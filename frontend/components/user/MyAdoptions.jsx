@@ -13,12 +13,6 @@ const statusClassMap = {
 export default function MyAdoptions() {
   const [adoptions, setAdoptions] = useState([]);
 
-  // useEffect(() => {
-  //   authFetch("http://localhost:3001/adoptions/my")
-  //     .then(res => res.json())
-  //     .then(setAdoptions);
-  // }, []);
-
   useEffect(() => {
     authFetch("http://localhost:3001/adoptions/my")
       .then(res => res.json())

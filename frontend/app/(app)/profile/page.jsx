@@ -52,7 +52,6 @@ export default function ProfilePage() {
   return (
     <section className={styles.container}>
       <div className={styles.card}>
-        {/* GÓRA */}
         <div className={styles.header}>
           <div className={styles.avatar}>
             {name.charAt(0).toUpperCase()}

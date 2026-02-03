@@ -1,23 +1,33 @@
+// IMPORTY
 const express = require("express");
 const cors = require("cors");
+const http = require("http");
+const url = require("url");
+
 const sqlite3 = require("sqlite3").verbose();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const http = require("http");
 const WebSocket = require("ws")
-const url = require("url");
 
+const multer = require("multer");
+const path = require("path");
+
+
+const PORT = 3001;
 const JWT_SECRET = "change_this_secret_key";
 
-const app = express();
-const PORT = 3001;
 
+const app = express();
 const server = http.createServer(app);
+
 
 app.use(cors());
 app.use(express.json());
 app.use("/images", express.static("images"));
 
+
+
+// BAZA DANYCH
 const db = new sqlite3.Database("./database.db", err => {
   if (err) {
     console.error("Błąd bazy danych:", err.message);
@@ -26,9 +36,8 @@ const db = new sqlite3.Database("./database.db", err => {
   }
 });
 
-const multer = require("multer");
-const path = require("path");
 
+// UPLOAD ZDJĘĆ
 const storage = multer.diskStorage({
   destination: "images",
   filename: (req, file, cb) => {
@@ -40,8 +49,10 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-const wss = new WebSocket.Server({ server });
 
+
+// WebSocket
+const wss = new WebSocket.Server({ server });
 const onlineUsers = new Set();
 
 wss.on("connection", (ws, req) => {
@@ -94,6 +105,8 @@ function broadcastOnlineUsers() {
   });
 }
 
+
+// AUTORYZACJA
 function authenticateToken(req, res, next) {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
@@ -120,6 +133,10 @@ function requireRole(roles) {
     next();
   };
 }
+
+
+
+// --------------- AUTH ---------------
 
 app.post("/auth/register", async (req, res) => {
   const { email, password, name } = req.body;
@@ -213,14 +230,9 @@ app.post("/auth/login", (req, res) => {
   );
 });
 
-// app.get("/animals", (req, res) => {
-//   db.all("SELECT * FROM animals", (err, rows) => {
-//     if (err) {
-//       return res.status(500).json({ error: err.message });
-//     }
-//     res.json(rows);
-//   });
-// });
+
+
+// --------------- ANIMALS ---------------
 
 app.get("/animals", (req, res) => {
   const { search, type, status } = req.query;
@@ -286,26 +298,6 @@ app.post("/animals", authenticateToken, requireRole(["admin"]), upload.single("i
   );
 });
 
-app.delete("/animals/:id", authenticateToken, requireRole(["admin"]), (req, res) => {
-  const { id } = req.params;
-
-  db.run(
-    "DELETE FROM animals WHERE id = ?",
-    [id],
-    function (err) {
-      if (err) {
-        return res.status(500).json({ error: err.message });
-      }
-
-      if (this.changes === 0) {
-        return res.status(404).json({ error: "Nie znaleziono zwierzęcia" });
-      }
-
-      res.json({ message: "Zwierzę usunięte" });
-    }
-  );
-});
-
 app.put("/animals/:id", authenticateToken, requireRole(["admin"]), (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
@@ -334,7 +326,29 @@ app.put("/animals/:id", authenticateToken, requireRole(["admin"]), (req, res) =>
   );
 });
 
-// CRUD - Adopcje
+app.delete("/animals/:id", authenticateToken, requireRole(["admin"]), (req, res) => {
+  const { id } = req.params;
+
+  db.run(
+    "DELETE FROM animals WHERE id = ?",
+    [id],
+    function (err) {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+
+      if (this.changes === 0) {
+        return res.status(404).json({ error: "Nie znaleziono zwierzęcia" });
+      }
+
+      res.json({ message: "Zwierzę usunięte" });
+    }
+  );
+});
+
+
+
+// --------------- ANIMALS ---------------
 
 app.post(
   "/adoptions",
@@ -509,6 +523,10 @@ app.get(
   }
 );
 
+
+
+// --------------- VOLUNTEER ---------------
+
 app.post(
   "/volunteer/join",
   authenticateToken,
@@ -524,6 +542,10 @@ app.post(
     );
   }
 );
+
+
+
+// --------------- TASKS ---------------
 
 app.post(
   "/tasks",
@@ -587,6 +609,10 @@ app.delete(
     );
   }
 );
+
+
+
+// --------------- SIGNUP ---------------
 
 app.post(
   "/tasks/:id/signup",
@@ -660,6 +686,10 @@ app.delete(
   }
 );
 
+
+
+// SSE
+
 const sseClients = new Set();
 
 app.get("/sse", (req, res) => {
@@ -681,6 +711,9 @@ function sendSSE(data) {
     res.write(payload);
   });
 }
+
+
+// Start serwera
 
 server.listen(PORT, () => {
   console.log(`Backend działa na http://localhost:${PORT}`);

@@ -64,4 +64,8 @@ frontend/node_modules/
 # env
 .env
 
+*.key
+*.crt
+*.csr
+
 # End of https://www.toptal.com/developers/gitignore/api/macos,visualstudiocode
