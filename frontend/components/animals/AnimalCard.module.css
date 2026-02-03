@@ -130,21 +130,6 @@
   font-weight: 600;
 }
 
-.available {
-  background: rgba(16, 185, 129, 0.15);
-  color: #047857;
-}
-
-.treatment {
-  background: rgba(245, 158, 11, 0.18);
-  color: #92400e;
-}
-
-.adopted {
-  background: rgba(239, 68, 68, 0.15);
-  color: #991b1b;
-}
-
 .footer {
   display: flex;
   justify-content: space-between;
@@ -189,8 +174,8 @@
 }
 
 .adopted {
-  background: rgba(239,68,68,0.15);
-  color: #991b1b;
+  background: rgba(139, 92, 246, 0.15);
+  color: #5b21b6;
 }
 
 .adoptButton {

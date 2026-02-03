@@ -323,7 +323,7 @@ app.post(
         res.status(201).json({
           id: this.lastID,
           animalId,
-          status: "pending"
+          status: "W oczekiwaniu"
         });
       }
     );
@@ -399,7 +399,31 @@ app.put(
           return res.status(500).json({ error: err.message });
         }
 
-        res.json({ message: "Status zaktualizowany" });
+        if (status === "Zaakceptowany") {
+          db.run(
+            `
+            UPDATE animals
+            SET status = 'Zaadoptowane'
+            WHERE id = (
+              SELECT animal_id FROM adoptions WHERE id = ?
+            )
+            `,
+            [id],
+            err => {
+              if (err) {
+                return res.status(500).json({
+                  error: "Błąd aktualizacji statusu zwierzęcia"
+                });
+              }
+
+              return res.json({
+                message: "Adopcja zaakceptowana, zwierzę zaadoptowane"
+              });
+            }
+          );
+        } else {
+          return res.json({ message: "Status adopcji zaktualizowany" });
+        }
       }
     );
   }
@@ -421,6 +445,29 @@ app.delete(
         }
 
         res.json({ message: "Adopcja usunięta" });
+      }
+    );
+  }
+);
+
+app.get(
+  "/adoptions/stats",
+  authenticateToken,
+  requireRole(["admin"]),
+  (req, res) => {
+    db.get(
+      `
+      SELECT
+        COUNT(*) AS total,
+        COALESCE(SUM(status = 'W oczekiwaniu'), 0) AS pending,
+        COALESCE(SUM(status = 'Zaakceptowana'), 0) AS approved
+      FROM adoptions
+      `,
+      (err, row) => {
+        if (err) {
+          return res.status(500).json({ error: err.message });
+        }
+        res.json(row);
       }
     );
   }

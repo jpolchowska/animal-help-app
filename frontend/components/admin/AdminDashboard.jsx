@@ -1,5 +1,6 @@
 "use client";
 
+import { authFetch } from "@/utils/api";
 import { useEffect, useState } from "react";
 import styles from "./AdminDashboard.module.css";
 
@@ -8,6 +9,11 @@ export default function AdminDashboard() {
   const [animalCount, setAnimalCount] = useState(0);
   const [dogsCount, setDogsCount] = useState(0);
   const [catsCount, setCatsCount] = useState(0);
+  const [adoptionStats, setAdoptionStats] = useState({
+    total: 0,
+    pending: 0,
+    approved: 0
+  });
 
   useEffect(() => {
     const ws = new WebSocket("ws://localhost:3001");
@@ -39,6 +45,12 @@ export default function AdminDashboard() {
         setDogsCount(0);
         setCatsCount(0);
       });
+  }, []);
+
+  useEffect(() => {
+    authFetch("http://localhost:3001/adoptions/stats")
+      .then(res => res.json())
+      .then(setAdoptionStats);
   }, []);
 
   return (
@@ -94,6 +106,29 @@ export default function AdminDashboard() {
             <i className="fa-solid fa-cat" />
           </div>
         </div>
+
+        {/* WNIOSKI ADOPCYJNE */}
+        <div className={styles.statCard}>
+          <div className={styles.statLeft}>
+            <span className={styles.label}>Wnioski adopcyjne</span>
+            <strong className={styles.value}>{adoptionStats.pending}</strong>
+          </div>
+          <div className={styles.icon}>
+            <i className="fa-solid fa-clipboard" />
+          </div>
+        </div>
+
+        {/* ZAADOPTOWANE ZWIERZĘTA */}
+        <div className={styles.statCard}>
+          <div className={styles.statLeft}>
+            <span className={styles.label}>Zaadoptowane zwierzęta</span>
+            <strong className={styles.value}>{adoptionStats.approved}</strong>
+          </div>
+          <div className={styles.icon}>
+            <i className="fa-solid fa-clipboard-check" />
+          </div>
+        </div>
+
       </div>
     </section>
   );

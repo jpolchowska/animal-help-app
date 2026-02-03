@@ -18,7 +18,7 @@ CREATE TABLE adoptions (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   user_id INTEGER NOT NULL,
   animal_id INTEGER NOT NULL,
-  status TEXT DEFAULT 'pending',
+  status TEXT DEFAULT 'W oczekiwaniu',
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 
   FOREIGN KEY(user_id) REFERENCES users(id),
