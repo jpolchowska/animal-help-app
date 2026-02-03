@@ -1,5 +1,7 @@
 "use client";
 
+import { useState, useEffect } from "react";
+
 import styles from "./profile.module.css";
 
 function formatDate(date) {
@@ -15,8 +17,35 @@ function formatDate(date) {
 }
 
 export default function ProfilePage() {
-  const auth = JSON.parse(localStorage.getItem("auth"));
-  if (!auth) return null;
+  const [auth, setAuth] = useState(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const stored = localStorage.getItem("auth");
+    if (stored) {
+      setAuth(JSON.parse(stored));
+    }
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    function syncAuth() {
+      const stored = localStorage.getItem("auth");
+      if (stored) {
+        setAuth(JSON.parse(stored));
+      }
+    }
+
+    window.addEventListener("storage", syncAuth);
+    window.addEventListener("auth-changed", syncAuth);
+
+    return () => {
+      window.removeEventListener("storage", syncAuth);
+      window.removeEventListener("auth-changed", syncAuth);
+    };
+  }, []);
+
+  if (!mounted || !auth) return null;
 
   const { name, email, role, createdAt, lastLoginAt } = auth.user;
 

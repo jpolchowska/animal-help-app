@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const http = require("http");
 const WebSocket = require("ws")
+const url = require("url");
 
 const JWT_SECRET = "change_this_secret_key";
 
@@ -41,22 +42,49 @@ const upload = multer({ storage });
 
 const wss = new WebSocket.Server({ server });
 
-let onlineUsers = 0;
+const onlineUsers = new Set();
 
-wss.on("connection", ws => {
-  onlineUsers++;
-  broadcastOnlineUsers();
+wss.on("connection", (ws, req) => {
+  const { query } = url.parse(req.url, true);
+  const token = query.token;
 
-  ws.on("close", () => {
-    onlineUsers--;
+  if (!token) {
+    ws.close();
+    return;
+  }
+
+  jwt.verify(token, JWT_SECRET, (err, user) => {
+    if (err) {
+      console.log("WS JWT ERROR:", err.message);
+      ws.close();
+      return;
+    }
+
+    const userId = user.id;
+    ws.userId = userId;
+    onlineUsers.add(userId);
     broadcastOnlineUsers();
+
+    ws.on("close", () => {
+      const stillConnected = [...wss.clients].some(
+        client =>
+          client !== ws &&
+          client.readyState === WebSocket.OPEN &&
+          client.userId === userId
+      );
+
+      if (!stillConnected) {
+        onlineUsers.delete(userId);
+        broadcastOnlineUsers();
+      }
+    });
   });
 });
 
 function broadcastOnlineUsers() {
   const message = JSON.stringify({
     type: "ONLINE_USERS",
-    count: onlineUsers
+    count: onlineUsers.size
   });
 
   wss.clients.forEach(client => {
@@ -92,8 +120,6 @@ function requireRole(roles) {
     next();
   };
 }
-
-// ===== ENDPOINTY =====
 
 app.post("/auth/register", async (req, res) => {
   const { email, password, name } = req.body;
@@ -465,7 +491,7 @@ app.get(
       SELECT
         COUNT(*) AS total,
         COALESCE(SUM(status = 'W oczekiwaniu'), 0) AS pending,
-        COALESCE(SUM(status = 'Zaakceptowana'), 0) AS approved
+        COALESCE(SUM(status = 'Zaakceptowany'), 0) AS approved
       FROM adoptions
       `,
       (err, row) => {
@@ -473,6 +499,157 @@ app.get(
           return res.status(500).json({ error: err.message });
         }
         res.json(row);
+      }
+    );
+  }
+);
+
+app.post(
+  "/volunteer/join",
+  authenticateToken,
+  requireRole(["user"]),
+  (req, res) => {
+    db.run(
+      "UPDATE users SET role = 'volunteer' WHERE id = ?",
+      [req.user.id],
+      err => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ message: "Zostałeś wolontariuszem" });
+      }
+    );
+  }
+);
+
+app.post(
+  "/tasks",
+  authenticateToken,
+  requireRole(["admin"]),
+  (req, res) => {
+    const { title, description, date, time_from, time_to } = req.body;
+
+    db.run(
+      `INSERT INTO tasks 
+       (title, description, date, time_from, time_to)
+       VALUES (?, ?, ?, ?, ?)`,
+      [title, description, date, time_from, time_to],
+      function (err) {
+        if (err) return res.status(500).json({ error: err.message });
+        res.status(201).json({ id: this.lastID });
+      }
+    );
+  }
+);
+
+app.get("/tasks", authenticateToken, (req, res) => {
+  db.all("SELECT * FROM tasks", (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows);
+  });
+});
+
+app.put(
+  "/tasks/:id",
+  authenticateToken,
+  requireRole(["admin"]),
+  (req, res) => {
+    const { title, description, date, time_from, time_to } = req.body;
+
+    db.run(
+      `UPDATE tasks 
+       SET title=?, description=?, date=?, time_from=?, time_to=?
+       WHERE id=?`,
+      [title, description, date, time_from, time_to, req.params.id],
+      err => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ message: "Zaktualizowano zadanie" });
+      }
+    );
+  }
+);
+
+app.delete(
+  "/tasks/:id",
+  authenticateToken,
+  requireRole(["admin"]),
+  (req, res) => {
+    db.run(
+      "DELETE FROM tasks WHERE id = ?",
+      [req.params.id],
+      err => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ message: "Usunięto zadanie" });
+      }
+    );
+  }
+);
+
+app.post(
+  "/tasks/:id/signup",
+  authenticateToken,
+  requireRole(["volunteer"]),
+  (req, res) => {
+    const { note } = req.body;
+
+    db.run(
+      `INSERT INTO signups (task_id, volunteer_id, note)
+       VALUES (?, ?, ?)`,
+      [req.params.id, req.user.id, note],
+      err => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.status(201).json({ message: "Zapisano na zadanie" });
+      }
+    );
+  }
+);
+
+app.get(
+  "/signups/my",
+  authenticateToken,
+  requireRole(["volunteer"]),
+  (req, res) => {
+    db.all(
+      `
+      SELECT signups.*, volunteer_tasks.title
+      FROM task_signups
+      JOIN volunteer_tasks ON volunteer_tasks.id = task_signups.task_id
+      WHERE volunteer_id = ?
+      `,
+      [req.user.id],
+      (err, rows) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(rows);
+      }
+    );
+  }
+);
+
+app.put(
+  "/signups/:id",
+  authenticateToken,
+  requireRole(["volunteer"]),
+  (req, res) => {
+    db.run(
+      "UPDATE signups SET note = ? WHERE id = ?",
+      [req.body.note, req.params.id],
+      err => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ message: "Zaktualizowano notatkę" });
+      }
+    );
+  }
+);
+
+app.delete(
+  "/signups/:id",
+  authenticateToken,
+  requireRole(["volunteer"]),
+  (req, res) => {
+    db.run(
+      "DELETE FROM signups WHERE id = ?",
+      [req.params.id],
+      err => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ message: "Wypisano z zadania" });
       }
     );
   }

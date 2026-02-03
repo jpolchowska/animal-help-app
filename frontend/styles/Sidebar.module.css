@@ -66,21 +66,9 @@
 }
 
 .active::before {
-  background: #3b82f6;
+  background: #1e3a8a;
   box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
 }
-
-/* .item:visited {
-  color: inherit;
-}
-
-.item:active {
-  color: inherit;
-}
-
-.item:focus {
-  outline: none;
-} */
 
 .sidebar {
   will-change: transform;

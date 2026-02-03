@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import AdminDashboard from "@/components/admin/AdminDashboard";
 import UserPage from "@/components/user/UserPage";
+import { WebSocketProvider } from "@/context/WebSocketProvider";
 
 export default function HomePage() {
   const [role, setRole] = useState(null);
@@ -16,9 +17,9 @@ export default function HomePage() {
 
   if (!role) return null;
 
-  if (role === "admin") {
-    return <AdminDashboard />;
-  }
-
-  return <UserPage />;
+  return (
+    <WebSocketProvider>
+      {role === "admin" ? <AdminDashboard /> : <UserPage />}
+    </WebSocketProvider>
+  );
 }

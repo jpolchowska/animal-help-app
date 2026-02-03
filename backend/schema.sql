@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS users (
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE adoptions (
+CREATE TABLE IF NOT EXISTS adoptions (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   user_id INTEGER NOT NULL,
   animal_id INTEGER NOT NULL,
@@ -23,4 +23,22 @@ CREATE TABLE adoptions (
 
   FOREIGN KEY(user_id) REFERENCES users(id),
   FOREIGN KEY(animal_id) REFERENCES animals(id)
+);
+
+CREATE TABLE IF NOT EXISTS tasks (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  title TEXT NOT NULL,
+  description TEXT,
+  date TEXT,
+  time_from TEXT,
+  time_to TEXT
+);
+
+CREATE TABLE IF NOT EXISTS signups (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  task_id INTEGER NOT NULL,
+  volunteer_id INTEGER NOT NULL,
+  note TEXT,
+  FOREIGN KEY (task_id) REFERENCES volunteer_tasks(id),
+  FOREIGN KEY (volunteer_id) REFERENCES users(id)
 );

@@ -3,9 +3,10 @@
 import { authFetch } from "@/utils/api";
 import { useEffect, useState } from "react";
 import styles from "./AdminDashboard.module.css";
+import { useOnlineUsers } from "@/context/WebSocketProvider";
 
 export default function AdminDashboard() {
-  const [online, setOnline] = useState(0);
+  const { online } = useOnlineUsers();
   const [animalCount, setAnimalCount] = useState(0);
   const [dogsCount, setDogsCount] = useState(0);
   const [catsCount, setCatsCount] = useState(0);
@@ -14,19 +15,6 @@ export default function AdminDashboard() {
     pending: 0,
     approved: 0
   });
-
-  useEffect(() => {
-    const ws = new WebSocket("ws://localhost:3001");
-
-    ws.onmessage = event => {
-      const data = JSON.parse(event.data);
-      if (data.type === "ONLINE_USERS") {
-        setOnline(data.count);
-      }
-    };
-
-    return () => ws.close();
-  }, []);
 
   useEffect(() => {
     fetch("http://localhost:3001/animals")
@@ -57,7 +45,6 @@ export default function AdminDashboard() {
     <section className={styles.container}>
       <div className={styles.header}>
         <h2>Panel administratora</h2>
-        <span className={styles.badge}>Admin</span>
       </div>
 
       <div className={styles.grid}>

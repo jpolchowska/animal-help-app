@@ -8,7 +8,8 @@ const ITEMS = [
   { icon: "fa-house", label: "Home", href: "/" },
   { icon: "fa-paw", label: "Zwierzęta", href: "/animals" },
   { icon: "fa-heart", label: "Adopcje", href: "/adoptions" },
-  { icon: "fa-user", label: "Profil", href: "/profile" },
+  { icon: "fa-handshake-angle", label: "Wolontariat", href: "/volunteer" },
+  { icon: "fa-user", label: "Profil", href: "/profile" }
 ];
 
 export default function Sidebar() {
