@@ -49,7 +49,7 @@ export default function AdminDashboard() {
 
       <div className={styles.grid}>
         {/* UŻYTKOWNICY ONLINE */}
-        <div className={styles.statCard}>
+        {/* <div className={styles.statCard}>
           <div className={styles.statLeft}>
             <span className={styles.label}>Użytkownicy online</span>
             <strong className={styles.value}>{online}</strong>
@@ -58,7 +58,7 @@ export default function AdminDashboard() {
           <div className={styles.icon}>
             <i className="fa-solid fa-users" />
           </div>
-        </div>
+        </div> */}
 
         {/* ZWIERZĘTA */}
         <div className={styles.statCard}>

@@ -348,7 +348,7 @@ app.delete("/animals/:id", authenticateToken, requireRole(["admin"]), (req, res)
 
 
 
-// --------------- ANIMALS ---------------
+// --------------- ADOPTIONS ---------------
 
 app.post(
   "/adoptions",
@@ -389,7 +389,10 @@ app.get(
 
     db.all(
       `
-      SELECT adoptions.*, animals.name AS animal_name
+      SELECT
+        adoptions.*,
+        animals.name AS animal_name,
+        animals.image AS animal_image
       FROM adoptions
       JOIN animals ON animals.id = adoptions.animal_id
       WHERE adoptions.user_id = ?
@@ -413,7 +416,11 @@ app.get(
   (req, res) => {
     db.all(
       `
-      SELECT adoptions.*, users.email, animals.name AS animal_name
+      SELECT
+        adoptions.*,
+        users.email,
+        animals.name AS animal_name,
+        animals.image AS animal_image
       FROM adoptions
       JOIN users ON users.id = adoptions.user_id
       JOIN animals ON animals.id = adoptions.animal_id
