@@ -693,6 +693,35 @@ app.delete(
   }
 );
 
+// -------- DASHBOARD STATS --------
+
+app.get(
+  "/admin/stats",
+  authenticateToken,
+  requireRole(["admin"]),
+  (req, res) => {
+    const stats = {};
+
+    db.get(
+      "SELECT COUNT(*) AS volunteers FROM users WHERE role = 'volunteer'",
+      (err, row) => {
+        if (err) return res.status(500).json({ error: err.message });
+        stats.volunteers = row.volunteers;
+
+        db.get(
+          "SELECT COUNT(*) AS tasks FROM tasks",
+          (err, row) => {
+            if (err) return res.status(500).json({ error: err.message });
+            stats.tasks = row.tasks;
+
+            res.json(stats);
+          }
+        );
+      }
+    );
+  }
+);
+
 
 
 // SSE

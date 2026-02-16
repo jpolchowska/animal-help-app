@@ -15,6 +15,12 @@ export default function AdminDashboard() {
     pending: 0,
     approved: 0
   });
+  const [adminStats, setAdminStats] = useState({
+    volunteers: 0,
+    tasks: 0
+  });
+
+  const FAKE_FUNDRAISING_COUNT = 4;
 
   useEffect(() => {
     fetch("http://localhost:3001/animals")
@@ -39,6 +45,18 @@ export default function AdminDashboard() {
     authFetch("http://localhost:3001/adoptions/stats")
       .then(res => res.json())
       .then(setAdoptionStats);
+  }, []);
+
+  useEffect(() => {
+    authFetch("http://localhost:3001/admin/stats")
+      .then(res => res.json())
+      .then(setAdminStats)
+      .catch(() =>
+        setAdminStats({
+          volunteers: 0,
+          tasks: 0
+        })
+      );
   }, []);
 
   return (
@@ -113,6 +131,48 @@ export default function AdminDashboard() {
           </div>
           <div className={styles.icon}>
             <i className="fa-solid fa-clipboard-check" />
+          </div>
+        </div>
+
+        {/* WOLONTARIUSZE */}
+        <div className={styles.statCard}>
+          <div className={styles.statLeft}>
+            <span className={styles.label}>Wolontariusze</span>
+            <strong className={styles.value}>
+              {adminStats.volunteers}
+            </strong>
+          </div>
+
+          <div className={styles.icon}>
+            <i className="fa-solid fa-handshake-angle" />
+          </div>
+        </div>
+
+        {/* ZADANIA */}
+        <div className={styles.statCard}>
+          <div className={styles.statLeft}>
+            <span className={styles.label}>Zadania</span>
+            <strong className={styles.value}>
+              {adminStats.tasks}
+            </strong>
+          </div>
+
+          <div className={styles.icon}>
+            <i className="fa-solid fa-list-check" />
+          </div>
+        </div>
+
+        {/* ZBIÓRKI (FAKE) */}
+        <div className={styles.statCard}>
+          <div className={styles.statLeft}>
+            <span className={styles.label}>Zbiórki</span>
+            <strong className={styles.value}>
+              {FAKE_FUNDRAISING_COUNT}
+            </strong>
+          </div>
+
+          <div className={styles.icon}>
+            <i className="fa-solid fa-piggy-bank" />
           </div>
         </div>
 
