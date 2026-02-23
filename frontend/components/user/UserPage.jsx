@@ -1,7 +1,18 @@
 import styles from "./UserPage.module.css";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { authFetch } from "@/utils/api";
 
 export default function UserPage() {
+  const [stats, setStats] = useState(null);
+
+  useEffect(() => {
+    authFetch("http://localhost:3001/stats")
+      .then(res => res.json())
+      .then(data => setStats(data))
+      .catch(err => console.error("Stats error:", err));
+  }, []);
+
   return (
     <main>
       {/* HERO */}
@@ -44,17 +55,17 @@ export default function UserPage() {
       <section className={styles.stats}>
         <div className={styles.stat}>
           <i className="fa-solid fa-dog" />
-          <strong>128</strong>
+          <strong>{stats ? stats.animals : "—"}</strong>
           <span>Zwierząt pod opieką</span>
         </div>
         <div className={styles.stat}>
           <i className="fa-solid fa-heart" />
-          <strong>54</strong>
+          <strong>{stats ? stats.adopted : "—"}</strong>
           <span>Udało się adoptować</span>
         </div>
         <div className={styles.stat}>
           <i className="fa-solid fa-hand-holding-heart" />
-          <strong>23</strong>
+          <strong>{stats ? stats.volunteers : "—"}</strong>
           <span>Aktywnych wolontariuszy</span>
         </div>
       </section>

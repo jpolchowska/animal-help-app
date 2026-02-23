@@ -137,6 +137,7 @@ export default function AnimalsPage() {
               </option>
             ))}
           </select>
+          <i className={`${styles.chevron} fa-solid fa-chevron-down`} />
         </div>
 
         {isMounted && isAdmin && (
@@ -144,7 +145,8 @@ export default function AnimalsPage() {
             className={styles.addButton}
             onClick={() => setShowAddForm(true)}
           >
-            + Dodaj zwierzę
+            <i className="fa-solid fa-plus" />
+            Dodaj zwierzę
           </button>
         )}
       </div>

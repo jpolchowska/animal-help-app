@@ -722,6 +722,36 @@ app.get(
   }
 );
 
+// -------- PUBLIC STATS --------
+app.get("/stats", (req, res) => {
+  const stats = {};
+
+  db.get(
+    "SELECT COUNT(*) AS count FROM animals WHERE status != 'Zaadoptowane'",
+    (err, row) => {
+      if (err) return res.status(500).json({ error: err.message });
+      stats.animals = row.count;
+
+      db.get(
+        "SELECT COUNT(*) AS count FROM animals WHERE status = 'Zaadoptowane'",
+        (err, row) => {
+          if (err) return res.status(500).json({ error: err.message });
+          stats.adopted = row.count;
+
+          db.get(
+            "SELECT COUNT(*) AS count FROM users WHERE role = 'volunteer'",
+            (err, row) => {
+              if (err) return res.status(500).json({ error: err.message });
+              stats.volunteers = row.count;
+
+              res.json(stats);
+            }
+          );
+        }
+      );
+    }
+  );
+});
 
 
 // SSE
