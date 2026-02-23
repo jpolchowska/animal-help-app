@@ -4,7 +4,6 @@ import { useEffect, useState, useRef } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import plLocale from "@fullcalendar/core/locales/pl";
 import { authFetch } from "@/utils/api";
 import styles from "./Volunteer.module.css";
 
@@ -15,6 +14,8 @@ export default function AdminVolunteer() {
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(true);
   const tasksRef = useRef(null);
+
+  const [errors, setErrors] = useState({});
 
   const [newTask, setNewTask] = useState({
     title: "",
@@ -39,6 +40,28 @@ export default function AdminVolunteer() {
     });
   }
 
+  /* ================= VALIDATION ================= */
+
+  function validateTask(task) {
+    const newErrors = {};
+
+    if (!task.title || task.title.trim().length < 3) {
+      newErrors.title = "Tytuł musi mieć co najmniej 3 znaki";
+    }
+
+    if (!task.date) {
+      newErrors.date = "Data jest wymagana";
+    }
+
+    if (task.time_from && task.time_to) {
+      if (task.time_from >= task.time_to) {
+        newErrors.time = "Godzina zakończenia musi być później";
+      }
+    }
+
+    return newErrors;
+  }
+
   /* ================= FETCH ================= */
 
   useEffect(() => {
@@ -51,6 +74,14 @@ export default function AdminVolunteer() {
   /* ================= CREATE ================= */
 
   async function addTask() {
+    const validationErrors = validateTask(newTask);
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    setErrors({});
+
     const res = await authFetch("http://localhost:3001/tasks", {
       method: "POST",
       body: JSON.stringify(newTask)
@@ -82,9 +113,18 @@ export default function AdminVolunteer() {
       time_from: task.time_from || "",
       time_to: task.time_to || ""
     });
+    setErrors({});
   }
 
   async function saveEdit(id) {
+    const validationErrors = validateTask(editForm);
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    setErrors({});
+
     await authFetch(`http://localhost:3001/tasks/${id}`, {
       method: "PUT",
       body: JSON.stringify(editForm)
@@ -99,6 +139,7 @@ export default function AdminVolunteer() {
 
   function cancelEdit() {
     setEditingId(null);
+    setErrors({});
   }
 
   /* ================= DELETE ================= */
@@ -128,7 +169,6 @@ export default function AdminVolunteer() {
       <div className={styles.calendar}>
         <FullCalendar
           plugins={[dayGridPlugin, interactionPlugin]}
-          locale={plLocale}
           initialView="dayGridMonth"
           firstDay={1}
           height="auto"
@@ -191,55 +231,70 @@ export default function AdminVolunteer() {
         Wszystkie zadania
       </button>
 
+      {/* ===== CREATE FORM ===== */}
       {showCreateForm && (
-        <div className={styles.formColumn}>
-          <input
-            placeholder="Tytuł zadania"
-            value={newTask.title}
-            onChange={e =>
-              setNewTask({ ...newTask, title: e.target.value })
-            }
-          />
-          <textarea
-            placeholder="Opis zadania"
-            value={newTask.description}
-            onChange={e =>
-              setNewTask({ ...newTask, description: e.target.value })
-            }
-          />
-          <div className={styles.row}>
+        <div className={styles.createFormWrapper}>
+          <div className={styles.formColumn}>
             <input
-              type="date"
-              value={newTask.date}
+              placeholder="Tytuł zadania"
+              value={newTask.title}
               onChange={e =>
-                setNewTask({ ...newTask, date: e.target.value })
+                setNewTask({ ...newTask, title: e.target.value })
               }
             />
-            <input
-              type="time"
-              value={newTask.time_from}
+            {errors.title && (
+              <small className={styles.error}>{errors.title}</small>
+            )}
+
+            <textarea
+              placeholder="Opis zadania (opcjonalnie)"
+              value={newTask.description}
               onChange={e =>
-                setNewTask({ ...newTask, time_from: e.target.value })
+                setNewTask({ ...newTask, description: e.target.value })
               }
             />
-            <input
-              type="time"
-              value={newTask.time_to}
-              onChange={e =>
-                setNewTask({ ...newTask, time_to: e.target.value })
-              }
-            />
-          </div>
-          <div className={styles.row}>
-            <button className={styles.primary} onClick={addTask}>
-              Zapisz
-            </button>
-            <button
-              className={styles.primary}
-              onClick={() => setShowCreateForm(false)}
-            >
-              Anuluj
-            </button>
+
+            <div className={styles.row}>
+              <input
+                type="date"
+                value={newTask.date}
+                onChange={e =>
+                  setNewTask({ ...newTask, date: e.target.value })
+                }
+              />
+              <input
+                type="time"
+                value={newTask.time_from}
+                onChange={e =>
+                  setNewTask({ ...newTask, time_from: e.target.value })
+                }
+              />
+              <input
+                type="time"
+                value={newTask.time_to}
+                onChange={e =>
+                  setNewTask({ ...newTask, time_to: e.target.value })
+                }
+              />
+            </div>
+
+            {(errors.date || errors.time) && (
+              <small className={styles.error}>
+                {errors.date || errors.time}
+              </small>
+            )}
+
+            <div className={styles.row}>
+              <button className={styles.primary} onClick={addTask}>
+                Zapisz
+              </button>
+              <button
+                className={styles.primary}
+                onClick={() => setShowCreateForm(false)}
+              >
+                Anuluj
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -252,7 +307,7 @@ export default function AdminVolunteer() {
         </h3>
       </div>
 
-      {/* ===== TASKS SECTION ===== */}
+      {/* ===== TASKS ===== */}
       <div className={styles.tasksSection} ref={tasksRef}>
         {visibleTasks.length === 0 ? (
           <div className={styles.emptyState}>
@@ -273,6 +328,10 @@ export default function AdminVolunteer() {
                       })
                     }
                   />
+                  {errors.title && (
+                    <small className={styles.error}>{errors.title}</small>
+                  )}
+
                   <textarea
                     value={editForm.description}
                     onChange={e =>
@@ -282,6 +341,7 @@ export default function AdminVolunteer() {
                       })
                     }
                   />
+
                   <div className={styles.row}>
                     <input
                       type="date"
@@ -314,6 +374,13 @@ export default function AdminVolunteer() {
                       }
                     />
                   </div>
+
+                  {(errors.date || errors.time) && (
+                    <small className={styles.error}>
+                      {errors.date || errors.time}
+                    </small>
+                  )}
+
                   <div className={styles.row}>
                     <button
                       className={styles.primary}
@@ -334,11 +401,17 @@ export default function AdminVolunteer() {
                   <div>
                     <strong>{t.title}</strong>
                     {t.description && <p>{t.description}</p>}
-                    <small>
-                      {t.date}{" "}
-                      {t.time_from &&
-                        `${t.time_from}–${t.time_to}`}
-                    </small>
+                    <div className={styles.meta}>
+                      <span className={styles.dateBadge}>
+                        {formatPolishDate(t.date)}
+                      </span>
+
+                      {t.time_from && (
+                        <span className={styles.time}>
+                          {t.time_from}–{t.time_to}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <div className={styles.row}>
                     <button

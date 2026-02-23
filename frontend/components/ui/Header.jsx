@@ -2,6 +2,7 @@
 
 import styles from "@/styles/Header.module.css";
 import Image from "next/image";
+import Link from "next/link";
 import { logout } from "@/utils/auth";
 import { useEffect, useState } from "react";
 
@@ -24,7 +25,7 @@ export default function Header() {
 
       <div className={styles.right}>
         {initial && (
-          <div className={styles.avatar}>{initial}</div>
+          <Link href="/profile" className={styles.avatar}>{initial}</Link>
         )}
         <button onClick={logout} className={styles.logoutBtn}>Wyloguj</button>
       </div>

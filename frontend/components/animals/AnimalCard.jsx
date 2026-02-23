@@ -46,9 +46,9 @@ export default function AnimalCard({ animal, onDelete, onStatusChange }) {
 
         <div className={styles.footer}>
           <div className={styles.meta}>
-            <div className={styles.type}>
+            {/* <div className={styles.type}>
               {animal.type.toUpperCase()}
-            </div>
+            </div> */}
 
             <span
               className={`${styles.status} ${

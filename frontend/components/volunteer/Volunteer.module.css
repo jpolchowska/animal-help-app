@@ -120,15 +120,45 @@
 
 .card {
   background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 14px;
-  padding: 16px 18px;
-  margin-bottom: 14px;
+  border-radius: 16px;
+  padding: 18px 20px;
+
+  position: relative;
+  overflow: hidden;
 
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 16px;
+  gap: 20px;
+
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 6px 20px rgba(15, 23, 42, 0.06);
+
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.15s ease;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  width: 4px;
+
+  background: rgba(30, 58, 138, 0.6);
+  /* background: rgba(30, 58, 138, 0.35); */
+  border-radius: 999px;
+}
+
+.card:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 4px 10px rgba(15, 23, 42, 0.08),
+    0 12px 30px rgba(15, 23, 42, 0.08);
 }
 
 .card strong {
@@ -136,39 +166,94 @@
   font-size: 15px;
   font-weight: 600;
   color: #0f172a;
+  line-height: 1.35;
 }
 
 .card p {
-  margin: 6px 0 4px;
+  margin: 6px 0 0;
   font-size: 13px;
   color: #475569;
+  line-height: 1.45;
 }
 
 .card small {
+  display: inline-block;
+  margin-top: 8px;
+
+  font-size: 12px;
+  color: #334155;
+
+  background: rgba(15, 23, 42, 0.04);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.dateBadge {
+  font-size: 12px;
+  font-weight: 500;
+  color: #334155;
+  background: rgba(15, 23, 42, 0.04);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+
+.time {
   font-size: 12px;
   color: #64748b;
 }
 
+
 .delete {
-  background: #dc2626;
-  color: #ffffff;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 8px;
+  background: rgba(220, 38, 38, 0.08);
+  color: #dc2626;
+
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  border-radius: 999px;
+
+  padding: 6px 14px;
   font-size: 12px;
   font-weight: 500;
+
   cursor: pointer;
+
+  transition:
+    background 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .delete:hover {
-  background: #b91c1c;
+  background: rgba(220, 38, 38, 0.15);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+}
+
+.card:hover::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background: linear-gradient(
+    120deg,
+    rgba(30, 58, 138, 0.04),
+    transparent 60%
+  );
+
+  pointer-events: none;
 }
 
 .tasksSection {
   margin-top: 32px;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 12px;
 }
 
 .loading {
@@ -252,6 +337,18 @@
   font-size: 13px;
 }
 
+.createFormWrapper {
+  max-width: 520px;
+  margin: 24px 0 32px;
+}
+
+.error {
+  font-size: 12px;
+  color: #dc2626;
+  margin-top: -6px;
+}
+
+
 
 
 /* ----- KALENDARZ ----- */
@@ -259,6 +356,15 @@
 .calendar {
   padding-top: 5px;
   padding-bottom: 30px;
+  max-height: 70vh;   /* albo np. 600px */
+  overflow-y: auto;
+}
+
+.calendar :global(.fc-col-header) {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: #ffffff;
 }
 
 .calendar :global(.fc-day-today) {
