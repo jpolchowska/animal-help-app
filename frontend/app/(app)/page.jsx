@@ -7,11 +7,13 @@ import { WebSocketProvider } from "@/context/WebSocketProvider";
 
 export default function HomePage() {
   const [role, setRole] = useState(null);
+  const [userName, setUserName] = useState(null);
 
   useEffect(() => {
     const auth = JSON.parse(localStorage.getItem("auth"));
     if (auth) {
       setRole(auth.user.role);
+      setUserName(auth.user.name);
     }
   }, []);
 
@@ -19,7 +21,7 @@ export default function HomePage() {
 
   return (
     <WebSocketProvider>
-      {role === "admin" ? <AdminDashboard /> : <UserPage />}
+      {role === "admin" ? <AdminDashboard /> : <UserPage userName={userName} />}
     </WebSocketProvider>
   );
 }

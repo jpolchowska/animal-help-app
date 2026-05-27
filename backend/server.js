@@ -234,6 +234,26 @@ app.post("/auth/login", (req, res) => {
 
 // --------------- ANIMALS ---------------
 
+app.get("/animals/:id", (req, res) => {
+  const { id } = req.params;
+
+  db.get(
+    "SELECT * FROM animals WHERE id = ?",
+    [id],
+    (err, row) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+
+      if (!row) {
+        return res.status(404).json({ error: "Nie znaleziono zwierzęcia" });
+      }
+
+      res.json(row);
+    }
+  );
+});
+
 app.get("/animals", (req, res) => {
   const { search, type, status } = req.query;
 

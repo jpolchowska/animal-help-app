@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { authFetch } from "@/utils/api";
 
-export default function UserPage() {
+export default function UserPage({ userName }) {
   const [stats, setStats] = useState(null);
 
   useEffect(() => {
@@ -17,7 +17,9 @@ export default function UserPage() {
     <main>
       {/* HERO */}
       <section className={styles.hero}>
-        <h2>Witaj w Animal Help App!</h2>
+        <h2>
+          Witaj{userName ? `, ${userName}` : ""}!
+        </h2>
         <p>
           Animal Help App to aplikacja wspierająca adopcję zwierząt, wolontariat
           oraz działania na rzecz podopiecznych schroniska.

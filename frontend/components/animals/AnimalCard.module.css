@@ -6,6 +6,8 @@
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
+  text-decoration: none;
+  color: inherit;
 }
 
 .card:hover {

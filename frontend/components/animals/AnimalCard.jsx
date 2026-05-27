@@ -2,6 +2,7 @@
 
 import styles from "./AnimalCard.module.css";
 import { authFetch, getAuth } from "@/utils/api";
+import Link from "next/link";
 
 export default function AnimalCard({ animal, onDelete, onStatusChange }) {
   const auth = getAuth();
@@ -11,7 +12,7 @@ export default function AnimalCard({ animal, onDelete, onStatusChange }) {
   const canAdopt = role === "user" || role === "volunteer";
 
   return (
-    <div className={styles.card}>
+    <Link href={`/animals/${animal.id}`} className={styles.card}>
       {isAdmin && (
         <div className={styles.cardActions}>
           <i
@@ -82,6 +83,6 @@ export default function AnimalCard({ animal, onDelete, onStatusChange }) {
           )}
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

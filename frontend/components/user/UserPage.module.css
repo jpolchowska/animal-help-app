@@ -16,6 +16,7 @@
 }
 
 .cards {
+  margin-top: 35px;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 20px;
@@ -64,12 +65,12 @@
 
 .icon {
   width: auto;
-  height: 120px;
+  height: 110px;
 }
 
 .stats {
-  margin-top: 50px;
-  padding: 26px 28px;
+  margin-top: 35px;
+  padding: 20px;
 
   background: linear-gradient(
     180deg,
@@ -105,7 +106,7 @@
   display: block;
   font-size: 22px;
   font-weight: 500;
-  color: #0f172a;          /* slate-900, NIE granat */
+  color: #0f172a;
   margin-bottom: 2px;
   letter-spacing: -0.01em;
 }
@@ -113,7 +114,7 @@
 .stat span {
   font-size: 12px;
   font-weight: 400;
-  color: #64748b;          /* slate-500 */
+  color: #64748b;
   text-align: center;
   line-height: 1.4;
 }
@@ -128,7 +129,7 @@
 
   font-size: 18px;
 
-  color: #1e3a8a; /* TWÓJ granat */
+  color: #1e3a8a;
   background: rgba(30, 58, 138, 0.08);
 
   border-radius: 12px;
@@ -136,12 +137,8 @@
   margin-bottom: 6px;
 }
 
-.stat {
-  gap: 6px;
-}
-
 .cta {
-  margin-top: 50px;
+  margin-top: 35px;
   padding: 28px 32px;
 
   background: #ffffff;

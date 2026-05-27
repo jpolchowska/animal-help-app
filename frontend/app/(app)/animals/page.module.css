@@ -196,3 +196,16 @@
 .addButton:active {
   transform: scale(0.97);
 }
+
+.image {
+  width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
