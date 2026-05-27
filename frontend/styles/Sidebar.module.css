@@ -1,36 +1,42 @@
+/* ── Sidebar shell ── */
+
 .sidebar {
   position: fixed;
   top: var(--header-height);
   left: 0;
   width: var(--sidebar-width);
   height: calc(100vh - var(--header-height));
-  background: #fafafa;
-  border-right: 1px solid #e5e7eb;
+  background: #2d4828;
+  border-right: none;
   padding: 16px 8px;
   display: flex;
   justify-content: center;
+  will-change: transform;
 }
+
+/* ── Nav ── */
 
 .nav {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
   width: 100%;
 }
+
+/* ── Nav item ── */
 
 .item {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  padding: 12px 6px;
-  border-radius: 12px;
-  color: #6b7280;
-  cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease;
+  gap: 5px;
+  padding: 11px 6px;
+  border-radius: 14px;
+  color: rgba(255, 255, 255, 0.62);
   text-decoration: none;
-  color: inherit;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease, transform 0.13s ease;
 }
 
 .item i {
@@ -43,44 +49,23 @@
 }
 
 .item:hover {
-  background: rgba(59, 130, 246, 0.06);
-  color: #1e3a8a;
-}
-
-.item::before {
-  content: "";
-  position: absolute;
-  left: -8px;
-  top: 15%;
-  width: 3px;
-  height: 70%;
-  border-radius: 999px;
-  background: transparent;
-  transition: background 0.25s ease, box-shadow 0.25s ease;
-}
-
-.active {
-  background: rgba(59, 130, 246, 0.1);
-  color: #1e3a8a;
-  font-weight: 600;
-}
-
-.active::before {
-  background: #1e3a8a;
-  box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
-}
-
-.sidebar {
-  will-change: transform;
-}
-
-.item {
-  transition:
-    background 0.2s ease,
-    color 0.2s ease,
-    transform 0.15s ease;
+  background: rgba(255, 255, 255, 0.09);
+  color: rgba(255, 255, 255, 0.88);
 }
 
 .item:active {
   transform: scale(0.96);
+}
+
+/* ── Active state ── */
+
+.active {
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.active:hover {
+  background: rgba(255, 255, 255, 0.17);
+  color: #ffffff;
 }
