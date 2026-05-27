@@ -1,6 +1,29 @@
 :root {
   --header-height: 64px;
   --sidebar-width: 110px;
+
+  /* ── Color palette ── */
+  --c-green-dark:  #2d4828;
+  --c-blue:        #3a7db8;
+  --c-blue-bg:     rgba(110, 168, 216, 0.12);
+  --c-teal:        #2d9b72;
+  --c-teal-bg:     rgba(95, 191, 160, 0.12);
+  --c-purple:      #7a62b8;
+  --c-purple-bg:   rgba(167, 141, 208, 0.12);
+  --c-orange:      #e0976a;
+  --c-orange-bg:   rgba(224, 151, 106, 0.12);
+  --c-red:         #b85050;
+
+  /* ── Text ── */
+  --c-text:        #0f172a;
+  --c-text-2:      #475569;
+  --c-text-3:      #94a3b8;
+
+  /* ── Surface ── */
+  --c-border:      #e2e8f0;
+  --c-bg:          #f9f8f8;
+  --c-bg-card:     #ffffff;
+  --c-bg-hover:    #f8fafc;
 }
 
 * {
@@ -19,7 +42,7 @@ body {
 
 .app-content {
   padding: 35px;
-  background: #f7f7f9;
+  background: #f9f8f8;
   overflow-y: auto;
   margin-top: var(--header-height);
   margin-left: var(--sidebar-width);

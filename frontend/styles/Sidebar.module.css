@@ -6,7 +6,7 @@
   left: 0;
   width: var(--sidebar-width);
   height: calc(100vh - var(--header-height));
-  background: #2d4828;
+  background: #354b34;
   border-right: none;
   padding: 16px 8px;
   display: flex;
@@ -49,8 +49,8 @@
 }
 
 .item:hover {
-  background: rgba(255, 255, 255, 0.09);
-  color: rgba(255, 255, 255, 0.88);
+  background: #4e654b;
+  color: rgba(255, 255, 255, 0.92);
 }
 
 .item:active {
@@ -60,12 +60,12 @@
 /* ── Active state ── */
 
 .active {
-  background: rgba(255, 255, 255, 0.14);
+  background: #4e654b;
   color: #ffffff;
   font-weight: 600;
 }
 
 .active:hover {
-  background: rgba(255, 255, 255, 0.17);
+  background: #4e654b;
   color: #ffffff;
 }
