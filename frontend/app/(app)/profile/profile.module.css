@@ -1,384 +1,183 @@
-/* ══════════════════════════════════════════
-   LAYOUT
-══════════════════════════════════════════ */
-
 .wrapper {
-  max-width: 1100px;
+  max-width: 1280px;
   margin: 0 auto;
-  padding-bottom: 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
-/* ══════════════════════════════════════════
-   PROFILE CARD
-══════════════════════════════════════════ */
+.cardsRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  align-items: stretch;
+}
 
-.profileCard {
-  background: #fff;
-  border-radius: 16px;
-  border: 1px solid #e2e8f0;
-  padding: 28px 32px;
+/* ── Hero ── */
+
+.hero {
+  background: #ffffff;
+  border-radius: 10px;
+  border: 1px solid rgba(40, 52, 38, 0.08);
+  box-shadow: 0 2px 10px rgba(16, 24, 40, 0.06);
+  padding: 32px 36px;
   display: flex;
   align-items: center;
-  gap: 28px;
-  margin-bottom: 18px;
-  box-shadow: 0 1px 2px rgba(15,23,42,0.04), 0 4px 12px rgba(15,23,42,0.04);
+  gap: 24px;
 }
 
-/* ── Avatar ── */
-
-.avatarWrap {
-  position: relative;
+.avatarCircle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #354b34;
+  color: #ffffff;
+  font-size: 30px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
+  box-shadow: 0 0 0 4px rgba(53, 75, 52, 0.12);
 }
 
-.avatar {
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: #fff;
-  font-size: 36px;
-  font-weight: 700;
+.heroInfo {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  letter-spacing: -0.02em;
-  user-select: none;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.avatarEdit {
-  position: absolute;
-  bottom: 1px;
-  right: 1px;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: #0f172a;
-  color: #fff;
-  border: 2.5px solid #f7f7f9;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 10px;
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-.avatarEdit:hover { background: #334155; }
-
-/* ── Info ── */
-
-.profileInfo {
-  flex: 1;
-  min-width: 0;
-}
-
-.nameRow {
+.heroTop {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 4px;
   flex-wrap: wrap;
 }
 
-.name {
+.heroName {
   font-size: 22px;
   font-weight: 700;
-  letter-spacing: -0.025em;
-  color: #0f172a;
-  line-height: 1.2;
+  color: #1e2820;
+  letter-spacing: -0.022em;
+  line-height: 1;
 }
 
-.roleBadge {
-  display: inline-flex;
-  align-items: center;
-  font-size: 10.5px;
-  font-weight: 700;
-  padding: 3px 10px;
-  border-radius: 999px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border: 1px solid transparent;
-}
-
-.role_admin     { background: rgba(244,63,94,0.11);  color: #be123c; border-color: rgba(244,63,94,0.2);   }
-.role_volunteer { background: rgba(16,185,129,0.11); color: #047857; border-color: rgba(16,185,129,0.2); }
-.role_user      { background: rgba(59,130,246,0.11); color: #1d4ed8; border-color: rgba(59,130,246,0.2); }
-
-.email {
-  font-size: 13.5px;
-  color: #64748b;
-  margin-bottom: 9px;
-}
-
-.bio {
-  font-size: 13.5px;
-  color: #475569;
-  line-height: 1.6;
-  margin-bottom: 18px;
-  max-width: 440px;
-}
-
-.editBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 8px 18px;
-  border-radius: 9px;
-  border: 1.5px solid #e2e8f0;
-  background: transparent;
-  color: #475569;
+.heroEmail {
   font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
-}
-.editBtn i { font-size: 11px; }
-.editBtn:hover { border-color: #cbd5e1; color: #0f172a; background: #f8fafc; }
-
-/* ── Dates ── */
-
-.profileDates {
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding-left: 28px;
-  border-left: 1px solid #f1f5f9;
-}
-
-.dateRow {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.dateIcon {
-  width: 36px;
-  height: 36px;
-  border-radius: 9px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  flex-shrink: 0;
-}
-
-.dateLabel {
-  display: block;
-  font-size: 11.5px;
-  color: #94a3b8;
-  font-weight: 500;
-  margin-bottom: 2px;
-}
-
-.dateValue {
-  display: block;
-  font-size: 13px;
-  font-weight: 600;
-  color: #0f172a;
-  white-space: nowrap;
-}
-
-/* ══════════════════════════════════════════
-   STATS  (one card, horizontal, dividers)
-══════════════════════════════════════════ */
-
-.statsCard {
-  background: #fff;
-  border-radius: 16px;
-  border: 1px solid #e2e8f0;
-  padding: 0 8px;
-  display: flex;
-  align-items: stretch;
-  margin-bottom: 18px;
-  box-shadow: 0 1px 2px rgba(15,23,42,0.04), 0 4px 12px rgba(15,23,42,0.04);
-  overflow: hidden;
-}
-
-.statItem {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 22px 24px;
-  transition: background 0.15s ease;
-}
-.statItem:hover { background: #fafbfc; }
-.statItem + .statItem { border-left: 1px solid #f1f5f9; }
-
-.statIcon {
-  width: 42px;
-  height: 42px;
-  border-radius: 11px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 17px;
-  flex-shrink: 0;
-}
-
-.statValue {
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: -0.025em;
-  color: #0f172a;
-  line-height: 1.2;
-}
-
-.statLabel {
-  font-size: 12px;
-  color: #64748b;
+  color: #a3a8ae;
   margin-top: 2px;
 }
 
-/* ══════════════════════════════════════════
-   BOTTOM GRID
-══════════════════════════════════════════ */
-
-.bottomGrid {
-  display: grid;
-  grid-template-columns: 1fr 340px;
-  gap: 18px;
-  align-items: stretch;
+.roleBadge {
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
 }
 
-/* ══════════════════════════════════════════
-   CARD BASE
-══════════════════════════════════════════ */
+.role_admin     { background: rgba(72,99,70,0.12);    color: #486346; }
+.role_volunteer { background: rgba(167,141,208,0.12); color: #7a62b8; }
+.role_user      { background: rgba(65,122,88,0.12);   color: #417a58; }
+
+/* ── Shared card ── */
 
 .card {
-  background: #fff;
-  border-radius: 16px;
-  border: 1px solid #e2e8f0;
-  padding: 24px;
-  box-shadow: 0 1px 2px rgba(15,23,42,0.04), 0 4px 12px rgba(15,23,42,0.04);
+  background: #ffffff;
+  border-radius: 10px;
+  border: 1px solid rgba(40, 52, 38, 0.08);
+  box-shadow: 0 2px 10px rgba(16, 24, 40, 0.06);
+  padding: 24px 32px;
 }
 
-.cardHeading {
-  font-size: 14px;
-  font-weight: 650;
-  color: #0f172a;
-  letter-spacing: -0.01em;
-  margin-bottom: 18px;
+.sectionLabel {
+  font-size: 11px;
+  font-weight: 700;
+  color: #a3a8ae;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #eeece8;
 }
 
-/* ══════════════════════════════════════════
-   ACTIVITY LIST
-══════════════════════════════════════════ */
+/* ── Info rows ── */
 
-.activityList {
+.infoList {
   display: flex;
   flex-direction: column;
 }
 
-.activityRow {
+.infoRow {
   display: flex;
   align-items: center;
-  gap: 13px;
-  padding: 11px 0;
-  border-bottom: 1px solid #f8fafc;
+  justify-content: space-between;
+  padding: 13px 0;
+  border-bottom: 1px solid #f4f6f1;
 }
-.activityRow:last-child { border-bottom: none; }
+.infoRow:first-child { padding-top: 0; }
+.infoRow:last-child  { border-bottom: none; padding-bottom: 0; }
 
-.activityIcon {
-  width: 34px;
-  height: 34px;
-  border-radius: 9px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  flex-shrink: 0;
+.infoLabel {
+  font-size: 13.5px;
+  color: #6b706b;
 }
 
-.activityText {
-  flex: 1;
-  font-size: 13px;
-  color: #374151;
-  line-height: 1.4;
-}
-
-.activityDate {
-  font-size: 12px;
-  color: #94a3b8;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.moreLink {
-  display: block;
-  margin-top: 16px;
-  padding-top: 14px;
-  border-top: 1px solid #f1f5f9;
-  background: none;
-  border-left: none;
-  border-right: none;
-  border-bottom: none;
-  width: 100%;
-  text-align: center;
-  font-size: 13px;
+.infoValue {
+  font-size: 13.5px;
   font-weight: 600;
-  color: #3b82f6;
-  cursor: pointer;
-  transition: color 0.15s ease;
+  color: #1e2820;
 }
-.moreLink:hover { color: #1d4ed8; }
 
-/* ══════════════════════════════════════════
-   QUICK ACTIONS
-══════════════════════════════════════════ */
+/* ── Quick links ── */
 
-.actionList {
+.linksList {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
-.actionItem {
+.linkRow {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 14px;
-  border-radius: 12px;
+  padding: 11px 14px;
+  border-radius: 8px;
+  background: #f4f6f1;
+  border: 1px solid #dde2d9;
   text-decoration: none;
-  transition: opacity 0.15s ease, transform 0.15s ease;
+  transition: background 0.15s;
 }
-.actionItem:hover { opacity: 0.85; transform: translateX(2px); }
+.linkRow:hover { background: #ecede7; }
 
-.actionIcon {
-  font-size: 15px;
-  width: 22px;
-  text-align: center;
+.linkIcon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: rgba(49,81,47,0.10);
+  color: #31512f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
   flex-shrink: 0;
 }
 
-.actionLabel {
+.linkLabel {
   flex: 1;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
+  color: #3c3e3a;
 }
 
-.actionChevron {
-  font-size: 11px;
-  color: rgba(0,0,0,0.25);
-  flex-shrink: 0;
+.linkChevron {
+  color: #bcc4b7;
+  font-size: 10px;
 }
 
-/* ══════════════════════════════════════════
-   RESPONSIVE
-══════════════════════════════════════════ */
+/* ── Responsive ── */
 
-@media (max-width: 900px) {
-  .bottomGrid { grid-template-columns: 1fr; }
-  .statsCard  { flex-wrap: wrap; padding: 0; }
-  .statItem   { flex: 1 1 45%; padding: 18px 20px; }
-}
-
-@media (max-width: 640px) {
-  .profileCard    { flex-direction: column; align-items: flex-start; gap: 20px; padding: 22px; }
-  .profileDates   { border-left: none; border-top: 1px solid #f1f5f9; padding-left: 0; padding-top: 16px; width: 100%; flex-direction: row; flex-wrap: wrap; gap: 20px; }
-  .statsCard              { flex-direction: column; padding: 0; }
-  .statItem               { flex: unset; padding: 16px 20px; }
-  .statItem + .statItem   { border-left: none; border-top: 1px solid #f1f5f9; }
-  .name           { font-size: 20px; }
+@media (max-width: 540px) {
+  .hero  { padding: 20px; }
+  .card  { padding: 20px; }
+  .infoRow { flex-direction: column; align-items: flex-start; gap: 2px; }
 }

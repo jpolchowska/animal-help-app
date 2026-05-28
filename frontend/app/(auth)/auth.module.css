@@ -2,12 +2,12 @@
   width: 420px;
   padding: 32px;
   background: white;
-  border-radius: 16px;
-  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  border: 1px solid rgba(40, 52, 38, 0.08);
   display: flex;
   flex-direction: column;
   gap: 16px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 24px rgba(40, 52, 38, 0.09);
 }
 
 .card h2 {
@@ -19,31 +19,40 @@
 
 .card input {
   padding: 12px 14px;
-  border-radius: 10px;
-  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  border: 1px solid rgba(40, 52, 38, 0.12);
   font-size: 14px;
+  background: #ecede7;
+}
+
+.card input:-webkit-autofill,
+.card input:-webkit-autofill:hover,
+.card input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 30px #ecede7 inset;
+  box-shadow: 0 0 0 30px #ecede7 inset;
+  -webkit-text-fill-color: #1e2820;
 }
 
 .card input:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+  border-color: #486346;
+  box-shadow: 0 0 0 3px #ecede7;
 }
 
 .card button {
   padding: 12px;
-  border-radius: 10px;
+  border-radius: 8px;
   border: none;
-  background: #1e3a8a;
+  background: #31512f;
   color: white;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
 }
 
 .card button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 25px rgba(118, 75, 162, 0.35);
+  background: #253e23;
+  box-shadow: 0 6px 20px rgba(49, 81, 47, 0.28);
 }
 
 .error {
@@ -56,23 +65,22 @@
   width: 56px;
   height: 56px;
   margin: 0 auto 8px;
-
-  border-radius: 14px;
+  border-radius: 10px;
+  background: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.35);
+  box-shadow: 0 8px 24px rgba(49, 81, 47, 0.22);
 }
 
 .switch {
   text-align: center;
   font-size: 14px;
-  color: #6b7280;
+  color: #6b706b;
 }
 
 .switch a {
-  color: #1e3a8a;
+  color: #31512f;
   font-weight: 500;
   text-decoration: none;
 }

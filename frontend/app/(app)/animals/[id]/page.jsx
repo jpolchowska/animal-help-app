@@ -224,66 +224,61 @@ export default function AnimalDetailsPage() {
       {/* ── Main grid ── */}
       <div className={styles.grid}>
 
-        {/* ─── LEFT ─── */}
-        <div className={styles.left}>
-
-          <div className={styles.imageCard}>
-            {animal.image ? (
-              <img
-                src={`http://localhost:3001${animal.image}`}
-                alt={animal.name}
-                className={styles.animalImage}
-              />
-            ) : (
-              <div className={styles.noImage}>
-                <i className="fa-solid fa-paw" />
-              </div>
-            )}
-          </div>
-
-          <div className={styles.card}>
-            <p className={styles.cardHeading}>O zwierzęciu</p>
-            <p className={styles.aboutText}>{about}</p>
-          </div>
+        {/* ─── LEFT: photo only ─── */}
+        <div className={styles.imageCard}>
+          {animal.image ? (
+            <img
+              src={`http://localhost:3001${animal.image}`}
+              alt={animal.name}
+              className={styles.animalImage}
+            />
+          ) : (
+            <div className={styles.noImage}>
+              <i className="fa-solid fa-paw" />
+            </div>
+          )}
         </div>
 
-        {/* ─── RIGHT ─── */}
-        <div className={styles.right}>
-
-          {/* Info card */}
-          <div className={styles.card}>
-            <p className={styles.cardHeading}>Informacje</p>
-            <div className={styles.infoList}>
-              {infoRows.map((row) => (
-                <div key={row.label} className={styles.infoRow}>
-                  <div
-                    className={styles.infoIconCircle}
-                    style={{ color: row.color, background: row.bg }}
-                  >
-                    <i className={`fa-solid ${row.icon}`} />
-                  </div>
-                  <div className={styles.infoText}>
-                    <span className={styles.infoLabel}>{row.label}</span>
-                    <span className={styles.infoValue}>{row.value}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Character card — stretches to fill remaining height */}
-          <div className={`${styles.card} ${styles.cardStretch}`}>
-            <p className={styles.cardHeading}>Charakter</p>
-            <div className={styles.traitsGrid}>
-              {traits.map((t) => (
-                <span
-                  key={t.label}
-                  className={`${styles.traitTag} ${styles["trait" + t.color]}`}
+        {/* ─── RIGHT: info only ─── */}
+        <div className={styles.card}>
+          <p className={styles.cardHeading}>Informacje</p>
+          <div className={styles.infoList}>
+            {infoRows.map((row) => (
+              <div key={row.label} className={styles.infoRow}>
+                <div
+                  className={styles.infoIconCircle}
+                  style={{ color: row.color, background: row.bg }}
                 >
-                  {t.label}
-                </span>
-              ))}
-            </div>
+                  <i className={`fa-solid ${row.icon}`} />
+                </div>
+                <div className={styles.infoText}>
+                  <span className={styles.infoLabel}>{row.label}</span>
+                  <span className={styles.infoValue}>{row.value}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Bottom row: O zwierzęciu + Charakter ── */}
+      <div className={styles.bottomRow}>
+        <div className={styles.card}>
+          <p className={styles.cardHeading}>O zwierzęciu</p>
+          <p className={styles.aboutText}>{about}</p>
+        </div>
+
+        <div className={styles.card}>
+          <p className={styles.cardHeading}>Charakter</p>
+          <div className={styles.traitsGrid}>
+            {traits.map((t) => (
+              <span
+                key={t.label}
+                className={`${styles.traitTag} ${styles["trait" + t.color]}`}
+              >
+                {t.label}
+              </span>
+            ))}
           </div>
         </div>
       </div>

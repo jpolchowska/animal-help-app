@@ -64,23 +64,6 @@ export default function AnimalCard({ animal, onDelete, onStatusChange }) {
             </span>
           </div>
 
-          {canAdopt && animal.status === "Do adopcji" && (
-            <button
-              className={styles.adoptButton}
-              onClick={async e => {
-                e.stopPropagation();
-
-                await authFetch("http://localhost:3001/adoptions", {
-                  method: "POST",
-                  body: JSON.stringify({ animalId: animal.id })
-                });
-
-                alert("Zgłoszono adopcję");
-              }}
-            >
-              Adoptuj
-            </button>
-          )}
         </div>
       </div>
     </Link>

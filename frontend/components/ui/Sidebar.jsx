@@ -9,8 +9,6 @@ const ITEMS = [
   { icon: "fa-paw", label: "Zwierzęta", href: "/animals" },
   { icon: "fa-heart", label: "Adopcje", href: "/adoptions" },
   { icon: "fa-handshake-angle", label: "Wolontariat", href: "/volunteer" },
-  { icon: "fa-piggy-bank" , label: "Zbiórki", href: "/fundraising" },
-  // { icon: "fa-comment" , label: "Chat", href: "/chat" },
   { icon: "fa-user", label: "Profil", href: "/profile" }
 ];
 

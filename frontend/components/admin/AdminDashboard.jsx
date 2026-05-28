@@ -16,10 +16,10 @@ const ACTIVITY = [
 ];
 
 const QUICK_ACTIONS = [
-  { label: "Dodaj zwierzę",        icon: "fa-plus",          color: "#31512f", bg: "rgba(49,81,47,0.10)", href: "/animals"     },
-  { label: "Zgłoszenia adopcyjne", icon: "fa-user",          color: "#31512f", bg: "rgba(49,81,47,0.10)", href: "/adoptions"   },
-  { label: "Zarządzaj zbiórkami",  icon: "fa-piggy-bank",    color: "#31512f", bg: "rgba(49,81,47,0.10)", href: "/fundraising" },
-  { label: "Kalendarz zadań",      icon: "fa-calendar-days", color: "#31512f", bg: "rgba(49,81,47,0.10)", href: "/volunteer"   },
+  { label: "Dodaj zwierzę",        icon: "fa-plus",          color: "#ffffff", bg: "#31512f", href: "/animals"     },
+  { label: "Zgłoszenia adopcyjne", icon: "fa-user",          color: "#31512f", bg: "#ecede7", href: "/adoptions"   },
+  { label: "Zarządzaj zbiórkami",  icon: "fa-piggy-bank",    color: "#31512f", bg: "#ecede7", href: "/fundraising" },
+  { label: "Kalendarz zadań",      icon: "fa-calendar-days", color: "#31512f", bg: "#ecede7", href: "/volunteer"   },
 ];
 
 const TASKS = [

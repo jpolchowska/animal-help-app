@@ -1,50 +1,41 @@
 "use client";
 
-import Image from "next/image";
 import styles from "./Volunteer.module.css";
 import { authFetch } from "@/utils/api";
 
-export default function UserView({ onBecameVolunteer }) {
+export default function VolunteerJoin({ onBecameVolunteer }) {
   async function join() {
-    await authFetch("http://localhost:3001/volunteer/join", {
-      method: "POST"
-    });
-
+    await authFetch("http://localhost:3001/volunteer/join", { method: "POST" });
     const stored = localStorage.getItem("auth");
     if (stored) {
       const auth = JSON.parse(stored);
       auth.user.role = "volunteer";
       localStorage.setItem("auth", JSON.stringify(auth));
     }
-
     window.dispatchEvent(new Event("auth-changed"));
     onBecameVolunteer();
   }
 
   return (
-    <section className={styles.container}>
-      <div className={styles.header}>
-        <h2>Wolontariat</h2>
+    <section>
+      <div className={styles.pageHeader}>
+        <div>
+          <h1 className={styles.pageTitle}>Wolontariat</h1>
+          <p className={styles.pageSubtitle}>Dołącz do grona wolontariuszy i pomagaj zwierzętom.</p>
+        </div>
       </div>
 
-      <div className={styles.locked}>
-        <div className={styles.imageWrapper}>
-          <Image
-            src="/cat.svg"
-            alt="Wolontariat"
-            width={120}
-            height={120}
-            priority
-          />
+      <div className={styles.joinWrap}>
+        <div className={styles.joinIcon}>
+          <i className="fa-solid fa-handshake-angle" />
         </div>
-
-        <p>
-          Aby uzyskać dostęp do zadań,
-          musisz zostać wolontariuszem.
+        <h2 className={styles.joinTitle}>Zostań wolontariuszem</h2>
+        <p className={styles.joinText}>
+          Aby uzyskać dostęp do zadań i kalendarza,<br />
+          musisz dołączyć do programu wolontariatu.
         </p>
-
-        <button className={styles.primary} onClick={join}>
-          Zostań wolontariuszem
+        <button className={styles.btnPrimary} onClick={join}>
+          Dołącz teraz
         </button>
       </div>
     </section>
