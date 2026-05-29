@@ -115,7 +115,7 @@
   gap: 8px;
   padding: 9px 19px;
   border-radius: 9px;
-  background: #0f172a;
+  background: #354b34;
   color: #fff;
   font-size: 13px;
   font-weight: 600;
@@ -125,7 +125,7 @@
   flex-shrink: 0;
   transition: background 0.15s ease;
 }
-.adoptBtn:hover    { background: #1e293b; }
+.adoptBtn:hover    { background: #2d4028; }
 .adoptBtn:disabled { cursor: default; }
 
 .adoptedBtn        { background: #4da882; }

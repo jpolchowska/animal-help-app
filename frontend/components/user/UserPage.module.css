@@ -13,7 +13,7 @@
 
 .heroWrapper {
   position: relative;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 .heroText {
@@ -58,7 +58,7 @@
   z-index: 1;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
+  gap: 16px;
 }
 
 .statCard {
@@ -113,9 +113,9 @@
 
 .bottomGrid {
   display: grid;
-  grid-template-columns: 1.2fr 1fr 1fr;
-  gap: 14px;
-  margin-bottom: 14px;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
   align-items: stretch;
 }
 
@@ -127,6 +127,7 @@
   padding: 20px;
   display: flex;
   flex-direction: column;
+  min-height: 270px;
 }
 
 .cardHeader {
@@ -134,7 +135,7 @@
   align-items: center;
   justify-content: space-between;
   padding-bottom: 12px;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
   border-bottom: 1px solid #eeece8;
   flex-shrink: 0;
 }
@@ -224,6 +225,54 @@
 .taskBadgeUrgent {
   color: #417a58;
   background: rgba(65, 122, 88, 0.11);
+}
+
+.emptyText {
+  font-size: 12.5px;
+  color: #a3a8ae;
+  padding: 12px 0;
+}
+
+.activityList {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.activityRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px solid #eeece8;
+}
+.activityRow:first-child { padding-top: 0; }
+.activityRow:last-child  { border-bottom: none; padding-bottom: 0; }
+
+.activityIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12.5px;
+  flex-shrink: 0;
+}
+
+.activityText {
+  flex: 1;
+  font-size: 12px;
+  color: #3c3d3a;
+  line-height: 1.35;
+  min-width: 0;
+}
+
+.activityDate {
+  font-size: 11px;
+  color: #a3a8ae;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .seeAllBtn {
@@ -402,7 +451,7 @@
 .ctaSubtitle {
   font-size: 13px;
   color: #6b706b;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 .ctaBtn {

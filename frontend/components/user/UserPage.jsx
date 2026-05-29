@@ -6,27 +6,30 @@ import Link from "next/link";
 import Image from "next/image";
 import styles from "./UserPage.module.css";
 
-const MY_ACTIVITIES = [
-  { icon: "fa-calendar-days", color: "#486346", bg: "rgba(72,99,70,0.11)",    title: "Spacer z Luną",      time: "4 lutego, 10:00 – 11:00",  badge: "Za 2 dni", urgent: true  },
-  { icon: "fa-heart",         color: "#417a58", bg: "rgba(65,122,88,0.11)",   title: "Pomoc w schronisku", time: "6 lutego, 12:00 – 16:00",  badge: "Za 4 dni", urgent: false },
-  { icon: "fa-piggy-bank",    color: "#7a62b8", bg: "rgba(167,141,208,0.11)", title: "Zbiórka karmy",      time: "10 lutego, 18:00 – 20:00", badge: "Za 8 dni", urgent: false },
-];
-
-const MY_FAVORITES = [
-  { icon: "fa-dog", color: "#486346", bg: "rgba(72,99,70,0.11)",    name: "Piorun", info: "Pies • Do adopcji" },
-  { icon: "fa-cat", color: "#417a58", bg: "rgba(65,122,88,0.11)",   name: "Kora",   info: "Kot • Do adopcji"  },
-  { icon: "fa-cat", color: "#7a62b8", bg: "rgba(167,141,208,0.11)", name: "Nutka",  info: "Kot • Do adopcji"  },
-];
+function formatTaskDate(task) {
+  if (!task.date) return "";
+  const d = new Date(task.date);
+  const dateStr = d.toLocaleDateString("pl-PL", { day: "numeric", month: "short" });
+  return task.time_from ? `${dateStr}, ${task.time_from}` : dateStr;
+}
 
 export default function UserPage({ userName }) {
   const [myAnimals, setMyAnimals] = useState([]);
-  const [userStats, setUserStats] = useState({ myAnimals: 3, myAdoptions: 2, volunteerHours: 14, favorites: 5 });
+  const [myTasks,   setMyTasks]   = useState([]);
+  const [userStats] = useState({ myAnimals: 3, myAdoptions: 2, volunteerHours: 14, favorites: 5 });
 
   useEffect(() => {
     authFetch("http://localhost:3001/animals/my")
       .then(res => res.json())
       .then(data => setMyAnimals(Array.isArray(data) ? data.slice(0, 2) : []))
       .catch(() => setMyAnimals([]));
+  }, []);
+
+  useEffect(() => {
+    authFetch("http://localhost:3001/signups/my")
+      .then(res => res.json())
+      .then(data => setMyTasks(Array.isArray(data) ? data.slice(0, 4) : []))
+      .catch(() => setMyTasks([]));
   }, []);
 
   const STAT_CARDS = [
@@ -65,32 +68,31 @@ export default function UserPage({ userName }) {
         </div>
       </div>
 
-      {/* ── 3-column section ── */}
+      {/* ── 2-column section ── */}
       <div className={styles.bottomGrid}>
 
-        {/* Moje aktywności */}
+        {/* Moje aktywności — real tasks */}
         <div className={styles.card}>
           <div className={styles.cardHeader}>
             <p className={styles.cardHeading}>Moje aktywności</p>
             <Link href="/volunteer" className={styles.cardLink}>Zobacz wszystkie</Link>
           </div>
-          <div className={styles.tasksList}>
-            {MY_ACTIVITIES.map((task, i) => (
-              <div key={i} className={styles.taskRow}>
-                <div className={styles.taskIcon} style={{ color: task.color, background: task.bg }}>
-                  <i className={`fa-solid ${task.icon}`} />
+          <div className={styles.activityList}>
+            {myTasks.length === 0 ? (
+              <p className={styles.emptyText}>Brak zapisanych zadań</p>
+            ) : myTasks.map((task) => (
+              <div key={task.id} className={styles.activityRow}>
+                <div className={styles.activityIcon} style={{ color: "#486346", background: "rgba(72,99,70,0.11)" }}>
+                  <i className="fa-solid fa-calendar-days" />
                 </div>
-                <div className={styles.taskInfo}>
-                  <span className={styles.taskTitle}>{task.title}</span>
-                  <span className={styles.taskTime}>{task.time}</span>
-                </div>
-                <span className={`${styles.taskBadge} ${task.urgent ? styles.taskBadgeUrgent : ""}`}>
-                  {task.badge}
-                </span>
+                <span className={styles.activityText}>{task.title}</span>
+                <span className={styles.activityDate}>{formatTaskDate(task)}</span>
               </div>
             ))}
           </div>
-          <button className={styles.seeAllBtn}>Zobacz wszystkie</button>
+          <button className={styles.seeAllBtn} onClick={() => window.location.href = "/volunteer"}>
+            Zobacz wszystkie
+          </button>
         </div>
 
         {/* Moje zwierzęta */}
@@ -100,10 +102,9 @@ export default function UserPage({ userName }) {
             <Link href="/animals" className={styles.cardLink}>Zobacz wszystkie</Link>
           </div>
           <div className={styles.animalGrid}>
-            {(myAnimals.length > 0 ? myAnimals : [
-              { id: null, name: "Luna", species: "Kot", age: 2, image_url: null },
-              { id: null, name: "Rex",  species: "Pies", age: 3, image_url: null },
-            ]).map((animal, i) => (
+            {myAnimals.length === 0 ? (
+              <p className={styles.emptyText}>Brak zwierząt pod opieką</p>
+            ) : myAnimals.map((animal, i) => (
               <div key={i} className={styles.animalCard}>
                 <div className={styles.animalPhoto}>
                   {animal.image_url ? (
@@ -119,30 +120,6 @@ export default function UserPage({ userName }) {
                   </div>
                   <i className="fa-solid fa-chevron-right" style={{ color: "#bcc4b7", fontSize: "10px" }} />
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Ulubione zwierzęta */}
-        <div className={styles.card}>
-          <div className={styles.cardHeader}>
-            <p className={styles.cardHeading}>Ulubione zwierzęta</p>
-            <Link href="/animals" className={styles.cardLink}>Zobacz wszystkie</Link>
-          </div>
-          <div className={styles.favoritesList}>
-            {MY_FAVORITES.map((fav, i) => (
-              <div key={i} className={styles.favoriteRow}>
-                <div className={styles.favoriteIcon} style={{ color: fav.color, background: fav.bg }}>
-                  <i className={`fa-solid ${fav.icon}`} />
-                </div>
-                <div className={styles.favoriteMeta}>
-                  <span className={styles.favoriteName}>{fav.name}</span>
-                  <span className={styles.favoriteInfo}>{fav.info}</span>
-                </div>
-                <button className={styles.heartBtn}>
-                  <i className="fa-regular fa-heart" />
-                </button>
               </div>
             ))}
           </div>

@@ -199,14 +199,6 @@ export default function AnimalDetailsPage() {
         {canAdopt && (
           <div className={styles.headerActions}>
             <button
-              className={`${styles.favBtn} ${favoured ? styles.favBtnActive : ""}`}
-              onClick={() => setFavoured((f) => !f)}
-            >
-              <i className={`fa-${favoured ? "solid" : "regular"} fa-heart`} />
-              {favoured ? "W ulubionych" : "Ulubione"}
-            </button>
-
-            <button
               className={`${styles.adoptBtn} ${
                 adopted      ? styles.adoptedBtn          :
                 !isAvailable ? styles.adoptBtnUnavailable : ""

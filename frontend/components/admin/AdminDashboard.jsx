@@ -4,35 +4,23 @@ import { authFetch } from "@/utils/api";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import styles from "./AdminDashboard.module.css";
 
-const FAKE_FUNDRAISING_COUNT = 4;
 
-const ACTIVITY = [
-  { icon: "fa-paw",         color: "#486346", bg: "rgba(72,99,70,0.11)",    text: "Dodano nowe zwierzę: Luna",               date: "13.05.2026, 10:30" },
-  { icon: "fa-circle-check",color: "#417a58", bg: "rgba(65,122,88,0.11)",   text: "Zaakceptowano adopcję: Rex",               date: "12.05.2026, 15:45" },
-  { icon: "fa-piggy-bank",  color: "#7a62b8", bg: "rgba(167,141,208,0.11)", text: "Utworzono zbiórkę: Leczenie kotki Mili",   date: "09.05.2026, 09:15" },
-  { icon: "fa-user",        color: "#c07a3a", bg: "rgba(192,122,58,0.11)",  text: "Nowy wolontariusz: Anna Kowalska",          date: "08.05.2026, 14:20" },
-];
 
-const QUICK_ACTIONS = [
-  { label: "Dodaj zwierzę",        icon: "fa-plus",          color: "#ffffff", bg: "#31512f", href: "/animals"     },
-  { label: "Zgłoszenia adopcyjne", icon: "fa-user",          color: "#31512f", bg: "#ecede7", href: "/adoptions"   },
-  { label: "Zarządzaj zbiórkami",  icon: "fa-piggy-bank",    color: "#31512f", bg: "#ecede7", href: "/fundraising" },
-  { label: "Kalendarz zadań",      icon: "fa-calendar-days", color: "#31512f", bg: "#ecede7", href: "/volunteer"   },
-];
-
-const TASKS = [
-  { icon: "fa-calendar-days", color: "#486346", bg: "rgba(72,99,70,0.11)",    title: "Spacer z psami",     time: "4 lutego, 10:00 – 11:00",  badge: "Jutro",  urgent: true  },
-  { icon: "fa-paw",           color: "#417a58", bg: "rgba(65,122,88,0.11)",   title: "Pomoc w schronisku", time: "6 lutego, 12:00 – 16:00",  badge: "2 dni",  urgent: false },
-  { icon: "fa-list-check",    color: "#7a62b8", bg: "rgba(167,141,208,0.11)", title: "Zbiórka karmy",      time: "10 lutego, 18:00 – 20:00", badge: "6 dni",  urgent: false },
-  { icon: "fa-broom",         color: "#c07a3a", bg: "rgba(192,122,58,0.11)",  title: "Sprzątanie bud",     time: "15 lutego, 14:00 – 16:00", badge: "11 dni", urgent: false },
-];
+function formatTaskDate(task) {
+  if (!task.date) return "";
+  const d = new Date(task.date);
+  const dateStr = d.toLocaleDateString("pl-PL", { day: "numeric", month: "short" });
+  return task.time_from ? `${dateStr}, ${task.time_from}` : dateStr;
+}
 
 export default function AdminDashboard() {
   const [animalCount,   setAnimalCount]   = useState(0);
   const [adoptionStats, setAdoptionStats] = useState({ total: 0, pending: 0, approved: 0 });
   const [adminStats,    setAdminStats]    = useState({ volunteers: 0, tasks: 0 });
+  const [tasks,         setTasks]         = useState([]);
 
   useEffect(() => {
     fetch("http://localhost:3001/animals")
@@ -54,16 +42,21 @@ export default function AdminDashboard() {
       .catch(() => setAdminStats({ volunteers: 0, tasks: 0 }));
   }, []);
 
+  useEffect(() => {
+    authFetch("http://localhost:3001/tasks")
+      .then(res => res.json())
+      .then(data => setTasks(Array.isArray(data) ? data.slice(0, 4) : []))
+      .catch(() => setTasks([]));
+  }, []);
+
   const today = new Date().toLocaleDateString("pl-PL", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
+    day: "numeric", month: "long", year: "numeric",
   });
 
   const STAT_CARDS = [
     { label: "Zwierzęta w bazie", value: animalCount,           icon: "fa-paw",             color: "#486346", bg: "#eaede8" },
     { label: "Adopcje w toku",    value: adoptionStats.pending,  icon: "fa-heart",           color: "#417a58", bg: "#e5efea" },
-    { label: "Aktywne zbiórki",   value: FAKE_FUNDRAISING_COUNT, icon: "fa-heart",           color: "#c07a3a", bg: "#f5ede2" },
+    { label: "Aktywne zadania",    value: tasks.length,           icon: "fa-list-check",      color: "#c07a3a", bg: "#f5ede2" },
     { label: "Wolontariusze",     value: adminStats.volunteers,  icon: "fa-handshake-angle", color: "#7a62b8", bg: "#f0edf8" },
   ];
 
@@ -97,69 +90,90 @@ export default function AdminDashboard() {
         ))}
       </div>
 
-      {/* ── 3-column section ── */}
+      {/* ── 2-column section ── */}
       <div className={styles.bottomGrid}>
 
-        {/* Ostatnia aktywność */}
+        {/* Adopcje — donut chart */}
         <div className={styles.card}>
           <div className={styles.cardHeader}>
-            <p className={styles.cardHeading}>Ostatnia aktywność</p>
-            <Link href="/adoptions" className={styles.cardLink}>Zobacz wszystko</Link>
+            <p className={styles.cardHeading}>Adopcje</p>
+            <Link href="/adoptions" className={styles.cardLink}>Zobacz wszystkie</Link>
           </div>
-          <div className={styles.activityList}>
-            {ACTIVITY.map((item, i) => (
-              <div key={i} className={styles.activityRow}>
-                <div className={styles.activityIcon} style={{ color: item.color, background: item.bg }}>
-                  <i className={`fa-solid ${item.icon}`} />
+
+          {(() => {
+            const rejected = Math.max(0, adoptionStats.total - adoptionStats.approved - adoptionStats.pending);
+
+            const pieData = [
+              { name: "Zaakceptowane", value: adoptionStats.approved || 0, color: "#5a8c57" },
+              { name: "Oczekujące",    value: adoptionStats.pending  || 0, color: "#e0976a" },
+              { name: "Odrzucone",     value: rejected,                    color: "#a78dd0" },
+            ];
+            const hasData = pieData.some(d => d.value > 0);
+
+            return (
+              <div className={styles.chartWrap}>
+                <ResponsiveContainer width="100%" height={150}>
+                  <PieChart>
+                    <Pie
+                      data={hasData ? pieData.filter(d => d.value > 0) : [{ name: "Brak", value: 1 }]}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={0}
+                      outerRadius={68}
+                      paddingAngle={0}
+                      dataKey="value"
+                      strokeWidth={0}
+                    >
+                      {hasData
+                        ? pieData.filter(d => d.value > 0).map((d, i) => <Cell key={i} fill={d.color} />)
+                        : <Cell fill="#eeece8" />
+                      }
+                    </Pie>
+                    {hasData && (
+                      <Tooltip
+                        contentStyle={{ borderRadius: 8, border: "1px solid #eeece8", fontSize: 12 }}
+                        formatter={(v, n) => [v, n]}
+                      />
+                    )}
+                  </PieChart>
+                </ResponsiveContainer>
+
+                <div className={styles.chartLegend}>
+                  {pieData.map(l => (
+                    <div key={l.name} className={styles.legendItem}>
+                      <span className={styles.legendDot} style={{ background: l.color }} />
+                      <span className={styles.legendLabel}>{l.name}</span>
+                      <span className={styles.legendValue}>{l.value}</span>
+                    </div>
+                  ))}
                 </div>
-                <span className={styles.activityText}>{item.text}</span>
-                <span className={styles.activityDate}>{item.date}</span>
               </div>
-            ))}
-          </div>
-          <button className={styles.seeAllBtn}>Zobacz wszystkie</button>
+            );
+          })()}
         </div>
 
-        {/* Szybkie akcje */}
-        <div className={styles.card}>
-          <div className={styles.cardHeader}>
-            <p className={styles.cardHeading}>Szybkie akcje</p>
-          </div>
-          <div className={styles.actionsList}>
-            {QUICK_ACTIONS.map((action) => (
-              <Link key={action.href} href={action.href} className={styles.actionRow}>
-                <div className={styles.actionIcon} style={{ color: action.color, background: action.bg }}>
-                  <i className={`fa-solid ${action.icon}`} />
-                </div>
-                <span className={styles.actionLabel}>{action.label}</span>
-                <i className={`fa-solid fa-chevron-right ${styles.actionChevron}`} />
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* Nadchodzące zadania */}
+        {/* Nadchodzące zadania — real data, activity style */}
         <div className={styles.card}>
           <div className={styles.cardHeader}>
             <p className={styles.cardHeading}>Nadchodzące zadania</p>
-            <Link href="/volunteer" className={styles.cardLink}>Zobacz kalendarz ›</Link>
+            <Link href="/volunteer" className={styles.cardLink}>Zobacz wszystkie</Link>
           </div>
-          <div className={styles.tasksList}>
-            {TASKS.map((task, i) => (
-              <div key={i} className={styles.taskRow}>
-                <div className={styles.taskIcon} style={{ color: task.color, background: task.bg }}>
-                  <i className={`fa-solid ${task.icon}`} />
+          <div className={styles.activityList}>
+            {tasks.length === 0 ? (
+              <p className={styles.emptyText}>Brak nadchodzących zadań</p>
+            ) : tasks.map((task) => (
+              <div key={task.id} className={styles.activityRow}>
+                <div className={styles.activityIcon} style={{ color: "#486346", background: "rgba(72,99,70,0.11)" }}>
+                  <i className="fa-solid fa-calendar-days" />
                 </div>
-                <div className={styles.taskInfo}>
-                  <span className={styles.taskTitle}>{task.title}</span>
-                  <span className={styles.taskTime}>{task.time}</span>
-                </div>
-                <span className={`${styles.taskBadge} ${task.urgent ? styles.taskBadgeUrgent : ""}`}>
-                  {task.badge}
-                </span>
+                <span className={styles.activityText}>{task.title}</span>
+                <span className={styles.activityDate}>{formatTaskDate(task)}</span>
               </div>
             ))}
           </div>
+          <button className={styles.seeAllBtn} onClick={() => window.location.href = "/volunteer"}>
+            Zobacz wszystkie
+          </button>
         </div>
 
       </div>
@@ -172,13 +186,7 @@ export default function AdminDashboard() {
           <Link href="/animals" className={styles.ctaBtn}>Przeglądaj zwierzęta</Link>
         </div>
         <div className={styles.ctaImageArea}>
-          <Image
-            src="/cta-animals-admin.png"
-            alt=""
-            fill
-            style={{ objectFit: "cover", objectPosition: "0% center" }}
-            priority
-          />
+          <Image src="/cta-animals-admin.png" alt="" fill style={{ objectFit: "cover", objectPosition: "0% center" }} priority />
         </div>
       </div>
 
