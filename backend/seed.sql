@@ -2,10 +2,10 @@
 -- PostgreSQL database dump
 --
 
-\restrict vfsbVgewQFeRL62ajeRgTH5RYTUnSvk2aKFzFTuQbxr07yD1cRFlob8aQgicaVs
+\restrict 7oL4xO7ocfsfk2cWcu0TUck0mz7S7koydRphfLp4gn7jCPDrBh6RHqFWtJN5Tep
 
--- Dumped from database version 18.4 (Debian 18.4-1.pgdg13+1)
--- Dumped by pg_dump version 18.4 (Debian 18.4-1.pgdg13+1)
+-- Dumped from database version 17.10
+-- Dumped by pg_dump version 17.10
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -85,8 +85,8 @@ INSERT INTO public.users VALUES (15, 'jane.doe@gmail.com', '$2b$10$3g8KJ3FAZMDiN
 INSERT INTO public.users VALUES (16, 'acc@gmail.com', '$2b$10$4.GcJpXSz1splMnlTZA9J.obDLrhGjAe781tCRedtofAOwrnNLLWm', 'user', 'acc1', '2026-02-16 15:03:12+00', NULL);
 INSERT INTO public.users VALUES (17, '1@1', '$2b$10$asise2rWm5i13J/I2m49NeC65NSBAYgCL4AIHhG.vmRUWZcP18heq', 'user', '1', '2026-02-16 15:04:50+00', '2026-02-16 15:04:56+00');
 INSERT INTO public.users VALUES (18, 'acc2@gmail.com', '$2b$10$hQ59tQDBNOxmtO3PH/pOj.Pdwtw.JPnsiXUrQ7epm5Clg9NZDJNRi', 'volunteer', 'acc2', '2026-02-16 18:18:03+00', '2026-02-16 18:18:17+00');
-INSERT INTO public.users VALUES (2, 'jagoda.polchowska@gmail.com', '$2b$10$WcXTxl5MXjSKjix6LwYVP.1.JWZy/ycPVcUdiynCeCSj8IzVfl0SS', 'volunteer', 'Jagoda', '2026-01-29 14:05:30+00', '2026-05-30 13:46:18.622523+00');
-INSERT INTO public.users VALUES (1, 'admin@gmail.com', '$2b$10$jKO8dnqkUBVxWFr/R8GiUO.f/k0Y1gm4omcTm/WGP6EqlYLGj0tUO', 'admin', 'Admin', '2026-01-27 21:20:38+00', '2026-05-30 13:47:50.373154+00');
+INSERT INTO public.users VALUES (1, 'admin@gmail.com', '$2b$10$jKO8dnqkUBVxWFr/R8GiUO.f/k0Y1gm4omcTm/WGP6EqlYLGj0tUO', 'admin', 'Admin', '2026-01-27 21:20:38+00', '2026-05-30 19:20:59.315983+00');
+INSERT INTO public.users VALUES (2, 'jagoda.polchowska@gmail.com', '$2b$10$WcXTxl5MXjSKjix6LwYVP.1.JWZy/ycPVcUdiynCeCSj8IzVfl0SS', 'volunteer', 'Jagoda', '2026-01-29 14:05:30+00', '2026-05-30 19:21:11.694429+00');
 
 
 --
@@ -107,12 +107,15 @@ INSERT INTO public.adoptions VALUES (13, 2, 64, 'W oczekiwaniu', '2026-05-30 09:
 -- Data for Name: tasks; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+INSERT INTO public.tasks VALUES (11, 'Karmienie zwierząt', 'Nakarmienie zwierząt rano i wieczorem', '2026-05-31', '08:00', '20:00');
+INSERT INTO public.tasks VALUES (12, 'Spacer z psem', 'Spacer z dowolnym psem', '2026-06-01', '12:00', '16:00');
 
 
 --
 -- Data for Name: signups; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+INSERT INTO public.signups VALUES (3, 12, 2, '');
 
 
 --
@@ -133,14 +136,14 @@ SELECT pg_catalog.setval('public.animals_id_seq', 70, false);
 -- Name: signups_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.signups_id_seq', 3, false);
+SELECT pg_catalog.setval('public.signups_id_seq', 3, true);
 
 
 --
 -- Name: tasks_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tasks_id_seq', 11, false);
+SELECT pg_catalog.setval('public.tasks_id_seq', 12, true);
 
 
 --
@@ -154,5 +157,5 @@ SELECT pg_catalog.setval('public.users_id_seq', 19, false);
 -- PostgreSQL database dump complete
 --
 
-\unrestrict vfsbVgewQFeRL62ajeRgTH5RYTUnSvk2aKFzFTuQbxr07yD1cRFlob8aQgicaVs
+\unrestrict 7oL4xO7ocfsfk2cWcu0TUck0mz7S7koydRphfLp4gn7jCPDrBh6RHqFWtJN5Tep
 
