@@ -141,6 +141,18 @@
 }
 .btnPrimary:hover { background: #253e23; }
 
+.btnSuccess {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  background: #e5efea;
+  color: #417a58;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: default;
+  white-space: nowrap;
+}
+
 .btnSecondary {
   padding: 8px 16px;
   border-radius: 8px;

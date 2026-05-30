@@ -6,7 +6,7 @@ import styles from "./profile.module.css";
 
 function formatDate(date) {
   if (!date) return "—";
-  return new Date(date + "Z").toLocaleString("pl-PL", {
+  return new Date(date).toLocaleString("pl-PL", {
     day: "2-digit", month: "long", year: "numeric",
   });
 }

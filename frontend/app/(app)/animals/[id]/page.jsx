@@ -5,31 +5,20 @@ import { useParams, useRouter } from "next/navigation";
 import { getAuth, authFetch } from "@/utils/api";
 import styles from "./page.module.css";
 
-const TRAITS = {
-  Pies: [
-    { label: "Łagodny",    icon: "fa-face-smile",   color: "Blue"   },
-    { label: "Towarzyski", icon: "fa-people-group", color: "Green"  },
-    { label: "Spokojny",   icon: "fa-heart",        color: "Purple" },
-  ],
-  Kot: [
-    { label: "Ciekawy",   icon: "fa-magnifying-glass", color: "Blue"   },
-    { label: "Spokojny",  icon: "fa-heart",            color: "Green"  },
-    { label: "Delikatny", icon: "fa-feather",          color: "Purple" },
-  ],
-  default: [
-    { label: "Łagodny",    icon: "fa-face-smile",   color: "Blue"   },
-    { label: "Towarzyski", icon: "fa-people-group", color: "Green"  },
-    { label: "Spokojny",   icon: "fa-heart",        color: "Purple" },
-  ],
-};
-
-const ABOUT = {
-  Pies: (name) =>
-    `${name} to przyjazny i energiczny pies, który uwielbia kontakt z człowiekiem. Jest gotowy, by znaleźć swój nowy dom i prawdziwą rodzinę.`,
-  Kot: (name) =>
-    `${name} to delikatny i spokojny kot, który szuka troskliwego domu. Po krótkim czasie aklimatyzacji staje się oddanym towarzyszem.`,
-  default: (name) =>
-    `${name} to zwierzę pod opieką naszego schroniska. Jest łagodne, przyzwyczajone do kontaktu z ludźmi i gotowe do adopcji.`,
+const TRAIT_MAP = {
+  "Łagodny":    { icon: "fa-face-smile",        color: "Blue"   },
+  "Towarzyski": { icon: "fa-people-group",       color: "Green"  },
+  "Spokojny":   { icon: "fa-heart",              color: "Purple" },
+  "Ciekawy":    { icon: "fa-magnifying-glass",   color: "Blue"   },
+  "Delikatny":  { icon: "fa-feather",            color: "Green"  },
+  "Niezależny": { icon: "fa-star",               color: "Purple" },
+  "Energiczny": { icon: "fa-bolt",               color: "Blue"   },
+  "Wesoły":     { icon: "fa-face-laugh-beam",    color: "Green"  },
+  "Czuły":      { icon: "fa-hand-holding-heart", color: "Purple" },
+  "Aktywny":    { icon: "fa-person-running",     color: "Blue"   },
+  "Przyjazny":  { icon: "fa-handshake",          color: "Green"  },
+  "Radosny":    { icon: "fa-sun",                color: "Purple" },
+  "Nieśmiały":  { icon: "fa-eye-slash",          color: "Blue"   },
 };
 
 function getInfoRows(animal) {
@@ -37,7 +26,7 @@ function getInfoRows(animal) {
     { icon: "fa-paw",          label: "Typ",         value: animal.type,                 color: "#3a7db8", bg: "rgba(110,168,216,0.12)" },
     { icon: "fa-heart",        label: "Status",      value: animal.status,               color: "#2d9b72", bg: "rgba(95,191,160,0.12)"  },
     { icon: "fa-building",     label: "Schronisko",  value: "Miejskie Schronisko",       color: "#7a62b8", bg: "rgba(167,141,208,0.12)" },
-    { icon: "fa-location-dot", label: "Lokalizacja", value: "Warszawa, PL",              color: "#7a62b8", bg: "rgba(167,141,208,0.12)" },
+    { icon: "fa-location-dot", label: "Lokalizacja", value: "Gdynia, PL",                color: "#7a62b8", bg: "rgba(167,141,208,0.12)" },
     { icon: "fa-calendar",     label: "Wiek",        value: animal.age  ?? "ok. 2 lata", color: "#3a7db8", bg: "rgba(110,168,216,0.12)" },
     { icon: "fa-venus-mars",   label: "Płeć",        value: animal.sex  ?? "Samiec",     color: "#2d9b72", bg: "rgba(95,191,160,0.12)"  },
   ];
@@ -125,7 +114,6 @@ export default function AnimalDetailsPage() {
   const [error, setError]       = useState(null);
   const [adopted, setAdopted]   = useState(false);
   const [adopting, setAdopting] = useState(false);
-  const [favoured, setFavoured] = useState(false);
 
   const auth     = getAuth();
   const role     = auth?.user?.role;
@@ -174,8 +162,10 @@ export default function AnimalDetailsPage() {
     );
   }
 
-  const traits      = TRAITS[animal.type] ?? TRAITS.default;
-  const about       = (ABOUT[animal.type] ?? ABOUT.default)(animal.name);
+  const traits = animal.traits
+    ? JSON.parse(animal.traits).map(label => ({ label, ...(TRAIT_MAP[label] || { icon: "fa-paw", color: "Blue" }) }))
+    : [];
+  const about = animal.description || `${animal.name} to zwierzę pod opieką naszego schroniska.`;
   const isAvailable = animal.status === "Do adopcji";
   const infoRows    = getInfoRows(animal);
 

@@ -53,6 +53,9 @@ Temporary Items
 .history
 .ionide
 
+# SQLite
+*.db
+
 # Node
 node_modules/
 backend/node_modules/

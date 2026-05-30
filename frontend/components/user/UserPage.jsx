@@ -14,29 +14,41 @@ function formatTaskDate(task) {
 }
 
 export default function UserPage({ userName }) {
-  const [myAnimals, setMyAnimals] = useState([]);
-  const [myTasks,   setMyTasks]   = useState([]);
-  const [userStats] = useState({ myAnimals: 3, myAdoptions: 2, volunteerHours: 14, favorites: 5 });
+  const [adoptions,   setAdoptions]   = useState([]);
+  const [signups,     setSignups]     = useState([]);
+  const [totalTasks,  setTotalTasks]  = useState(0);
 
   useEffect(() => {
-    authFetch("http://localhost:3001/animals/my")
+    authFetch("http://localhost:3001/adoptions/my")
       .then(res => res.json())
-      .then(data => setMyAnimals(Array.isArray(data) ? data.slice(0, 2) : []))
-      .catch(() => setMyAnimals([]));
+      .then(data => setAdoptions(Array.isArray(data) ? data : []))
+      .catch(() => setAdoptions([]));
   }, []);
 
   useEffect(() => {
     authFetch("http://localhost:3001/signups/my")
       .then(res => res.json())
-      .then(data => setMyTasks(Array.isArray(data) ? data.slice(0, 4) : []))
-      .catch(() => setMyTasks([]));
+      .then(data => setSignups(Array.isArray(data) ? data : []))
+      .catch(() => setSignups([]));
   }, []);
 
+  useEffect(() => {
+    authFetch("http://localhost:3001/tasks")
+      .then(res => res.json())
+      .then(data => setTotalTasks(Array.isArray(data) ? data.length : 0))
+      .catch(() => setTotalTasks(0));
+  }, []);
+
+  const adoptedCount = adoptions.filter(a => a.status === "Zaakceptowany").length;
+  const pendingCount = adoptions.filter(a => a.status === "W oczekiwaniu").length;
+  const adoptedAnimals = adoptions.filter(a => a.status === "Zaakceptowany").slice(0, 2);
+  const recentSignups  = signups.slice(0, 4);
+
   const STAT_CARDS = [
-    { label: "Moje zwierzęta pod opieką", value: userStats.myAnimals,       icon: "fa-paw",          color: "#486346", bg: "#eaede8" },
-    { label: "Moje adopcje w toku",        value: userStats.myAdoptions,    icon: "fa-heart",        color: "#c07a3a", bg: "#f5ede2" },
-    { label: "Godzin wolontariatu",         value: userStats.volunteerHours, icon: "fa-person",       color: "#7a62b8", bg: "#f0edf8" },
-    { label: "Ulubione zwierzęta",          value: userStats.favorites,      icon: "fa-star",         color: "#417a58", bg: "#e5efea" },
+    { label: "Zaadoptowane zwierzęta", value: adoptedCount,      icon: "fa-paw",    color: "#486346", bg: "#eaede8" },
+    { label: "Adopcje w toku",          value: pendingCount,     icon: "fa-heart",  color: "#c07a3a", bg: "#f5ede2" },
+    { label: "Moje zadania",            value: signups.length,   icon: "fa-person", color: "#7a62b8", bg: "#f0edf8" },
+    { label: "Dostępne zadania",         value: totalTasks,       icon: "fa-calendar-check", color: "#417a58", bg: "#e5efea" },
   ];
 
   return (
@@ -71,22 +83,27 @@ export default function UserPage({ userName }) {
       {/* ── 2-column section ── */}
       <div className={styles.bottomGrid}>
 
-        {/* Moje aktywności — real tasks */}
+        {/* Moje aktywności */}
         <div className={styles.card}>
           <div className={styles.cardHeader}>
             <p className={styles.cardHeading}>Moje aktywności</p>
             <Link href="/volunteer" className={styles.cardLink}>Zobacz wszystkie</Link>
           </div>
           <div className={styles.activityList}>
-            {myTasks.length === 0 ? (
+            {recentSignups.length === 0 ? (
               <p className={styles.emptyText}>Brak zapisanych zadań</p>
-            ) : myTasks.map((task) => (
+            ) : recentSignups.map((task) => (
               <div key={task.id} className={styles.activityRow}>
                 <div className={styles.activityIcon} style={{ color: "#486346", background: "rgba(72,99,70,0.11)" }}>
                   <i className="fa-solid fa-calendar-days" />
                 </div>
-                <span className={styles.activityText}>{task.title}</span>
-                <span className={styles.activityDate}>{formatTaskDate(task)}</span>
+                <div className={styles.activityBody}>
+                  <span className={styles.activityText}>{task.title}</span>
+                  {task.description && <span className={styles.activitySub}>{task.description}</span>}
+                </div>
+                {(task.date || task.time_from) && (
+                  <span className={styles.activityDate}>{formatTaskDate(task)}</span>
+                )}
               </div>
             ))}
           </div>
@@ -95,28 +112,33 @@ export default function UserPage({ userName }) {
           </button>
         </div>
 
-        {/* Moje zwierzęta */}
+        {/* Moje adopcje */}
         <div className={styles.card}>
           <div className={styles.cardHeader}>
-            <p className={styles.cardHeading}>Moje zwierzęta</p>
-            <Link href="/animals" className={styles.cardLink}>Zobacz wszystkie</Link>
+            <p className={styles.cardHeading}>Moje adopcje</p>
+            <Link href="/adoptions" className={styles.cardLink}>Zobacz wszystkie</Link>
           </div>
           <div className={styles.animalGrid}>
-            {myAnimals.length === 0 ? (
-              <p className={styles.emptyText}>Brak zwierząt pod opieką</p>
-            ) : myAnimals.map((animal, i) => (
-              <div key={i} className={styles.animalCard}>
+            {adoptedAnimals.length === 0 ? (
+              <p className={styles.emptyText}>Brak zaadoptowanych zwierząt</p>
+            ) : adoptedAnimals.map((a) => (
+              <div key={a.id} className={styles.animalCard}>
                 <div className={styles.animalPhoto}>
-                  {animal.image_url ? (
-                    <Image src={animal.image_url} alt={animal.name} fill style={{ objectFit: "cover" }} />
+                  {a.animal_image ? (
+                    <Image
+                      src={`http://localhost:3001${a.animal_image}`}
+                      alt={a.animal_name}
+                      fill
+                      style={{ objectFit: "cover" }}
+                    />
                   ) : (
                     <div className={styles.animalNoPhoto}><i className="fa-solid fa-paw" /></div>
                   )}
                 </div>
                 <div className={styles.animalFooter}>
                   <div className={styles.animalMeta}>
-                    <span className={styles.animalName}>{animal.name}</span>
-                    <span className={styles.animalInfo}>{animal.species} • {animal.age} lata</span>
+                    <span className={styles.animalName}>{a.animal_name}</span>
+                    <span className={styles.animalInfo}>Zaadoptowane</span>
                   </div>
                   <i className="fa-solid fa-chevron-right" style={{ color: "#bcc4b7", fontSize: "10px" }} />
                 </div>

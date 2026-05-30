@@ -10,14 +10,25 @@ import MyTasks from "./MyTasks";
 import styles from "./Volunteer.module.css";
 
 export default function VolunteerView() {
-  const [tasks,        setTasks]        = useState([]);
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [tasks,           setTasks]           = useState([]);
+  const [signedUpTaskIds, setSignedUpTaskIds] = useState(new Set());
+  const [selectedDate,    setSelectedDate]    = useState(null);
   const tasksRef = useRef(null);
 
   useEffect(() => {
     authFetch("http://localhost:3001/tasks")
       .then(res => res.json())
       .then(data => setTasks(Array.isArray(data) ? data : []));
+  }, []);
+
+  useEffect(() => {
+    authFetch("http://localhost:3001/signups/my")
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setSignedUpTaskIds(new Set(data.map(s => s.task_id)));
+        }
+      });
   }, []);
 
   return (
@@ -60,7 +71,7 @@ export default function VolunteerView() {
       </div>
 
       <div ref={tasksRef}>
-        <VolunteerTasks selectedDate={selectedDate} />
+        <VolunteerTasks selectedDate={selectedDate} signedUpTaskIds={signedUpTaskIds} />
         <MyTasks />
       </div>
     </section>

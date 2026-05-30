@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { authFetch } from "@/utils/api";
 import styles from "./Volunteer.module.css";
 
@@ -11,8 +11,11 @@ function formatPolishDate(dateStr) {
   return f.charAt(0).toUpperCase() + f.slice(1);
 }
 
-export default function VolunteerTasks({ selectedDate } = {}) {
-  const [tasks, setTasks] = useState([]);
+export default function VolunteerTasks({ selectedDate, signedUpTaskIds = new Set() } = {}) {
+  const [tasks,    setTasks]    = useState([]);
+  const [signedUp, setSignedUp] = useState(new Set());
+  const [loading,  setLoading]  = useState(new Set());
+  const inFlight = useRef(new Set());
 
   useEffect(() => {
     authFetch("http://localhost:3001/tasks")
@@ -20,11 +23,22 @@ export default function VolunteerTasks({ selectedDate } = {}) {
       .then(data => setTasks(Array.isArray(data) ? data : []));
   }, []);
 
-  function signup(id) {
-    authFetch(`http://localhost:3001/tasks/${id}/signup`, {
-      method: "POST",
-      body: JSON.stringify({ note: "" })
-    });
+  async function signup(id) {
+    if (inFlight.current.has(id) || signedUp.has(id)) return;
+    inFlight.current.add(id);
+    setLoading(prev => new Set(prev).add(id));
+    try {
+      const res = await authFetch(`http://localhost:3001/tasks/${id}/signup`, {
+        method: "POST",
+        body: JSON.stringify({ note: "" })
+      });
+      if (res.ok) {
+        setSignedUp(prev => new Set(prev).add(id));
+      }
+    } finally {
+      inFlight.current.delete(id);
+      setLoading(prev => { const s = new Set(prev); s.delete(id); return s; });
+    }
   }
 
   const visible = selectedDate ? tasks.filter(t => t.date === selectedDate) : tasks;
@@ -51,7 +65,17 @@ export default function VolunteerTasks({ selectedDate } = {}) {
             </div>
           </div>
           <div className={styles.cardActions}>
-            <button className={styles.btnPrimary} onClick={() => signup(t.id)}>Zapisz się</button>
+            {(signedUpTaskIds.has(t.id) || signedUp.has(t.id)) ? (
+              <button className={styles.btnSuccess} disabled>Zapisano</button>
+            ) : (
+              <button
+                className={styles.btnPrimary}
+                onClick={() => signup(t.id)}
+                disabled={loading.has(t.id)}
+              >
+                {loading.has(t.id) ? "Zapisywanie…" : "Zapisz się"}
+              </button>
+            )}
           </div>
         </div>
       ))}

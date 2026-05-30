@@ -17,16 +17,24 @@ function formatTaskDate(task) {
 }
 
 export default function AdminDashboard() {
-  const [animalCount,   setAnimalCount]   = useState(0);
-  const [adoptionStats, setAdoptionStats] = useState({ total: 0, pending: 0, approved: 0 });
-  const [adminStats,    setAdminStats]    = useState({ volunteers: 0, tasks: 0 });
-  const [tasks,         setTasks]         = useState([]);
+  const [animalCount,    setAnimalCount]    = useState(0);
+  const [availableCount, setAvailableCount] = useState(0);
+  const [adoptionStats,  setAdoptionStats]  = useState({ total: 0, pending: 0, approved: 0 });
+  const [adminStats,     setAdminStats]     = useState({ volunteers: 0, tasks: 0 });
+  const [tasks,          setTasks]          = useState([]);
 
   useEffect(() => {
     fetch("http://localhost:3001/animals")
       .then(res => res.json())
       .then(data => setAnimalCount(data.length))
       .catch(() => setAnimalCount(0));
+  }, []);
+
+  useEffect(() => {
+    fetch("http://localhost:3001/animals?status=Do adopcji")
+      .then(res => res.json())
+      .then(data => setAvailableCount(Array.isArray(data) ? data.length : 0))
+      .catch(() => setAvailableCount(0));
   }, []);
 
   useEffect(() => {
@@ -57,7 +65,7 @@ export default function AdminDashboard() {
     { label: "Zwierzęta w bazie", value: animalCount,           icon: "fa-paw",             color: "#486346", bg: "#eaede8" },
     { label: "Adopcje w toku",    value: adoptionStats.pending,  icon: "fa-heart",           color: "#417a58", bg: "#e5efea" },
     { label: "Aktywne zadania",    value: tasks.length,           icon: "fa-list-check",      color: "#c07a3a", bg: "#f5ede2" },
-    { label: "Wolontariusze",     value: adminStats.volunteers,  icon: "fa-handshake-angle", color: "#7a62b8", bg: "#f0edf8" },
+    { label: "Do adopcji",        value: availableCount,         icon: "fa-house-chimney",   color: "#7a62b8", bg: "#f0edf8" },
   ];
 
   return (
