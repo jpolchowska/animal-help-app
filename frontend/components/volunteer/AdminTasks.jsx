@@ -6,6 +6,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { authFetch } from "@/utils/api";
 import styles from "./Volunteer.module.css";
+import { API_URL } from "@/utils/config";
 
 function formatPolishDate(dateStr) {
   const date = new Date(dateStr);
@@ -37,7 +38,7 @@ export default function AdminTasks() {
   }
 
   useEffect(() => {
-    authFetch("http://localhost:3001/tasks")
+    authFetch(`${API_URL}/tasks`)
       .then(res => res.json())
       .then(data => setTasks(Array.isArray(data) ? data : []))
       .finally(() => setLoading(false));
@@ -47,7 +48,7 @@ export default function AdminTasks() {
     const errs = validateTask(newTask);
     if (Object.keys(errs).length) { setErrors(errs); return; }
     setErrors({});
-    const res  = await authFetch("http://localhost:3001/tasks", { method: "POST", body: JSON.stringify(newTask) });
+    const res  = await authFetch(`${API_URL}/tasks`, { method: "POST", body: JSON.stringify(newTask) });
     const data = await res.json();
     setTasks(prev => [...prev, { id: data.id, ...newTask }]);
     setNewTask(emptyForm);
@@ -64,13 +65,13 @@ export default function AdminTasks() {
     const errs = validateTask(editForm);
     if (Object.keys(errs).length) { setErrors(errs); return; }
     setErrors({});
-    await authFetch(`http://localhost:3001/tasks/${id}`, { method: "PUT", body: JSON.stringify(editForm) });
+    await authFetch(`${API_URL}/tasks/${id}`, { method: "PUT", body: JSON.stringify(editForm) });
     setTasks(prev => prev.map(t => (t.id === id ? { ...t, ...editForm } : t)));
     setEditingId(null);
   }
 
   async function removeTask(id) {
-    await authFetch(`http://localhost:3001/tasks/${id}`, { method: "DELETE" });
+    await authFetch(`${API_URL}/tasks/${id}`, { method: "DELETE" });
     setTasks(prev => prev.filter(t => t.id !== id));
   }
 

@@ -4,6 +4,7 @@ import { useState } from "react";
 import styles from "../auth.module.css";
 import Image from "next/image";
 import Link from "next/link";
+import { API_URL } from "@/utils/config";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -13,7 +14,7 @@ export default function LoginPage() {
   async function handleSubmit(e) {
     e.preventDefault();
 
-    const res = await fetch("http://localhost:3001/auth/login", {
+    const res = await fetch(`${API_URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),

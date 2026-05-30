@@ -8,6 +8,7 @@ import { authFetch } from "@/utils/api";
 import VolunteerTasks from "./VolunteerTasks";
 import MyTasks from "./MyTasks";
 import styles from "./Volunteer.module.css";
+import { API_URL } from "@/utils/config";
 
 export default function VolunteerView() {
   const [tasks,           setTasks]           = useState([]);
@@ -16,13 +17,13 @@ export default function VolunteerView() {
   const tasksRef = useRef(null);
 
   useEffect(() => {
-    authFetch("http://localhost:3001/tasks")
+    authFetch(`${API_URL}/tasks`)
       .then(res => res.json())
       .then(data => setTasks(Array.isArray(data) ? data : []));
   }, []);
 
   useEffect(() => {
-    authFetch("http://localhost:3001/signups/my")
+    authFetch(`${API_URL}/signups/my`)
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {

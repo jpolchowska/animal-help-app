@@ -6,6 +6,7 @@ import { pluralizeAnimals } from "@/utils/pluralize";
 import styles from "./page.module.css";
 import { authFetch } from "@/utils/api";
 import AddAnimalModal from "@/components/animals/AddAnimalModal";
+import { API_URL } from "@/utils/config";
 
 const categories = ["Wszystkie", "pies", "kot"];
 
@@ -29,7 +30,7 @@ export default function AnimalsPage() {
     if (!confirm("Czy na pewno chcesz usunąć to zwierzę?")) return;
 
     const res = await authFetch(
-      `http://localhost:3001/animals/${id}`,
+      `${API_URL}/animals/${id}`,
       { method: "DELETE" }
     );
 
@@ -46,7 +47,7 @@ export default function AnimalsPage() {
     if (!status) return;
 
     const res = await authFetch(
-      `http://localhost:3001/animals/${id}`,
+      `${API_URL}/animals/${id}`,
       {
         method: "PUT",
         body: JSON.stringify({ status }),
@@ -78,7 +79,7 @@ export default function AnimalsPage() {
     if (category !== "Wszystkie") params.append("type", category);
     if (status !== "Wszystkie") params.append("status", status);
 
-    fetch(`http://localhost:3001/animals?${params.toString()}`)
+    fetch(`${API_URL}/animals?${params.toString()}`)
       .then(res => res.json())
       .then(data => setAnimals(data));
   }, [query, category, status]);

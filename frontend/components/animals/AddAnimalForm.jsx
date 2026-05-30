@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { authFetch } from "@/utils/api";
 import styles from "./AddAnimalForm.module.css";
+import { API_URL } from "@/utils/config";
 
 export default function AddAnimalForm({ onAdd, onClose }) {
   const [form, setForm] = useState({
@@ -28,7 +29,7 @@ export default function AddAnimalForm({ onAdd, onClose }) {
     formData.append("image", file);
 
     const res = await authFetch(
-      "http://localhost:3001/animals",
+      `${API_URL}/animals`,
       {
         method: "POST",
         body: formData,

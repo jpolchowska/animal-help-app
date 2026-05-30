@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { authFetch } from "@/utils/api";
 import styles from "./Volunteer.module.css";
+import { API_URL } from "@/utils/config";
 
 function formatPolishDate(dateStr) {
   if (!dateStr) return null;
@@ -18,7 +19,7 @@ export default function VolunteerTasks({ selectedDate, signedUpTaskIds = new Set
   const inFlight = useRef(new Set());
 
   useEffect(() => {
-    authFetch("http://localhost:3001/tasks")
+    authFetch(`${API_URL}/tasks`)
       .then(res => res.json())
       .then(data => setTasks(Array.isArray(data) ? data : []));
   }, []);
@@ -28,7 +29,7 @@ export default function VolunteerTasks({ selectedDate, signedUpTaskIds = new Set
     inFlight.current.add(id);
     setLoading(prev => new Set(prev).add(id));
     try {
-      const res = await authFetch(`http://localhost:3001/tasks/${id}/signup`, {
+      const res = await authFetch(`${API_URL}/tasks/${id}/signup`, {
         method: "POST",
         body: JSON.stringify({ note: "" })
       });

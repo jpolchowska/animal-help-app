@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import styles from "./UserPage.module.css";
+import { API_URL } from "@/utils/config";
 
 function formatTaskDate(task) {
   if (!task.date) return "";
@@ -19,21 +20,21 @@ export default function UserPage({ userName }) {
   const [totalTasks,  setTotalTasks]  = useState(0);
 
   useEffect(() => {
-    authFetch("http://localhost:3001/adoptions/my")
+    authFetch(`${API_URL}/adoptions/my`)
       .then(res => res.json())
       .then(data => setAdoptions(Array.isArray(data) ? data : []))
       .catch(() => setAdoptions([]));
   }, []);
 
   useEffect(() => {
-    authFetch("http://localhost:3001/signups/my")
+    authFetch(`${API_URL}/signups/my`)
       .then(res => res.json())
       .then(data => setSignups(Array.isArray(data) ? data : []))
       .catch(() => setSignups([]));
   }, []);
 
   useEffect(() => {
-    authFetch("http://localhost:3001/tasks")
+    authFetch(`${API_URL}/tasks`)
       .then(res => res.json())
       .then(data => setTotalTasks(Array.isArray(data) ? data.length : 0))
       .catch(() => setTotalTasks(0));
@@ -126,7 +127,7 @@ export default function UserPage({ userName }) {
                 <div className={styles.animalPhoto}>
                   {a.animal_image ? (
                     <Image
-                      src={`http://localhost:3001${a.animal_image}`}
+                      src={`${API_URL}${a.animal_image}`}
                       alt={a.animal_name}
                       fill
                       style={{ objectFit: "cover" }}

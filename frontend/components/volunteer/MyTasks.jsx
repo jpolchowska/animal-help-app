@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { authFetch } from "@/utils/api";
 import styles from "./Volunteer.module.css";
+import { API_URL } from "@/utils/config";
 
 function formatPolishDate(dateStr) {
   if (!dateStr) return null;
@@ -16,14 +17,14 @@ export default function MyTasks() {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    authFetch("http://localhost:3001/signups/my")
+    authFetch(`${API_URL}/signups/my`)
       .then(res => res.json())
       .then(data => { setItems(Array.isArray(data) ? data : []); setLoaded(true); })
       .catch(() => { setItems([]); setLoaded(true); });
   }, []);
 
   function unsignup(id) {
-    authFetch(`http://localhost:3001/signups/${id}`, { method: "DELETE" });
+    authFetch(`${API_URL}/signups/${id}`, { method: "DELETE" });
     setItems(prev => prev.filter(i => i.id !== id));
   }
 

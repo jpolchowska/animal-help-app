@@ -623,6 +623,13 @@ app.get("/stats", async (req, res) => {
 });
 
 
+// HEALTHCHECK
+
+app.get("/healthz", (req, res) => {
+  res.status(200).json({ status: "ok" });
+});
+
+
 // Start serwera
 
 app.listen(PORT, () => {

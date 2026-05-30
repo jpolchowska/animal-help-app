@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { authFetch } from "@/utils/api";
 import styles from "./AdoptionsAdmin.module.css";
+import { API_URL } from "@/utils/config";
 
 const statusClassMap = {
   "W oczekiwaniu": "pending",
@@ -14,13 +15,13 @@ export default function AdoptionsAdmin() {
   const [adoptions, setAdoptions] = useState([]);
 
   useEffect(() => {
-    authFetch("http://localhost:3001/adoptions")
+    authFetch(`${API_URL}/adoptions`)
       .then(res => res.json())
       .then(data => setAdoptions(Array.isArray(data) ? data : []));
   }, []);
 
   async function updateStatus(id, status) {
-    await authFetch(`http://localhost:3001/adoptions/${id}`, {
+    await authFetch(`${API_URL}/adoptions/${id}`, {
       method: "PUT",
       body: JSON.stringify({ status })
     });
@@ -29,7 +30,7 @@ export default function AdoptionsAdmin() {
 
   async function handleDelete(id) {
     if (!confirm("Czy na pewno chcesz usunąć ten wniosek?")) return;
-    await authFetch(`http://localhost:3001/adoptions/${id}`, { method: "DELETE" });
+    await authFetch(`${API_URL}/adoptions/${id}`, { method: "DELETE" });
     setAdoptions(prev => prev.filter(a => a.id !== id));
   }
 
@@ -42,7 +43,7 @@ export default function AdoptionsAdmin() {
       <div key={a.id} className={styles.card}>
         <div className={styles.left}>
           <img
-            src={`http://localhost:3001${a.animal_image}`}
+            src={`${API_URL}${a.animal_image}`}
             alt={a.animal_name}
             className={styles.avatar}
           />

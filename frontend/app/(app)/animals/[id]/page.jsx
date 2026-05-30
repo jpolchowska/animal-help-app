@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { getAuth, authFetch } from "@/utils/api";
 import styles from "./page.module.css";
+import { API_URL } from "@/utils/config";
 
 const TRAIT_MAP = {
   "Łagodny":    { icon: "fa-face-smile",        color: "Blue"   },
@@ -121,7 +122,7 @@ export default function AnimalDetailsPage() {
 
   useEffect(() => {
     if (!id) return;
-    fetch(`http://localhost:3001/animals/${id}`)
+    fetch(`${API_URL}/animals/${id}`)
       .then(async (res) => {
         if (!res.ok) throw new Error("Nie znaleziono zwierzęcia");
         return res.json();
@@ -134,7 +135,7 @@ export default function AnimalDetailsPage() {
     if (adopting || adopted) return;
     setAdopting(true);
     try {
-      await authFetch("http://localhost:3001/adoptions", {
+      await authFetch(`${API_URL}/adoptions`, {
         method: "POST",
         body: JSON.stringify({ animalId: animal.id }),
       });
@@ -210,7 +211,7 @@ export default function AnimalDetailsPage() {
         <div className={styles.imageCard}>
           {animal.image ? (
             <img
-              src={`http://localhost:3001${animal.image}`}
+              src={`${API_URL}${animal.image}`}
               alt={animal.name}
               className={styles.animalImage}
             />

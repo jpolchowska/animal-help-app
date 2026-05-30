@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import styles from "./AdminDashboard.module.css";
+import { API_URL } from "@/utils/config";
 
 
 
@@ -24,34 +25,34 @@ export default function AdminDashboard() {
   const [tasks,          setTasks]          = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:3001/animals")
+    fetch(`${API_URL}/animals`)
       .then(res => res.json())
       .then(data => setAnimalCount(data.length))
       .catch(() => setAnimalCount(0));
   }, []);
 
   useEffect(() => {
-    fetch("http://localhost:3001/animals?status=Do adopcji")
+    fetch(`${API_URL}/animals?status=Do adopcji`)
       .then(res => res.json())
       .then(data => setAvailableCount(Array.isArray(data) ? data.length : 0))
       .catch(() => setAvailableCount(0));
   }, []);
 
   useEffect(() => {
-    authFetch("http://localhost:3001/adoptions/stats")
+    authFetch(`${API_URL}/adoptions/stats`)
       .then(res => res.json())
       .then(setAdoptionStats);
   }, []);
 
   useEffect(() => {
-    authFetch("http://localhost:3001/admin/stats")
+    authFetch(`${API_URL}/admin/stats`)
       .then(res => res.json())
       .then(setAdminStats)
       .catch(() => setAdminStats({ volunteers: 0, tasks: 0 }));
   }, []);
 
   useEffect(() => {
-    authFetch("http://localhost:3001/tasks")
+    authFetch(`${API_URL}/tasks`)
       .then(res => res.json())
       .then(data => setTasks(Array.isArray(data) ? data.slice(0, 4) : []))
       .catch(() => setTasks([]));

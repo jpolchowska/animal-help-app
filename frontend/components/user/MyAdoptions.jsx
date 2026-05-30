@@ -5,6 +5,7 @@ import { authFetch } from "@/utils/api";
 import Link from "next/link";
 import Image from "next/image";
 import styles from "./MyAdoptions.module.css";
+import { API_URL } from "@/utils/config";
 
 const STATUS_META = {
   "W oczekiwaniu": { cls: "pending",  icon: "fa-clock",        label: "W oczekiwaniu" },
@@ -19,7 +20,7 @@ export default function MyAdoptions() {
   useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
-    authFetch("http://localhost:3001/adoptions/my")
+    authFetch(`${API_URL}/adoptions/my`)
       .then(res => res.json())
       .then(data => setAdoptions(Array.isArray(data) ? data : []))
       .catch(() => setAdoptions([]));
@@ -54,7 +55,7 @@ export default function MyAdoptions() {
               <div key={a.id} className={styles.card}>
                 <div className={styles.cardLeft}>
                   <img
-                    src={`http://localhost:3001${a.animal_image}`}
+                    src={`${API_URL}${a.animal_image}`}
                     alt={a.animal_name}
                     className={styles.avatar}
                   />

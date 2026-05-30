@@ -2,10 +2,11 @@
 
 import styles from "./Volunteer.module.css";
 import { authFetch } from "@/utils/api";
+import { API_URL } from "@/utils/config";
 
 export default function VolunteerJoin({ onBecameVolunteer }) {
   async function join() {
-    await authFetch("http://localhost:3001/volunteer/join", { method: "POST" });
+    await authFetch(`${API_URL}/volunteer/join`, { method: "POST" });
     const stored = localStorage.getItem("auth");
     if (stored) {
       const auth = JSON.parse(stored);
