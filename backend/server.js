@@ -1,30 +1,22 @@
 // IMPORTY
 const express = require("express");
 const cors = require("cors");
-const http = require("http");
-const url = require("url");
 
 const { Pool } = require("pg");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const WebSocket = require("ws");
 
 const multer = require("multer");
 const path = require("path");
 
-
 const PORT = process.env.PORT || 3001;
 const JWT_SECRET = process.env.JWT_SECRET || "change_this_secret_key";
 
-
 const app = express();
-const server = http.createServer(app);
-
 
 app.use(cors());
 app.use(express.json());
 app.use("/images", express.static("images"));
-
 
 
 // BAZA DANYCH
@@ -45,62 +37,6 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
-
-
-
-// WebSocket
-const wss = new WebSocket.Server({ server });
-const onlineUsers = new Set();
-
-wss.on("connection", (ws, req) => {
-  const { query } = url.parse(req.url, true);
-  const token = query.token;
-
-  if (!token) {
-    ws.close();
-    return;
-  }
-
-  jwt.verify(token, JWT_SECRET, (err, user) => {
-    if (err) {
-      console.log("WS JWT ERROR:", err.message);
-      ws.close();
-      return;
-    }
-
-    const userId = user.id;
-    ws.userId = userId;
-    onlineUsers.add(userId);
-    broadcastOnlineUsers();
-
-    ws.on("close", () => {
-      const stillConnected = [...wss.clients].some(
-        client =>
-          client !== ws &&
-          client.readyState === WebSocket.OPEN &&
-          client.userId === userId
-      );
-
-      if (!stillConnected) {
-        onlineUsers.delete(userId);
-        broadcastOnlineUsers();
-      }
-    });
-  });
-});
-
-function broadcastOnlineUsers() {
-  const message = JSON.stringify({
-    type: "ONLINE_USERS",
-    count: onlineUsers.size
-  });
-
-  wss.clients.forEach(client => {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(message);
-    }
-  });
-}
 
 
 // AUTORYZACJA
@@ -284,7 +220,6 @@ app.post("/animals", authenticateToken, requireRole(["admin"]), upload.single("i
       image
     });
 
-    sendSSE({ type: "ALERT", message: `Dodano nowe zwierzę: ${name}` });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -688,33 +623,8 @@ app.get("/stats", async (req, res) => {
 });
 
 
-// SSE
-
-const sseClients = new Set();
-
-app.get("/sse", (req, res) => {
-  res.setHeader("Content-Type", "text/event-stream");
-  res.setHeader("Cache-Control", "no-cache");
-  res.setHeader("Connection", "keep-alive");
-
-  sseClients.add(res);
-
-  req.on("close", () => {
-    sseClients.delete(res);
-  });
-});
-
-function sendSSE(data) {
-  const payload = `data: ${JSON.stringify(data)}\n\n`;
-
-  sseClients.forEach(res => {
-    res.write(payload);
-  });
-}
-
-
 // Start serwera
 
-server.listen(PORT, () => {
+app.listen(PORT, () => {
   console.log(`Backend działa na http://localhost:${PORT}`);
 });
