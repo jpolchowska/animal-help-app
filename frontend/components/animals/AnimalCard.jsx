@@ -3,6 +3,7 @@
 import styles from "./AnimalCard.module.css";
 import { authFetch, getAuth } from "@/utils/api";
 import Link from "next/link";
+import { API_URL } from "@/utils/config";
 
 export default function AnimalCard({ animal, onDelete, onStatusChange }) {
   const auth = getAuth();
@@ -36,7 +37,7 @@ export default function AnimalCard({ animal, onDelete, onStatusChange }) {
 
       <div className={styles.photo}>
         <img
-          src={`http://localhost:3001${animal.image}`}
+          src={`${API_URL}${animal.image}`}
           alt={animal.name}
           className={styles.image}
         />
@@ -64,23 +65,6 @@ export default function AnimalCard({ animal, onDelete, onStatusChange }) {
             </span>
           </div>
 
-          {canAdopt && animal.status === "Do adopcji" && (
-            <button
-              className={styles.adoptButton}
-              onClick={async e => {
-                e.stopPropagation();
-
-                await authFetch("http://localhost:3001/adoptions", {
-                  method: "POST",
-                  body: JSON.stringify({ animalId: animal.id })
-                });
-
-                alert("Zgłoszono adopcję");
-              }}
-            >
-              Adoptuj
-            </button>
-          )}
         </div>
       </div>
     </Link>

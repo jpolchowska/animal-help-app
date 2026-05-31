@@ -1,86 +1,79 @@
+/* ── Sidebar shell ── */
+
 .sidebar {
   position: fixed;
   top: var(--header-height);
   left: 0;
   width: var(--sidebar-width);
   height: calc(100vh - var(--header-height));
-  background: #fafafa;
-  border-right: 1px solid #e5e7eb;
-  padding: 16px 8px;
+  background: #354b34;
+  border-right: none;
+  padding: 20px 12px;
   display: flex;
   justify-content: center;
+  will-change: transform;
 }
+
+/* ── Nav ── */
 
 .nav {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   width: 100%;
 }
 
+/* ── Nav item ── */
+
 .item {
-  position: relative;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 6px;
-  padding: 12px 6px;
-  border-radius: 12px;
-  color: #6b7280;
-  cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease;
+  gap: 13px;
+  padding: 15px 14px;
+  border-radius: 7px;
+  color: rgba(255, 255, 255, 0.85);
   text-decoration: none;
-  color: inherit;
+  cursor: pointer;
+  outline: none;
+  transition: background 0.18s ease, color 0.18s ease, transform 0.13s ease;
 }
 
 .item i {
-  font-size: 18px;
+  font-size: 17px;
+  flex-shrink: 0;
+  width: 18px;
+  text-align: center;
 }
 
 .label {
-  font-size: 11px;
-  letter-spacing: 0.02em;
+  font-size: 14.5px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
 }
 
 .item:hover {
-  background: rgba(59, 130, 246, 0.06);
-  color: #1e3a8a;
-}
-
-.item::before {
-  content: "";
-  position: absolute;
-  left: -8px;
-  top: 15%;
-  width: 3px;
-  height: 70%;
-  border-radius: 999px;
-  background: transparent;
-  transition: background 0.25s ease, box-shadow 0.25s ease;
-}
-
-.active {
-  background: rgba(59, 130, 246, 0.1);
-  color: #1e3a8a;
-  font-weight: 600;
-}
-
-.active::before {
-  background: #1e3a8a;
-  box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
-}
-
-.sidebar {
-  will-change: transform;
-}
-
-.item {
-  transition:
-    background 0.2s ease,
-    color 0.2s ease,
-    transform 0.15s ease;
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
 }
 
 .item:active {
-  transform: scale(0.96);
+  transform: scale(0.97);
+}
+
+/* ── Active state ── */
+
+.active {
+  background: #4e654b;
+  color: #ffffff;
+}
+
+.active .label {
+  font-weight: 500;
+}
+
+.active:hover {
+  background: #4e654b;
+  color: #ffffff;
 }

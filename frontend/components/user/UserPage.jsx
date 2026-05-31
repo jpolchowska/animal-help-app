@@ -1,94 +1,167 @@
-import styles from "./UserPage.module.css";
-import Link from "next/link";
-import { useEffect, useState } from "react";
+"use client";
+
 import { authFetch } from "@/utils/api";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import styles from "./UserPage.module.css";
+import { API_URL } from "@/utils/config";
+
+function formatTaskDate(task) {
+  if (!task.date) return "";
+  const d = new Date(task.date);
+  const dateStr = d.toLocaleDateString("pl-PL", { day: "numeric", month: "short" });
+  return task.time_from ? `${dateStr}, ${task.time_from}` : dateStr;
+}
 
 export default function UserPage({ userName }) {
-  const [stats, setStats] = useState(null);
+  const [adoptions,   setAdoptions]   = useState([]);
+  const [signups,     setSignups]     = useState([]);
+  const [totalTasks,  setTotalTasks]  = useState(0);
 
   useEffect(() => {
-    authFetch("http://localhost:3001/stats")
+    authFetch(`${API_URL}/adoptions/my`)
       .then(res => res.json())
-      .then(data => setStats(data))
-      .catch(err => console.error("Stats error:", err));
+      .then(data => setAdoptions(Array.isArray(data) ? data : []))
+      .catch(() => setAdoptions([]));
   }, []);
 
+  useEffect(() => {
+    authFetch(`${API_URL}/signups/my`)
+      .then(res => res.json())
+      .then(data => setSignups(Array.isArray(data) ? data : []))
+      .catch(() => setSignups([]));
+  }, []);
+
+  useEffect(() => {
+    authFetch(`${API_URL}/tasks`)
+      .then(res => res.json())
+      .then(data => setTotalTasks(Array.isArray(data) ? data.length : 0))
+      .catch(() => setTotalTasks(0));
+  }, []);
+
+  const adoptedCount = adoptions.filter(a => a.status === "Zaakceptowany").length;
+  const pendingCount = adoptions.filter(a => a.status === "W oczekiwaniu").length;
+  const adoptedAnimals = adoptions.filter(a => a.status === "Zaakceptowany").slice(0, 2);
+  const recentSignups  = signups.slice(0, 4);
+
+  const STAT_CARDS = [
+    { label: "Zaadoptowane zwierzęta", value: adoptedCount,      icon: "fa-paw",    color: "#486346", bg: "#eaede8" },
+    { label: "Adopcje w toku",          value: pendingCount,     icon: "fa-heart",  color: "#c07a3a", bg: "#f5ede2" },
+    { label: "Moje zadania",            value: signups.length,   icon: "fa-person", color: "#7a62b8", bg: "#f0edf8" },
+    { label: "Dostępne zadania",         value: totalTasks,       icon: "fa-calendar-check", color: "#417a58", bg: "#e5efea" },
+  ];
+
   return (
-    <main>
-      {/* HERO */}
-      <section className={styles.hero}>
-        <h2>
-          Witaj{userName ? `, ${userName}` : ""}!
-        </h2>
-        <p>
-          Animal Help App to aplikacja wspierająca adopcję zwierząt, wolontariat
-          oraz działania na rzecz podopiecznych schroniska.
-        </p>
-      </section>
+    <section className={styles.container}>
 
-      {/* KARTY NAWIGACYJNE */}
-      <section className={styles.cards}>
-        <Link href="/animals" className={styles.card}>
-          <h3>Zwierzęta</h3>
-          <p>Przeglądaj zwierzęta dostępne do adopcji.</p>
-          <div className={styles.imageWrapper}>
-            <img src="/animals.png" alt="Zwierzęta" className={styles.icon} />
-          </div>
-        </Link>
-
-        <Link href="/adoptions" className={styles.card}>
-          <h3>Adopcje</h3>
-          <p>Zgłaszaj zgłoszenia adopcyjne i śledź ich status.</p>
-          <div className={styles.imageWrapper}>
-            <img src="/adoptions.png" alt="Adopcje" className={styles.icon} />
-          </div>
-        </Link>
-
-        <Link href="/volunteer" className={styles.card}>
-          <h3>Wolontariat</h3>
-          <p>Dołącz do grona naszych wolontariuszy.</p>
-          <div className={styles.imageWrapper}>
-            <img src="/volunteer.png" alt="Wolontariat" className={styles.icon} />
-          </div>
-        </Link>
-      </section>
-
-      {/* MINI STATYSTYKI */}
-      <section className={styles.stats}>
-        <div className={styles.stat}>
-          <i className="fa-solid fa-dog" />
-          <strong>{stats ? stats.animals : "—"}</strong>
-          <span>Zwierząt pod opieką</span>
+      {/* ── Hero + stats wrapper ── */}
+      <div className={styles.heroWrapper}>
+        <div className={styles.heroText}>
+          <h1 className={styles.heroTitle}>Witaj{userName ? `, ${userName}` : ""}!</h1>
+          <p className={styles.heroSubtitle}>
+            Dziękujemy, że jesteś częścią naszej społeczności.
+          </p>
         </div>
-        <div className={styles.stat}>
-          <i className="fa-solid fa-heart" />
-          <strong>{stats ? stats.adopted : "—"}</strong>
-          <span>Udało się adoptować</span>
+        <div className={styles.heroImageArea}>
+          <Image src="/cta-animals-user.png" alt="" fill style={{ objectFit: "contain", objectPosition: "right top" }} priority />
         </div>
-        <div className={styles.stat}>
-          <i className="fa-solid fa-hand-holding-heart" />
-          <strong>{stats ? stats.volunteers : "—"}</strong>
-          <span>Aktywnych wolontariuszy</span>
+        <div className={styles.statsRow}>
+          {STAT_CARDS.map((card) => (
+            <div key={card.label} className={styles.statCard}>
+              <div className={styles.statIconCircle} style={{ color: card.color, background: card.bg }}>
+                <i className={`fa-solid ${card.icon}`} />
+              </div>
+              <div className={styles.statInfo}>
+                <strong className={styles.statValue}>{card.value}</strong>
+                <span className={styles.statLabel}>{card.label}</span>
+              </div>
+            </div>
+          ))}
         </div>
-      </section>
+      </div>
 
-      {/* CTA */}
-      <section className={styles.cta}>
-        <h3>Chcesz pomóc?</h3>
-        <p>
-          Każda adopcja i każda godzina wolontariatu realnie
-          zmienia życie zwierząt.
-        </p>
-        <Link href="/animals" className={styles.ctaButton}>
-          Zobacz zwierzęta
-        </Link>
-      </section>
+      {/* ── 2-column section ── */}
+      <div className={styles.bottomGrid}>
 
-      {/* FOOTER */}
-      <footer className={styles.footer}>
-        <span>Animal Help App</span>
-        <span>© 2026</span>
-      </footer>
-    </main>
+        {/* Moje aktywności */}
+        <div className={styles.card}>
+          <div className={styles.cardHeader}>
+            <p className={styles.cardHeading}>Moje aktywności</p>
+            <Link href="/volunteer" className={styles.cardLink}>Zobacz wszystkie</Link>
+          </div>
+          <div className={styles.activityList}>
+            {recentSignups.length === 0 ? (
+              <p className={styles.emptyText}>Brak zapisanych zadań</p>
+            ) : recentSignups.map((task) => (
+              <div key={task.id} className={styles.activityRow}>
+                <div className={styles.activityIcon} style={{ color: "#486346", background: "rgba(72,99,70,0.11)" }}>
+                  <i className="fa-solid fa-calendar-days" />
+                </div>
+                <div className={styles.activityBody}>
+                  <span className={styles.activityText}>{task.title}</span>
+                  {task.description && <span className={styles.activitySub}>{task.description}</span>}
+                </div>
+                {(task.date || task.time_from) && (
+                  <span className={styles.activityDate}>{formatTaskDate(task)}</span>
+                )}
+              </div>
+            ))}
+          </div>
+          <button className={styles.seeAllBtn} onClick={() => window.location.href = "/volunteer"}>
+            Zobacz wszystkie
+          </button>
+        </div>
+
+        {/* Moje adopcje */}
+        <div className={styles.card}>
+          <div className={styles.cardHeader}>
+            <p className={styles.cardHeading}>Moje adopcje</p>
+            <Link href="/adoptions" className={styles.cardLink}>Zobacz wszystkie</Link>
+          </div>
+          <div className={styles.animalGrid}>
+            {adoptedAnimals.length === 0 ? (
+              <p className={styles.emptyText}>Brak zaadoptowanych zwierząt</p>
+            ) : adoptedAnimals.map((a) => (
+              <div key={a.id} className={styles.animalCard}>
+                <div className={styles.animalPhoto}>
+                  {a.animal_image ? (
+                    <Image
+                      src={`${API_URL}${a.animal_image}`}
+                      alt={a.animal_name}
+                      fill
+                      style={{ objectFit: "cover" }}
+                    />
+                  ) : (
+                    <div className={styles.animalNoPhoto}><i className="fa-solid fa-paw" /></div>
+                  )}
+                </div>
+                <div className={styles.animalFooter}>
+                  <div className={styles.animalMeta}>
+                    <span className={styles.animalName}>{a.animal_name}</span>
+                    <span className={styles.animalInfo}>Zaadoptowane</span>
+                  </div>
+                  <i className="fa-solid fa-chevron-right" style={{ color: "#bcc4b7", fontSize: "10px" }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+      </div>
+
+      {/* ── CTA section ── */}
+      <div className={styles.ctaSection}>
+        <div className={styles.ctaContent}>
+          <p className={styles.ctaTitle}>Nie znalazłeś swojego zgłoszenia?</p>
+          <p className={styles.ctaSubtitle}>Może interesuje Cię inne zwierzę?</p>
+          <Link href="/animals" className={styles.ctaBtn}>Przeglądaj zwierzęta</Link>
+        </div>
+        <div className={styles.ctaImageArea}>
+          <Image src="/cta-animals-admin.png" alt="" fill style={{ objectFit: "cover", objectPosition: "0% center" }} priority />
+        </div>
+      </div>
+
+    </section>
   );
 }

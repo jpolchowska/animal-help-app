@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: animal-help-config
+  namespace: animal-help-app
+data:
+  PORT: "3001"
+  NODE_ENV: "production"
+  NEXT_PUBLIC_API_URL: "http://api.animal-help-app.local"
