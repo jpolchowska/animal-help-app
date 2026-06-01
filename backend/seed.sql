@@ -2,8 +2,6 @@
 -- PostgreSQL database dump
 --
 
-\restrict 7oL4xO7ocfsfk2cWcu0TUck0mz7S7koydRphfLp4gn7jCPDrBh6RHqFWtJN5Tep
-
 -- Dumped from database version 17.10
 -- Dumped by pg_dump version 17.10
 
@@ -157,5 +155,4 @@ SELECT pg_catalog.setval('public.users_id_seq', 19, false);
 -- PostgreSQL database dump complete
 --
 
-\unrestrict 7oL4xO7ocfsfk2cWcu0TUck0mz7S7koydRphfLp4gn7jCPDrBh6RHqFWtJN5Tep
 
