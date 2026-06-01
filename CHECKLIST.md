@@ -15,19 +15,7 @@ git clone https://github.com/jpolchowska/animal-help-app.git
 cd animal-help-app
 ```
 
-### 2. Zbuduj obrazy lokalnie
-
-```bash
-docker build -t ghcr.io/jpolchowska/animal-help-backend:latest ./backend
-
-docker build -t ghcr.io/jpolchowska/animal-help-frontend:latest \
-  --build-arg NEXT_PUBLIC_API_URL=http://api.animal-help-app.local \
-  ./frontend
-```
-
-> Alternatywnie obrazy są dostępne na GHCR i zostaną pobrane automatycznie po pierwszym `kubectl apply`.
-
-### 3. Zainstaluj nginx Ingress Controller
+### 2. Zainstaluj nginx Ingress Controller
 
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.12.0/deploy/static/provider/cloud/deploy.yaml
@@ -38,13 +26,23 @@ kubectl wait --namespace ingress-nginx \
   --timeout=90s
 ```
 
-### 4. Dodaj wpisy do /etc/hosts
+### 3. Dodaj wpisy do /etc/hosts
 
+**macOS / Linux:**
 ```bash
 echo "127.0.0.1 animal-help-app.local api.animal-help-app.local" | sudo tee -a /etc/hosts
 ```
 
-### 5. Zaaplikuj manifesty
+**Windows** (terminal jako Administrator):
+```
+notepad C:\Windows\System32\drivers\etc\hosts
+```
+Dodaj linię:
+```
+127.0.0.1 animal-help-app.local api.animal-help-app.local
+```
+
+### 4. Zaaplikuj manifesty
 
 ```bash
 kubectl apply -f k8s/namespace.yaml
@@ -56,7 +54,7 @@ kubectl apply -f k8s/frontend/
 kubectl apply -f k8s/ingress.yaml
 ```
 
-### 6. Poczekaj aż pody będą gotowe
+### 5. Poczekaj aż pody będą gotowe
 
 ```bash
 kubectl get pods -n animal-help-app -w
@@ -71,7 +69,7 @@ frontend-xxxxxxxxx-xxxxx    1/1     Running   0          2m
 postgres-xxxxxxxxx-xxxxx    1/1     Running   0          3m
 ```
 
-### 7. Otwórz aplikację
+### 6. Otwórz aplikację
 
 ```
 http://animal-help-app.local
@@ -162,7 +160,7 @@ postgres-pvc         Bound    pvc-xxxxxxxx   1Gi        RWO            12m
 curl http://api.animal-help-app.local/healthz
 ```
 ```json
-{"status":"ok"}
+{"status":"ok","database":"connected"}
 ```
 
 ```bash

@@ -625,8 +625,13 @@ app.get("/stats", async (req, res) => {
 
 // HEALTHCHECK
 
-app.get("/healthz", (req, res) => {
-  res.status(200).json({ status: "ok" });
+app.get("/healthz", async (req, res) => {
+  try {
+    await pool.query("SELECT 1");
+    res.status(200).json({ status: "ok", database: "connected" });
+  } catch (err) {
+    res.status(503).json({ status: "error", database: "unreachable" });
+  }
 });
 
 app.get("/metrics", async (req, res) => {
