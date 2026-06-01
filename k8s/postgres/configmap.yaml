@@ -121,6 +121,8 @@ data:
     INSERT INTO public.users VALUES (16, 'acc@gmail.com', '$2b$10$4.GcJpXSz1splMnlTZA9J.obDLrhGjAe781tCRedtofAOwrnNLLWm', 'user', 'acc1', '2026-02-16 15:03:12+00', NULL);
     INSERT INTO public.users VALUES (17, '1@1', '$2b$10$asise2rWm5i13J/I2m49NeC65NSBAYgCL4AIHhG.vmRUWZcP18heq', 'user', '1', '2026-02-16 15:04:50+00', NULL);
     INSERT INTO public.users VALUES (18, 'acc2@gmail.com', '$2b$10$hQ59tQDBNOxmtO3PH/pOj.Pdwtw.JPnsiXUrQ7epm5Clg9NZDJNRi', 'volunteer', 'acc2', '2026-02-16 18:18:03+00', NULL);
+    INSERT INTO public.users VALUES (20, 'k8s_1@gmail.com', '$2b$10$lEDXXY4MkEs5lMRUc1Okte3WVybiDOnjJeC7pIY/tgZ.cS9/NuERC', 'volunteer', 'k8s_1', '2026-05-31 12:32:11.588682+00', NULL);
+    INSERT INTO public.users VALUES (22, 'john.smith@gmail.com', '$2b$10$av/iGfdaKfMA.oqwpxXMkOIM9JM5zjZ5A/2ZHlxdESDmUfV1LzLga', 'volunteer', 'John', '2026-05-31 13:21:15.101247+00', NULL);
 
     INSERT INTO public.adoptions VALUES (5, 13, 35, 'Zaakceptowany', '2026-02-04 12:59:01+00');
     INSERT INTO public.adoptions VALUES (6, 2, 68, 'Zaakceptowany', '2026-02-09 18:03:36+00');
@@ -130,14 +132,16 @@ data:
     INSERT INTO public.adoptions VALUES (10, 15, 67, 'W oczekiwaniu', '2026-02-09 23:08:21+00');
     INSERT INTO public.adoptions VALUES (11, 6, 63, 'Zaakceptowany', '2026-02-09 23:12:50+00');
     INSERT INTO public.adoptions VALUES (13, 2, 64, 'W oczekiwaniu', '2026-05-30 09:41:37+00');
+    INSERT INTO public.adoptions VALUES (15, 22, 69, 'W oczekiwaniu', '2026-05-31 13:22:50.676932+00');
 
     INSERT INTO public.tasks VALUES (11, 'Karmienie zwierząt', 'Nakarmienie zwierząt rano i wieczorem', '2026-05-31', '08:00', '20:00');
     INSERT INTO public.tasks VALUES (12, 'Spacer z psem', 'Spacer z dowolnym psem', '2026-06-01', '12:00', '16:00');
 
     INSERT INTO public.signups VALUES (3, 12, 2, '');
+    INSERT INTO public.signups VALUES (4, 11, 22, '');
 
-    SELECT pg_catalog.setval('public.adoptions_id_seq', 14, true);
+    SELECT pg_catalog.setval('public.adoptions_id_seq', 15, true);
     SELECT pg_catalog.setval('public.animals_id_seq', 70, false);
-    SELECT pg_catalog.setval('public.signups_id_seq', 3, true);
+    SELECT pg_catalog.setval('public.signups_id_seq', 4, true);
     SELECT pg_catalog.setval('public.tasks_id_seq', 12, true);
-    SELECT pg_catalog.setval('public.users_id_seq', 19, false);
+    SELECT pg_catalog.setval('public.users_id_seq', 22, true);
