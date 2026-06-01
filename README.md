@@ -34,6 +34,10 @@ Pełna instrukcja uruchomienia na kind/minikube/k3d w [CHECKLIST.md](CHECKLIST.m
 - **Wolontariusz** — przeglądanie zadań i zapisywanie się na nie
 - **Użytkownik** — przeglądanie zwierząt i składanie wniosków o adopcję
 
+## Architektura bazy danych
+
+PostgreSQL działa jako Deployment z PersistentVolumeClaim zamiast StatefulSet, ponieważ aplikacja używa jednej instancji bazy danych, dla której PVC zapewnia wymaganą trwałość danych. Dane przeżywają restarty podów i aktualizacje deploymentu.
+
 ## CI/CD
 
 Każdy push do `main` uruchamia workflow który buduje i pushuje obrazy Docker na GHCR:
