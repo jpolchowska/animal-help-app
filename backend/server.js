@@ -1,4 +1,4 @@
-// IMPORTY
+// Importy
 const express = require("express");
 const cors = require("cors");
 
@@ -19,7 +19,7 @@ app.use(express.json());
 app.use("/images", express.static("images"));
 
 
-// BAZA DANYCH
+// Baza danych
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
 pool.connect()
@@ -27,7 +27,7 @@ pool.connect()
   .catch(err => console.error("Błąd bazy danych:", err.message));
 
 
-// UPLOAD ZDJĘĆ
+// Upload zdjęć
 const storage = multer.diskStorage({
   destination: "images",
   filename: (req, file, cb) => {
@@ -39,7 +39,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 
-// AUTORYZACJA
+// Autoryzacja
 function authenticateToken(req, res, next) {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
@@ -68,8 +68,7 @@ function requireRole(roles) {
 }
 
 
-
-// --------------- AUTH ---------------
+// Rejestracja i logowanie
 
 app.post("/auth/register", async (req, res) => {
   const { email, password, name } = req.body;
@@ -149,8 +148,7 @@ app.post("/auth/login", async (req, res) => {
 });
 
 
-
-// --------------- ANIMALS ---------------
+// Zwierzęta
 
 app.get("/animals/:id", async (req, res) => {
   try {
@@ -266,8 +264,7 @@ app.delete("/animals/:id", authenticateToken, requireRole(["admin"]), async (req
 });
 
 
-
-// --------------- ADOPTIONS ---------------
+// Adopcje
 
 app.post(
   "/adoptions",
@@ -420,8 +417,7 @@ app.get(
 );
 
 
-
-// --------------- VOLUNTEER ---------------
+// Wolontariat
 
 app.post(
   "/volunteer/join",
@@ -441,8 +437,7 @@ app.post(
 );
 
 
-
-// --------------- TASKS ---------------
+// Zadania
 
 app.post(
   "/tasks",
@@ -508,8 +503,7 @@ app.delete(
 );
 
 
-
-// --------------- SIGNUP ---------------
+// Zapisy na zadania
 
 app.post(
   "/tasks/:id/signup",
@@ -579,7 +573,8 @@ app.delete(
   }
 );
 
-// -------- DASHBOARD STATS --------
+
+// Statystyki
 
 app.get(
   "/admin/stats",
@@ -602,7 +597,8 @@ app.get(
   }
 );
 
-// -------- PUBLIC STATS --------
+
+// Statystyki publiczne
 
 app.get("/stats", async (req, res) => {
   try {
@@ -623,7 +619,7 @@ app.get("/stats", async (req, res) => {
 });
 
 
-// HEALTHCHECK
+// Healthcheck
 
 app.get("/healthz", async (req, res) => {
   try {
@@ -634,19 +630,26 @@ app.get("/healthz", async (req, res) => {
   }
 });
 
+
+// Obserwowalność
+
 app.get("/metrics", async (req, res) => {
-  const [animals, users, adoptions, tasks] = await Promise.all([
-    pool.query("SELECT COUNT(*) FROM animals"),
-    pool.query("SELECT COUNT(*) FROM users"),
-    pool.query("SELECT COUNT(*) FROM adoptions"),
-    pool.query("SELECT COUNT(*) FROM tasks"),
-  ]);
-  res.status(200).json({
-    animals_total: parseInt(animals.rows[0].count),
-    users_total: parseInt(users.rows[0].count),
-    adoptions_total: parseInt(adoptions.rows[0].count),
-    tasks_total: parseInt(tasks.rows[0].count),
-  });
+  try {
+    const [animals, users, adoptions, tasks] = await Promise.all([
+      pool.query("SELECT COUNT(*) FROM animals"),
+      pool.query("SELECT COUNT(*) FROM users"),
+      pool.query("SELECT COUNT(*) FROM adoptions"),
+      pool.query("SELECT COUNT(*) FROM tasks"),
+    ]);
+    res.status(200).json({
+      animals_total: parseInt(animals.rows[0].count),
+      users_total: parseInt(users.rows[0].count),
+      adoptions_total: parseInt(adoptions.rows[0].count),
+      tasks_total: parseInt(tasks.rows[0].count),
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 
