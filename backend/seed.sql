@@ -85,6 +85,8 @@ INSERT INTO public.users VALUES (17, '1@1', '$2b$10$asise2rWm5i13J/I2m49NeC65NSB
 INSERT INTO public.users VALUES (18, 'acc2@gmail.com', '$2b$10$hQ59tQDBNOxmtO3PH/pOj.Pdwtw.JPnsiXUrQ7epm5Clg9NZDJNRi', 'volunteer', 'acc2', '2026-02-16 18:18:03+00', '2026-02-16 18:18:17+00');
 INSERT INTO public.users VALUES (1, 'admin@gmail.com', '$2b$10$jKO8dnqkUBVxWFr/R8GiUO.f/k0Y1gm4omcTm/WGP6EqlYLGj0tUO', 'admin', 'Admin', '2026-01-27 21:20:38+00', '2026-05-30 19:20:59.315983+00');
 INSERT INTO public.users VALUES (2, 'jagoda.polchowska@gmail.com', '$2b$10$WcXTxl5MXjSKjix6LwYVP.1.JWZy/ycPVcUdiynCeCSj8IzVfl0SS', 'volunteer', 'Jagoda', '2026-01-29 14:05:30+00', '2026-05-30 19:21:11.694429+00');
+INSERT INTO public.users VALUES (20, 'k8s_1@gmail.com', '$2b$10$lEDXXY4MkEs5lMRUc1Okte3WVybiDOnjJeC7pIY/tgZ.cS9/NuERC', 'volunteer', 'k8s_1', '2026-05-31 12:32:11.588682+00', NULL);
+INSERT INTO public.users VALUES (22, 'john.smith@gmail.com', '$2b$10$av/iGfdaKfMA.oqwpxXMkOIM9JM5zjZ5A/2ZHlxdESDmUfV1LzLga', 'volunteer', 'John', '2026-05-31 13:21:15.101247+00', NULL);
 
 
 --
@@ -99,6 +101,7 @@ INSERT INTO public.adoptions VALUES (9, 15, 69, 'Odrzucony', '2026-02-09 22:54:1
 INSERT INTO public.adoptions VALUES (10, 15, 67, 'W oczekiwaniu', '2026-02-09 23:08:21+00');
 INSERT INTO public.adoptions VALUES (11, 6, 63, 'Zaakceptowany', '2026-02-09 23:12:50+00');
 INSERT INTO public.adoptions VALUES (13, 2, 64, 'W oczekiwaniu', '2026-05-30 09:41:37+00');
+INSERT INTO public.adoptions VALUES (15, 22, 69, 'W oczekiwaniu', '2026-05-31 13:22:50.676932+00');
 
 
 --
@@ -114,13 +117,14 @@ INSERT INTO public.tasks VALUES (12, 'Spacer z psem', 'Spacer z dowolnym psem', 
 --
 
 INSERT INTO public.signups VALUES (3, 12, 2, '');
+INSERT INTO public.signups VALUES (4, 11, 22, '');
 
 
 --
 -- Name: adoptions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.adoptions_id_seq', 14, true);
+SELECT pg_catalog.setval('public.adoptions_id_seq', 15, true);
 
 
 --
@@ -134,7 +138,7 @@ SELECT pg_catalog.setval('public.animals_id_seq', 70, false);
 -- Name: signups_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.signups_id_seq', 3, true);
+SELECT pg_catalog.setval('public.signups_id_seq', 4, true);
 
 
 --
@@ -148,7 +152,7 @@ SELECT pg_catalog.setval('public.tasks_id_seq', 12, true);
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.users_id_seq', 19, false);
+SELECT pg_catalog.setval('public.users_id_seq', 22, true);
 
 
 --
