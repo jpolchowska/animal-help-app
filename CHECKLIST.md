@@ -155,14 +155,30 @@ backend-images-pvc   Bound    pvc-xxxxxxxx   500Mi      RWO            10m
 postgres-pvc         Bound    pvc-xxxxxxxx   1Gi        RWO            12m
 ```
 
-### Healthcheck backendu
+### Weryfikacja funkcjonalności
 
 ```bash
+# Health check
 curl http://api.animal-help-app.local/healthz
 ```
-
 ```json
 {"status":"ok"}
+```
+
+```bash
+# Odczyt zwierząt
+curl http://api.animal-help-app.local/animals
+```
+```json
+[{"id":17,"name":"Piorun","type":"pies","status":"Do adopcji",...}]
+```
+
+```bash
+# Metryki aplikacji
+curl http://api.animal-help-app.local/metrics
+```
+```json
+{"animals_total":40,"users_total":20,"adoptions_total":9,"tasks_total":2}
 ```
 
 ### Metryki aplikacji
