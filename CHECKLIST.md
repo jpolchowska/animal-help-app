@@ -165,6 +165,16 @@ curl http://api.animal-help-app.local/healthz
 {"status":"ok"}
 ```
 
+### Metryki aplikacji
+
+```bash
+curl http://api.animal-help-app.local/metrics
+```
+
+```json
+{"animals_total":40,"users_total":20,"adoptions_total":9,"tasks_total":2}
+```
+
 ### Logi
 
 ```bash

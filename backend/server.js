@@ -629,6 +629,21 @@ app.get("/healthz", (req, res) => {
   res.status(200).json({ status: "ok" });
 });
 
+app.get("/metrics", async (req, res) => {
+  const [animals, users, adoptions, tasks] = await Promise.all([
+    pool.query("SELECT COUNT(*) FROM animals"),
+    pool.query("SELECT COUNT(*) FROM users"),
+    pool.query("SELECT COUNT(*) FROM adoptions"),
+    pool.query("SELECT COUNT(*) FROM tasks"),
+  ]);
+  res.status(200).json({
+    animals_total: parseInt(animals.rows[0].count),
+    users_total: parseInt(users.rows[0].count),
+    adoptions_total: parseInt(adoptions.rows[0].count),
+    tasks_total: parseInt(tasks.rows[0].count),
+  });
+});
+
 
 // Start serwera
 
