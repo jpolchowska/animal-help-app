@@ -191,6 +191,24 @@ curl http://api.animal-help-app.local/metrics
 {"animals_total":40,"users_total":20,"adoptions_total":9,"tasks_total":2}
 ```
 
+### Test trwałości danych
+
+```bash
+# Sprawdź dane przed restartem
+curl http://api.animal-help-app.local/metrics
+
+# Usuń pod bazy
+kubectl delete pod -n animal-help-app -l app=postgres
+
+# Poczekaj aż wróci
+kubectl wait --for=condition=ready pod -l app=postgres -n animal-help-app --timeout=60s
+
+# Dane nadal dostępne
+curl http://api.animal-help-app.local/metrics
+```
+
+Liczba zwierząt przed i po restarcie powinna być identyczna.
+
 ### Logi
 
 ```bash
