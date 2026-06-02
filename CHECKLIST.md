@@ -340,7 +340,7 @@ Obrazy:
 - `ghcr.io/jpolchowska/animal-help-frontend:latest`
 
 **Link do ostatniego udanego workflow:**
-https://github.com/jpolchowska/animal-help-app/actions/runs/26802311315
+https://github.com/jpolchowska/animal-help-app/actions/runs/26822164741
 
 ---
 
