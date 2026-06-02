@@ -38,8 +38,7 @@ jobs:
           context: ./backend
           push: ${{ github.event_name == 'push' }}
           tags: ${{ env.BACKEND_IMAGE }}:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          no-cache: true
 
       - name: Build and push frontend
         uses: docker/build-push-action@v5
