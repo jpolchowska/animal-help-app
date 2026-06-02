@@ -72,6 +72,7 @@ jobs:
           kubectl apply --dry-run=client -f k8s/backend/
           kubectl apply --dry-run=client -f k8s/frontend/
           kubectl apply --dry-run=client -f k8s/ingress.yaml
+          kubectl apply --dry-run=client -f k8s/pdb.yaml
 
       - name: Apply manifests
         run: |
@@ -81,6 +82,7 @@ jobs:
           kubectl apply -f k8s/postgres/
           kubectl apply -f k8s/backend/
           kubectl apply -f k8s/frontend/
+          kubectl apply -f k8s/pdb.yaml
 
       - name: Check rollout
         run: |
