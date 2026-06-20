@@ -53,6 +53,9 @@ Temporary Items
 .history
 .ionide
 
+# JetBrains IDEs
+.idea/
+
 # SQLite
 *.db
 
