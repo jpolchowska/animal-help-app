@@ -631,7 +631,7 @@ app.get("/healthz", async (req, res) => {
 });
 
 
-// Obserwowalność
+// Statystyki systemu
 
 app.get("/metrics", async (req, res) => {
   try {

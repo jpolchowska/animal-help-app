@@ -1,4 +1,4 @@
-# CHECKLIST — Animal Help App
+# Kubernetes — Animal Help App
 
 ## Wymagania wstępne
 
@@ -308,7 +308,7 @@ Liczba rekordów przed i po restarcie powinna być identyczna.
 
 ---
 
-## Obserwowalność
+## Statystyki systemu
 
 ```bash
 curl http://api.animal-help-app.local/metrics

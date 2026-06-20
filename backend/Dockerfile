@@ -1,4 +1,5 @@
-FROM node:20-alpine
+# Dependencies stage
+FROM node:20-alpine AS deps
 
 WORKDIR /app
 
@@ -6,7 +7,15 @@ COPY package*.json ./
 
 RUN npm ci --only=production
 
-COPY --chown=node:node . .
+# Production stage
+FROM node:20-alpine AS runner
+
+WORKDIR /app
+
+COPY --from=deps --chown=node:node /app/node_modules ./node_modules
+COPY --chown=node:node server.js ./
+COPY --chown=node:node package*.json ./
+COPY --chown=node:node images ./images
 
 RUN if [ -d images ]; then mv images images-seed; else mkdir -p images-seed; fi && mkdir -p images
 

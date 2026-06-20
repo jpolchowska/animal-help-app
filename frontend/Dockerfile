@@ -1,4 +1,4 @@
-# ── Etap 1: budowanie ──────────────────────────────────────────
+# Build stage
 FROM node:20-alpine AS builder
 
 WORKDIR /app
@@ -14,7 +14,7 @@ ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 
 RUN npm run build
 
-# ── Etap 2: obraz produkcyjny (tylko wyniki buildu) ─────────────
+# Production stage
 FROM node:20-alpine AS runner
 
 WORKDIR /app
