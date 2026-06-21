@@ -22,8 +22,8 @@ app.use("/images", express.static("images"));
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
 pool.connect()
-  .then(() => console.log("Połączono z PostgreSQL"))
-  .catch(err => console.error("Błąd bazy danych:", err.message));
+  .then(() => console.log("Connected to PostgreSQL"))
+  .catch(err => console.error("Database error:", err.message));
 
 
 // Upload zdjęć
@@ -73,19 +73,19 @@ async function authenticateToken(req, res, next) {
   const token = authHeader && authHeader.split(" ")[1];
 
   if (!token) {
-    return res.status(401).json({ error: "Brak tokenu" });
+    return res.status(401).json({ error: "Missing token" });
   }
 
   const payload = await verifyKeycloakToken(token);
 
   if (!payload) {
-    return res.status(403).json({ error: "Nieprawidłowy token" });
+    return res.status(403).json({ error: "Invalid token" });
   }
 
   try {
     const result = await pool.query("SELECT id FROM users WHERE email = $1", [payload.email]);
     if (!result.rows[0]) {
-      return res.status(403).json({ error: "Użytkownik nie istnieje w aplikacji" });
+      return res.status(403).json({ error: "User not found" });
     }
 
     const roles = payload.realm_access?.roles || [];
@@ -94,20 +94,18 @@ async function authenticateToken(req, res, next) {
     req.user = { id: result.rows[0].id, role };
     next();
   } catch {
-    res.status(500).json({ error: "Błąd serwera" });
+    res.status(500).json({ error: "Internal server error" });
   }
 }
 
 function requireRole(roles) {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
-      return res.status(403).json({ error: "Brak uprawnień" });
+      return res.status(403).json({ error: "Forbidden" });
     }
     next();
   };
 }
-
-
 
 
 // Zwierzęta
@@ -120,7 +118,7 @@ app.get("/animals/:id", async (req, res) => {
     );
 
     if (!result.rows[0]) {
-      return res.status(404).json({ error: "Nie znaleziono zwierzęcia" });
+      return res.status(404).json({ error: "Animal not found" });
     }
 
     res.json(result.rows[0]);
@@ -163,7 +161,7 @@ app.post("/animals", authenticateToken, requireRole(["admin"]), upload.single("i
   const image = req.file ? `/images/${req.file.filename}` : null;
 
   if (!name || !type || !status) {
-    return res.status(400).json({ error: "Brak danych" });
+    return res.status(400).json({ error: "Missing required fields" });
   }
 
   try {
@@ -189,7 +187,7 @@ app.put("/animals/:id", authenticateToken, requireRole(["admin"]), async (req, r
   const { status } = req.body;
 
   if (!status) {
-    return res.status(400).json({ error: "Brak statusu" });
+    return res.status(400).json({ error: "Missing status" });
   }
 
   try {
@@ -199,10 +197,10 @@ app.put("/animals/:id", authenticateToken, requireRole(["admin"]), async (req, r
     );
 
     if (result.rowCount === 0) {
-      return res.status(404).json({ error: "Nie znaleziono zwierzęcia" });
+      return res.status(404).json({ error: "Animal not found" });
     }
 
-    res.json({ message: "Status zaktualizowany", status });
+    res.json({ message: "Status updated", status });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -216,10 +214,10 @@ app.delete("/animals/:id", authenticateToken, requireRole(["admin"]), async (req
     );
 
     if (result.rowCount === 0) {
-      return res.status(404).json({ error: "Nie znaleziono zwierzęcia" });
+      return res.status(404).json({ error: "Animal not found" });
     }
 
-    res.json({ message: "Zwierzę usunięte" });
+    res.json({ message: "Animal deleted" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -236,7 +234,7 @@ app.post(
     const { animalId } = req.body;
 
     if (!animalId) {
-      return res.status(400).json({ error: "Brak animalId" });
+      return res.status(400).json({ error: "Missing animalId" });
     }
 
     try {
@@ -313,7 +311,7 @@ app.put(
     const { status } = req.body;
 
     if (!status) {
-      return res.status(400).json({ error: "Brak statusu" });
+      return res.status(400).json({ error: "Missing status" });
     }
 
     try {
@@ -329,10 +327,10 @@ app.put(
            WHERE id = (SELECT animal_id FROM adoptions WHERE id = $1)`,
           [id]
         );
-        return res.json({ message: "Adopcja zaakceptowana, zwierzę zaadoptowane" });
+        return res.json({ message: "Adoption accepted" });
       }
 
-      res.json({ message: "Status adopcji zaktualizowany" });
+      res.json({ message: "Adoption status updated" });
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -346,7 +344,7 @@ app.delete(
   async (req, res) => {
     try {
       await pool.query("DELETE FROM adoptions WHERE id = $1", [req.params.id]);
-      res.json({ message: "Adopcja usunięta" });
+      res.json({ message: "Adoption deleted" });
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -391,7 +389,7 @@ app.post(
         "UPDATE users SET role = 'volunteer' WHERE id = $1",
         [req.user.id]
       );
-      res.json({ message: "Zostałeś wolontariuszem" });
+      res.json({ message: "You are now a volunteer" });
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -443,7 +441,7 @@ app.put(
          WHERE id=$6`,
         [title, description, date, time_from, time_to, req.params.id]
       );
-      res.json({ message: "Zaktualizowano zadanie" });
+      res.json({ message: "Task updated" });
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -457,7 +455,7 @@ app.delete(
   async (req, res) => {
     try {
       await pool.query("DELETE FROM tasks WHERE id = $1", [req.params.id]);
-      res.json({ message: "Usunięto zadanie" });
+      res.json({ message: "Task deleted" });
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -477,7 +475,7 @@ app.post(
         "INSERT INTO signups (task_id, volunteer_id, note) VALUES ($1, $2, $3) ON CONFLICT (task_id, volunteer_id) DO NOTHING",
         [req.params.id, req.user.id, req.body.note]
       );
-      res.status(201).json({ message: "Zapisano na zadanie" });
+      res.status(201).json({ message: "Signed up for task" });
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -514,7 +512,7 @@ app.put(
         "UPDATE signups SET note = $1 WHERE id = $2",
         [req.body.note, req.params.id]
       );
-      res.json({ message: "Zaktualizowano notatkę" });
+      res.json({ message: "Note updated" });
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -528,7 +526,7 @@ app.delete(
   async (req, res) => {
     try {
       await pool.query("DELETE FROM signups WHERE id = $1", [req.params.id]);
-      res.json({ message: "Wypisano z zadania" });
+      res.json({ message: "Unregistered from task" });
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -618,5 +616,5 @@ app.get("/metrics", async (req, res) => {
 // Start serwera
 
 app.listen(PORT, () => {
-  console.log(`Backend działa na http://localhost:${PORT}`);
+  console.log(`Resource server running on http://localhost:${PORT}`);
 });
