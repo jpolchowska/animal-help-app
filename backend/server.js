@@ -1,16 +1,15 @@
 // Importy
 const express = require("express");
 const cors = require("cors");
+const crypto = require("crypto");
 
 const { Pool } = require("pg");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-
 const multer = require("multer");
 const path = require("path");
 
 const PORT = process.env.PORT || 3001;
-const JWT_SECRET = process.env.JWT_SECRET || "change_this_secret_key";
+const KEYCLOAK_URL = process.env.KEYCLOAK_URL || "http://keycloak:8080";
+const JWKS_URI = `${KEYCLOAK_URL}/realms/animal-help-app/protocol/openid-connect/certs`;
 
 const app = express();
 
@@ -40,7 +39,36 @@ const upload = multer({ storage });
 
 
 // Autoryzacja
-function authenticateToken(req, res, next) {
+async function verifyKeycloakToken(token) {
+  try {
+    const parts = token.split(".");
+    if (parts.length !== 3) return null;
+
+    const header = JSON.parse(Buffer.from(parts[0], "base64url").toString());
+    const payload = JSON.parse(Buffer.from(parts[1], "base64url").toString());
+
+    const response = await fetch(JWKS_URI);
+    const { keys } = await response.json();
+
+    const key = keys.find(k => k.kid === header.kid);
+    if (!key) return null;
+
+    const cert = `-----BEGIN CERTIFICATE-----\n${key.x5c[0].match(/.{1,64}/g).join("\n")}\n-----END CERTIFICATE-----\n`;
+
+    const verify = crypto.createVerify("RSA-SHA256");
+    verify.update(parts[0] + "." + parts[1]);
+    const isValid = verify.verify(cert, parts[2], "base64url");
+
+    if (!isValid) return null;
+    if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) return null;
+
+    return payload;
+  } catch {
+    return null;
+  }
+}
+
+async function authenticateToken(req, res, next) {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
 
@@ -48,14 +76,26 @@ function authenticateToken(req, res, next) {
     return res.status(401).json({ error: "Brak tokenu" });
   }
 
-  jwt.verify(token, JWT_SECRET, (err, user) => {
-    if (err) {
-      return res.status(403).json({ error: "Nieprawidłowy token" });
+  const payload = await verifyKeycloakToken(token);
+
+  if (!payload) {
+    return res.status(403).json({ error: "Nieprawidłowy token" });
+  }
+
+  try {
+    const result = await pool.query("SELECT id FROM users WHERE email = $1", [payload.email]);
+    if (!result.rows[0]) {
+      return res.status(403).json({ error: "Użytkownik nie istnieje w aplikacji" });
     }
 
-    req.user = user;
+    const roles = payload.realm_access?.roles || [];
+    const role = roles.find(r => ["admin", "user", "volunteer"].includes(r)) || "user";
+
+    req.user = { id: result.rows[0].id, role };
     next();
-  });
+  } catch {
+    res.status(500).json({ error: "Błąd serwera" });
+  }
 }
 
 function requireRole(roles) {
@@ -68,84 +108,6 @@ function requireRole(roles) {
 }
 
 
-// Rejestracja i logowanie
-
-app.post("/auth/register", async (req, res) => {
-  const { email, password, name } = req.body;
-
-  if (!email || !password || !name) {
-    return res.status(400).json({ error: "Brak pełnych danych" });
-  }
-
-  try {
-    const passwordHash = await bcrypt.hash(password, 10);
-
-    const result = await pool.query(
-      "INSERT INTO users (email, password_hash, role, name) VALUES ($1, $2, 'user', $3) RETURNING id",
-      [email, passwordHash, name]
-    );
-
-    res.status(201).json({
-      id: result.rows[0].id,
-      email,
-      role: "user",
-      name
-    });
-  } catch (err) {
-    if (err.code === "23505") {
-      return res.status(400).json({ error: "Użytkownik już istnieje" });
-    }
-    res.status(500).json({ error: "Błąd serwera" });
-  }
-});
-
-app.post("/auth/login", async (req, res) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.status(400).json({ error: "Brak emailu lub hasła" });
-  }
-
-  try {
-    const result = await pool.query(
-      "SELECT * FROM users WHERE email = $1",
-      [email]
-    );
-    const user = result.rows[0];
-
-    if (!user) {
-      return res.status(401).json({ error: "Nieprawidłowy email lub hasło" });
-    }
-
-    const isValid = await bcrypt.compare(password, user.password_hash);
-
-    if (!isValid) {
-      return res.status(401).json({ error: "Nieprawidłowy email lub hasło" });
-    }
-
-    const token = jwt.sign(
-      { id: user.id, role: user.role },
-      JWT_SECRET,
-      { expiresIn: "1h" }
-    );
-
-    await pool.query(
-      "UPDATE users SET last_login_at = NOW() WHERE id = $1",
-      [user.id]
-    );
-
-    res.json({
-      token,
-      email: user.email,
-      role: user.role,
-      name: user.name,
-      createdAt: user.created_at,
-      lastLoginAt: user.last_login_at
-    });
-  } catch (err) {
-    res.status(500).json({ error: "Błąd serwera" });
-  }
-});
 
 
 // Zwierzęta

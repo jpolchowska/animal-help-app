@@ -29,9 +29,8 @@ docker compose up --build
 
 Uzupełnij `.env` własnymi wartościami:
 
-```
-POSTGRES_PASSWORD=twoje_haslo
-JWT_SECRET=twoj_dlugi_losowy_klucz
+```env
+POSTGRES_PASSWORD=your_password_here
 ```
 
 Aplikacja dostępna pod `http://localhost:3000`.
