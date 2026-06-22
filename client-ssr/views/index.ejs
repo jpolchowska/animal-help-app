@@ -20,13 +20,16 @@
         <a href="#animals">Zwierzęta</a>
         <a href="#adoption">Adopcja</a>
         <a href="#volunteer">Wolontariat</a>
+        <% if (user) { %><a href="/my-adoptions">Moje adopcje</a><% } %>
       </nav>
       <div class="navbar-right">
         <% if (user) { %>
-          <div class="avatar"><%= user.name.charAt(0).toUpperCase() %></div>
-          <span class="user-name"><%= user.name %></span>
-          <a href="/my-adoptions" class="btn-outline">Moje adopcje</a>
-          <a href="/logout" class="btn-primary">Wyloguj</a>
+          <div class="navbar-profile">
+            <div class="avatar"><%= user.name.charAt(0).toUpperCase() %></div>
+            <span class="user-name"><%= user.name %></span>
+          </div>
+          <div class="navbar-divider"></div>
+          <a href="/logout" class="btn-nav-login">Wyloguj</a>
         <% } else { %>
           <a href="/login" class="btn-nav-login">
             <i class="fa-solid fa-user"></i> Zaloguj się
@@ -245,27 +248,27 @@
           </div>
           <p class="footer-desc">Tworzymy lepszą przyszłość dla zwierząt.<br>Dziękujemy, że jesteś z nami.</p>
           <div class="footer-socials">
-            <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
-            <a href="#"><i class="fa-brands fa-instagram"></i></a>
-            <a href="#"><i class="fa-brands fa-youtube"></i></a>
+            <a><i class="fa-brands fa-facebook-f"></i></a>
+            <a><i class="fa-brands fa-instagram"></i></a>
+            <a><i class="fa-brands fa-youtube"></i></a>
           </div>
         </div>
         <div>
           <div class="footer-heading">Nawigacja</div>
           <div class="footer-links">
-            <a href="#">O nas</a>
-            <a href="/animals">Zwierzęta</a>
-            <a href="#volunteer">Wolontariat</a>
-            <a href="#">Kontakt</a>
+            <a>O nas</a>
+            <a>Zwierzęta</a>
+            <a>Wolontariat</a>
+            <a>Kontakt</a>
           </div>
         </div>
         <div>
           <div class="footer-heading">Pomoc</div>
           <div class="footer-links">
-            <a href="#">FAQ</a>
-            <a href="#">Jak adoptować?</a>
-            <a href="#">Regulamin</a>
-            <a href="#">Polityka prywatności</a>
+            <a>FAQ</a>
+            <a>Jak adoptować?</a>
+            <a>Regulamin</a>
+            <a>Polityka prywatności</a>
           </div>
         </div>
         <div>

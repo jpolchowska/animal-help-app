@@ -20,13 +20,16 @@
         <a href="/animals">Zwierzęta</a>
         <a href="/#adoption">Adopcja</a>
         <a href="/#volunteer">Wolontariat</a>
+        <% if (user) { %><a href="/my-adoptions">Moje adopcje</a><% } %>
       </nav>
       <div class="navbar-right">
         <% if (user) { %>
-          <div class="avatar"><%= user.name.charAt(0).toUpperCase() %></div>
-          <span class="user-name"><%= user.name %></span>
-          <a href="/my-adoptions" class="btn-outline">Moje adopcje</a>
-          <a href="/logout" class="btn-primary">Wyloguj</a>
+          <div class="navbar-profile">
+            <div class="avatar"><%= user.name.charAt(0).toUpperCase() %></div>
+            <span class="user-name"><%= user.name %></span>
+          </div>
+          <div class="navbar-divider"></div>
+          <a href="/logout" class="btn-nav-login">Wyloguj</a>
         <% } else { %>
           <a href="/login" class="btn-nav-login">
             <i class="fa-solid fa-user"></i> Zaloguj się
