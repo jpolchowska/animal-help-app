@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { getAuth } from "@/utils/api";
 import AdminDashboard from "@/components/admin/AdminDashboard";
 import UserPage from "@/components/user/UserPage";
 
@@ -9,7 +10,7 @@ export default function HomePage() {
   const [userName, setUserName] = useState(null);
 
   useEffect(() => {
-    const auth = JSON.parse(localStorage.getItem("auth"));
+    const auth = getAuth();
     if (auth) {
       setRole(auth.user.role);
       setUserName(auth.user.name);

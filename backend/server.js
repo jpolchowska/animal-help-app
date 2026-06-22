@@ -579,6 +579,24 @@ app.get("/stats", async (req, res) => {
 });
 
 
+// Profil
+
+app.get("/profile", authenticateToken, async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT created_at, last_login_at FROM users WHERE id = $1",
+      [req.user.id]
+    );
+    if (!result.rows[0]) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
 // Healthcheck
 
 app.get("/healthz", async (req, res) => {

@@ -1,4 +1,5 @@
+import { getKeycloakInstance } from "@/utils/keycloak";
+
 export function logout() {
-  localStorage.removeItem("auth");
-  window.location.href = "/login";
+  getKeycloakInstance()?.logout({ redirectUri: window.location.origin });
 }

@@ -1,29 +1,32 @@
-export function getAuth() {
-  if (typeof window === "undefined") return null;
+import { getKeycloakInstance } from "@/utils/keycloak";
 
-  const raw = localStorage.getItem("auth");
-  if (!raw) return null;
-
-  try {
-    return JSON.parse(raw);
-  } catch {
-    return null;
-  }
-}
-
-export function isLoggedIn() {
-  return !!getAuth();
-}
-
-export function getUser() {
-  return getAuth()?.user || null;
+function extractRole(parsed) {
+  if (!parsed) return null;
+  const roles = parsed.realm_access?.roles || [];
+  return roles.find(r => ["admin", "user", "volunteer"].includes(r)) || null;
 }
 
 export function getRole() {
-  return getAuth()?.user?.role || null;
+  if (typeof window === "undefined") return null;
+  return extractRole(getKeycloakInstance()?.tokenParsed);
+}
+
+export function getUser() {
+  if (typeof window === "undefined") return null;
+  const kc = getKeycloakInstance();
+  if (!kc?.authenticated) return null;
+  return {
+    email: kc.tokenParsed?.email,
+    name: kc.tokenParsed?.given_name || kc.tokenParsed?.preferred_username,
+    role: extractRole(kc.tokenParsed),
+  };
+}
+
+export function isLoggedIn() {
+  if (typeof window === "undefined") return false;
+  return getKeycloakInstance()?.authenticated || false;
 }
 
 export function logout() {
-  localStorage.removeItem("auth");
-  window.location.href = "/login";
+  getKeycloakInstance()?.logout({ redirectUri: window.location.origin });
 }

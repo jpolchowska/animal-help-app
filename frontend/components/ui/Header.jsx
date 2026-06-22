@@ -3,16 +3,16 @@
 import styles from "@/styles/Header.module.css";
 import Image from "next/image";
 import Link from "next/link";
-import { logout } from "@/utils/auth";
 import { useEffect, useState } from "react";
+import { getUser, logout } from "@/utils/auth";
 
 export default function Header() {
   const [initial, setInitial] = useState(null);
 
   useEffect(() => {
-    const auth = JSON.parse(localStorage.getItem("auth"));
-    if (auth?.user?.name) {
-      setInitial(auth.user.name.charAt(0).toUpperCase());
+    const user = getUser();
+    if (user?.name) {
+      setInitial(user.name.charAt(0).toUpperCase());
     }
   }, []);
 
