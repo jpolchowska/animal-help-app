@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Animal Help App</title>
+</head>
+<body>
+  <h1>Animal Help App — SSR</h1>
+  <% if (user) { %>
+    <p>Zalogowany jako: <%= user.name %> (<%= user.email %>)</p>
+    <a href="/logout">Wyloguj</a>
+  <% } else { %>
+    <a href="/login">Zaloguj się</a>
+  <% } %>
+</body>
+</html>

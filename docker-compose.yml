@@ -81,6 +81,25 @@ services:
       backend:
         condition: service_healthy
 
+  client-ssr:
+    build: ./client-ssr
+    environment:
+      PORT: 3002
+      API_URL: http://backend:3001
+      KEYCLOAK_EXTERNAL_URL: http://localhost:8080
+      KEYCLOAK_INTERNAL_URL: http://keycloak:8080
+      CLIENT_ID: ssr-client
+      CLIENT_SECRET: ${SSR_CLIENT_SECRET}
+      REDIRECT_URI: http://localhost:3002/callback
+      SESSION_SECRET: ${SESSION_SECRET:-dev-secret}
+    ports:
+      - "3002:3002"
+    depends_on:
+      backend:
+        condition: service_healthy
+      keycloak:
+        condition: service_started
+
 volumes:
   postgres_data:
   keycloak_postgres_data:
