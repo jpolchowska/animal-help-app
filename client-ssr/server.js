@@ -15,6 +15,8 @@ app.use(session({
 
 const PORT = process.env.PORT || 3002;
 const API_URL = process.env.API_URL || 'http://localhost:3001';
+const API_PUBLIC_URL = process.env.API_PUBLIC_URL || 'http://localhost:3001';
+const PORTAL_URL = process.env.PORTAL_URL || 'http://localhost:3000';
 const KEYCLOAK_EXTERNAL_URL = process.env.KEYCLOAK_EXTERNAL_URL || 'http://localhost:8080';
 const KEYCLOAK_INTERNAL_URL = process.env.KEYCLOAK_INTERNAL_URL || 'http://localhost:8080';
 const REALM = 'animal-help-app';
@@ -32,6 +34,27 @@ function base64url(buffer) {
     .replace(/=/g, '');
 }
 
+function statusLabel(s) {
+  const map = {
+    available: 'Do adopcji', 'Do adopcji': 'Do adopcji',
+    adopted: 'Zaadoptowane', Zaadoptowane: 'Zaadoptowane',
+    treatment: 'W trakcie leczenia', 'W trakcie leczenia': 'W trakcie leczenia',
+  };
+  return map[s] || s;
+}
+
+function statusClass(s) {
+  if (s === 'available' || s === 'Do adopcji') return 'available';
+  if (s === 'adopted' || s === 'Zaadoptowane') return 'adopted';
+  return 'treatment';
+}
+
+function adoptionStatusClass(s) {
+  if (s === 'Zaakceptowany') return 'adopted';
+  if (s === 'Odrzucony') return 'treatment';
+  return 'pending';
+}
+
 const pkceStore = {};
 
 app.use((req, res, next) => {
@@ -39,8 +62,86 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get('/', (req, res) => {
-  res.render('index');
+function authRequired(req, res, next) {
+  if (!req.session.token) return res.redirect('/login');
+  next();
+}
+
+app.get('/', async (req, res) => {
+  try {
+    const [animalsRes, statsRes] = await Promise.all([
+      axios.get(`${API_URL}/animals`),
+      axios.get(`${API_URL}/stats`),
+    ]);
+
+    const animals = animalsRes.data;
+    const apiStats = statsRes.data;
+
+    const stats = {
+      total: animals.length,
+      available: animals.filter(a => a.status === 'available' || a.status === 'Do adopcji').length,
+      adopted: apiStats.adopted,
+      volunteers: apiStats.volunteers,
+    };
+
+    res.render('index', {
+      animals: animals.slice(0, 10),
+      stats,
+      apiPublicUrl: API_PUBLIC_URL,
+      statusLabel,
+      statusClass,
+    });
+  } catch (err) {
+    console.error('Home fetch error:', err.message);
+    res.render('index', {
+      animals: [],
+      stats: { total: 0, available: 0, adopted: 0, volunteers: 0 },
+      apiPublicUrl: API_PUBLIC_URL,
+      statusLabel,
+      statusClass,
+    });
+  }
+});
+
+app.get('/animals', async (req, res) => {
+  try {
+    const animalsRes = await axios.get(`${API_URL}/animals`);
+    res.render('animals', {
+      animals: animalsRes.data,
+      apiPublicUrl: API_PUBLIC_URL,
+      portalUrl: PORTAL_URL,
+      statusLabel,
+      statusClass,
+    });
+  } catch (err) {
+    console.error('Animals fetch error:', err.message);
+    res.render('animals', {
+      animals: [],
+      apiPublicUrl: API_PUBLIC_URL,
+      portalUrl: PORTAL_URL,
+      statusLabel,
+      statusClass,
+    });
+  }
+});
+
+app.get('/my-adoptions', authRequired, async (req, res) => {
+  try {
+    const result = await axios.get(`${API_URL}/adoptions/my`, {
+      headers: { Authorization: `Bearer ${req.session.token}` },
+    });
+    res.render('my-adoptions', {
+      adoptions: result.data,
+      apiPublicUrl: API_PUBLIC_URL,
+      adoptionStatusClass,
+    });
+  } catch {
+    res.render('my-adoptions', {
+      adoptions: [],
+      apiPublicUrl: API_PUBLIC_URL,
+      adoptionStatusClass,
+    });
+  }
 });
 
 app.get('/login', (req, res) => {

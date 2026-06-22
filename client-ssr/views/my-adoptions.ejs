@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moje adopcje — Animal Help App</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="/" class="navbar-brand">
+        <img src="/logo.svg" alt="logo" width="32" height="32">
+        <span>Animal Help App</span>
+      </a>
+      <nav class="navbar-nav">
+        <a href="/animals">Zwierzęta</a>
+        <a href="/#adoption">Adopcja</a>
+        <a href="/#volunteer">Wolontariat</a>
+      </nav>
+      <div class="navbar-right">
+        <div class="avatar"><%= user.name.charAt(0).toUpperCase() %></div>
+        <span class="user-name"><%= user.name %></span>
+        <a href="/my-adoptions" class="btn-outline">Moje adopcje</a>
+        <a href="/logout" class="btn-primary">Wyloguj</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- CONTENT -->
+  <div class="page">
+    <h1 class="page-title">Moje adopcje</h1>
+    <p class="page-subtitle">Przeglądaj swoje wnioski adopcyjne i ich aktualny status.</p>
+
+    <% if (adoptions.length === 0) { %>
+      <div class="empty-state">
+        <i class="fa-solid fa-paw"></i>
+        <p>Nie masz jeszcze żadnych wniosków adopcyjnych.</p>
+        <a href="/animals" class="btn-primary">Przeglądaj zwierzęta</a>
+      </div>
+    <% } else { %>
+      <% adoptions.forEach(adoption => { %>
+        <div class="adoption-row">
+          <% if (adoption.animal_image) { %>
+            <img class="adoption-img" src="<%= apiPublicUrl %><%= adoption.animal_image %>" alt="<%= adoption.animal_name %>">
+          <% } else { %>
+            <div class="adoption-img" style="background: #f3f4f6; display:flex; align-items:center; justify-content:center; color:#d1d5db;">
+              <i class="fa-solid fa-paw"></i>
+            </div>
+          <% } %>
+          <div class="adoption-info">
+            <div class="adoption-animal"><%= adoption.animal_name %></div>
+            <div class="adoption-date">
+              Złożono · <%= new Date(adoption.created_at).toLocaleDateString('pl-PL', { day: '2-digit', month: 'long', year: 'numeric' }) %>
+            </div>
+          </div>
+          <span class="badge badge-<%= adoptionStatusClass(adoption.status) %>"><%= adoption.status %></span>
+        </div>
+      <% }) %>
+    <% } %>
+  </div>
+
+</body>
+</html>

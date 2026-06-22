@@ -92,6 +92,8 @@ services:
       CLIENT_SECRET: ${SSR_CLIENT_SECRET}
       REDIRECT_URI: http://localhost:3002/callback
       SESSION_SECRET: ${SESSION_SECRET:-dev-secret}
+      API_PUBLIC_URL: http://localhost:3001
+      PORTAL_URL: http://localhost:3000
     ports:
       - "3002:3002"
     depends_on:
