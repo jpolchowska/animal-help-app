@@ -1,0 +1,149 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  background: #f4f4f1;
+  color: #1c1c1a;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* TOPBAR */
+.topbar {
+  background: #2d4828;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+}
+.topbar-brand { color: #fff; font-size: 14px; font-weight: 600; }
+.topbar-time  { color: rgba(255,255,255,0.45); font-size: 13px; }
+
+/* PAGE HEADER */
+.page-header {
+  background: #fff;
+  border-bottom: 1px solid #e4e4e0;
+  padding: 24px 0;
+}
+.page-header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+.page-header h1 {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #1c1c1a;
+}
+
+/* CONTENT */
+.content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 32px 60px;
+}
+
+.section { margin-bottom: 24px; }
+.section-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #aaa;
+  margin-bottom: 12px;
+}
+
+/* GRIDY */
+.g4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* STAT CARDS */
+.stat-card {
+  background: #fff;
+  border: 1px solid #e4e4e0;
+  border-radius: 10px;
+  padding: 20px 22px;
+}
+.stat-num {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: #1c1c1a;
+  margin-bottom: 6px;
+}
+.stat-num.green { color: #387534; }
+.stat-lbl { font-size: 13px; color: #888; }
+
+/* KARTY SZCZEGÓŁÓW */
+.card {
+  background: #fff;
+  border: 1px solid #e4e4e0;
+  border-radius: 10px;
+  padding: 20px 22px;
+}
+.card-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1c1c1a;
+  margin-bottom: 16px;
+}
+.card-divider { height: 1px; background: #f0f0ec; margin: 14px 0; }
+
+/* BARY */
+.bar-row { margin-bottom: 14px; }
+.bar-row:last-child { margin-bottom: 0; }
+.bar-row-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+.bar-name  { font-size: 13px; color: #444; }
+.bar-count { font-size: 15px; font-weight: 700; color: #1c1c1a; }
+.bar-track { height: 6px; background: #f0f0ec; border-radius: 99px; overflow: hidden; }
+.bar-fill        { height: 100%; border-radius: 99px; }
+.bar-fill-green  { background: #4e7a4a; }
+.bar-fill-muted  { background: #82ae7f; }
+.bar-fill-light  { background: #a8c4a5; }
+
+/* DATA ROWS */
+.data-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #f7f7f4;
+  font-size: 13px;
+}
+.data-row:first-child { padding-top: 0; }
+.data-row:last-child  { border-bottom: none; padding-bottom: 0; }
+.dr-key { color: #777; }
+.dr-val { font-weight: 600; color: #1c1c1a; font-size: 14px; }
+.dr-val.green { color: #387534; }
+.dr-val.amber { color: #a07818; }
+.dr-val.red   { color: #a04828; }
+.dr-val.big   { font-size: 18px; }
+
+/* ROLE ROWS */
+.role-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #f7f7f4;
+  font-size: 13px;
+}
+.role-row:first-child { padding-top: 0; }
+.role-row:last-child  { border-bottom: none; padding-bottom: 0; }
+.role-left { display: flex; align-items: center; gap: 10px; }
+.dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.role-name { color: #555; }
+.role-num  { font-size: 14px; font-weight: 700; color: #1c1c1a; }
+
+/* TOKEN */
+.token-block { background: #1a2818; border-radius: 10px; padding: 18px 22px; margin-top: 24px; }
+.token-lbl { font-size: 10px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(255,255,255,0.22); margin-bottom: 8px; }
+.token-val { font-family: 'SF Mono','Fira Code','Courier New',monospace; font-size: 11px; color: #7ec87a; word-break: break-all; line-height: 1.7; }
+.token-foot { margin-top: 8px; font-size: 11px; color: rgba(255,255,255,0.16); }

@@ -102,6 +102,22 @@ services:
       keycloak:
         condition: service_started
 
+  client-b2b:
+    build: ./client-b2b
+    environment:
+      PORT: 3003
+      API_URL: http://backend:3001
+      KEYCLOAK_INTERNAL_URL: http://keycloak:8080
+      CLIENT_ID: b2b-client
+      CLIENT_SECRET: ${B2B_CLIENT_SECRET}
+    ports:
+      - "3003:3003"
+    depends_on:
+      backend:
+        condition: service_healthy
+      keycloak:
+        condition: service_started
+
 volumes:
   postgres_data:
   keycloak_postgres_data:
