@@ -2,8 +2,8 @@
 
 import { useEffect, useState, useRef } from "react";
 import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import interactionPlugin from "@fullcalendar/interaction";
+import dayGridPlugin from "@fullcalendar/daygrid/index.js";
+import interactionPlugin from "@fullcalendar/interaction/index.js";
 import { authFetch } from "@/utils/api";
 import styles from "./Volunteer.module.css";
 import { API_URL } from "@/utils/config";

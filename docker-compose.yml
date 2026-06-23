@@ -8,8 +8,8 @@ services:
       POSTGRES_DB: postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./backend/init.sql:/docker-entrypoint-initdb.d/01-init.sql
-      - ./backend/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql
+      - ./resource-server/init.sql:/docker-entrypoint-initdb.d/01-init.sql
+      - ./resource-server/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
@@ -47,14 +47,14 @@ services:
       keycloak-postgres:
         condition: service_healthy
 
-  backend:
-    build: ./backend
+  resource-server:
+    build: ./resource-server
     environment:
       DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/postgres
       KEYCLOAK_URL: http://keycloak:8080
       PORT: 3001
     volumes:
-      - ./backend/images:/app/images
+      - ./resource-server/images:/app/images
     ports:
       - "3001:3001"
     depends_on:
@@ -69,23 +69,23 @@ services:
       retries: 3
       start_period: 10s
 
-  frontend:
+  client-spa:
     build:
-      context: ./frontend
+      context: ./client-spa
       args:
         NEXT_PUBLIC_API_URL: http://localhost:3001
         NEXT_PUBLIC_KEYCLOAK_URL: http://localhost:8080
     ports:
       - "3000:3000"
     depends_on:
-      backend:
+      resource-server:
         condition: service_healthy
 
   client-ssr:
     build: ./client-ssr
     environment:
       PORT: 3002
-      API_URL: http://backend:3001
+      API_URL: http://resource-server:3001
       KEYCLOAK_EXTERNAL_URL: http://localhost:8080
       KEYCLOAK_INTERNAL_URL: http://keycloak:8080
       CLIENT_ID: ssr-client
@@ -97,7 +97,7 @@ services:
     ports:
       - "3002:3002"
     depends_on:
-      backend:
+      resource-server:
         condition: service_healthy
       keycloak:
         condition: service_started
@@ -106,14 +106,14 @@ services:
     build: ./client-b2b
     environment:
       PORT: 3003
-      API_URL: http://backend:3001
+      API_URL: http://resource-server:3001
       KEYCLOAK_INTERNAL_URL: http://keycloak:8080
       CLIENT_ID: b2b-client
       CLIENT_SECRET: ${B2B_CLIENT_SECRET}
     ports:
       - "3003:3003"
     depends_on:
-      backend:
+      resource-server:
         condition: service_healthy
       keycloak:
         condition: service_started
