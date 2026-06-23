@@ -83,15 +83,18 @@ async function authenticateToken(req, res, next) {
   }
 
   try {
-    const result = await pool.query("SELECT id FROM users WHERE email = $1", [payload.email]);
-    if (!result.rows[0]) {
-      return res.status(403).json({ error: "User not found" });
-    }
-
     const roles = payload.realm_access?.roles || [];
-    const role = roles.find(r => ["admin", "user", "volunteer"].includes(r)) || "user";
+    const role = ["admin", "volunteer", "user"].find(r => roles.includes(r)) || "user";
 
-    req.user = { id: result.rows[0].id, role };
+    const result = await pool.query(
+      `INSERT INTO users (email, password_hash, role)
+       VALUES ($1, '', $2)
+       ON CONFLICT (email) DO UPDATE SET last_login_at = NOW()
+       RETURNING id`,
+      [payload.email, role]
+    );
+
+    req.user = { id: result.rows[0].id, role, email: payload.email };
     next();
   } catch {
     res.status(500).json({ error: "Internal server error" });
@@ -395,11 +398,52 @@ app.post(
   authenticateToken,
   requireRole(["user"]),
   async (req, res) => {
+    const REALM = "animal-help-app";
+    const adminUser = process.env.KEYCLOAK_ADMIN || "admin";
+    const adminPass = process.env.KEYCLOAK_ADMIN_PASSWORD || "admin";
+
     try {
-      await pool.query(
-        "UPDATE users SET role = 'volunteer' WHERE id = $1",
-        [req.user.id]
+      const tokenParams = new URLSearchParams();
+      tokenParams.append("grant_type", "password");
+      tokenParams.append("client_id", "admin-cli");
+      tokenParams.append("username", adminUser);
+      tokenParams.append("password", adminPass);
+
+      const tokenRes = await fetch(`${KEYCLOAK_URL}/realms/master/protocol/openid-connect/token`, {
+        method: "POST",
+        body: tokenParams,
+      });
+      const { access_token: adminToken } = await tokenRes.json();
+
+      const usersRes = await fetch(
+        `${KEYCLOAK_URL}/admin/realms/${REALM}/users?email=${encodeURIComponent(req.user.email)}&exact=true`,
+        { headers: { Authorization: `Bearer ${adminToken}` } }
       );
+      const kcUsers = await usersRes.json();
+      const kcUser = kcUsers[0];
+      if (!kcUser) return res.status(404).json({ error: "User not found in Keycloak" });
+
+      const [volunteerRoleRes, userRoleRes] = await Promise.all([
+        fetch(`${KEYCLOAK_URL}/admin/realms/${REALM}/roles/volunteer`, { headers: { Authorization: `Bearer ${adminToken}` } }),
+        fetch(`${KEYCLOAK_URL}/admin/realms/${REALM}/roles/user`, { headers: { Authorization: `Bearer ${adminToken}` } }),
+      ]);
+      const volunteerRole = await volunteerRoleRes.json();
+      const userRole = await userRoleRes.json();
+
+      await fetch(`${KEYCLOAK_URL}/admin/realms/${REALM}/users/${kcUser.id}/role-mappings/realm`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${adminToken}`, "Content-Type": "application/json" },
+        body: JSON.stringify([{ id: volunteerRole.id, name: volunteerRole.name }]),
+      });
+
+      await fetch(`${KEYCLOAK_URL}/admin/realms/${REALM}/users/${kcUser.id}/role-mappings/realm`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${adminToken}`, "Content-Type": "application/json" },
+        body: JSON.stringify([{ id: userRole.id, name: userRole.name }]),
+      });
+
+      await pool.query("UPDATE users SET role = 'volunteer' WHERE id = $1", [req.user.id]);
+
       res.json({ message: "You are now a volunteer" });
     } catch (err) {
       res.status(500).json({ error: err.message });

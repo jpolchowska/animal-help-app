@@ -3,18 +3,14 @@
 import styles from "./Volunteer.module.css";
 import { authFetch } from "@/utils/api";
 import { API_URL } from "@/utils/config";
+import { getKeycloakInstance } from "@/utils/keycloak";
 
 export default function VolunteerJoin({ onBecameVolunteer }) {
   async function join() {
-    await authFetch(`${API_URL}/volunteer/join`, { method: "POST" });
-    const stored = localStorage.getItem("auth");
-    if (stored) {
-      const auth = JSON.parse(stored);
-      auth.user.role = "volunteer";
-      localStorage.setItem("auth", JSON.stringify(auth));
+    const res = await authFetch(`${API_URL}/volunteer/join`, { method: "POST" });
+    if (res?.ok) {
+      getKeycloakInstance()?.logout({ redirectUri: window.location.origin });
     }
-    window.dispatchEvent(new Event("auth-changed"));
-    onBecameVolunteer();
   }
 
   return (

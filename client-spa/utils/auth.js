@@ -3,7 +3,7 @@ import { getKeycloakInstance } from "@/utils/keycloak";
 function extractRole(parsed) {
   if (!parsed) return null;
   const roles = parsed.realm_access?.roles || [];
-  return roles.find(r => ["admin", "user", "volunteer"].includes(r)) || null;
+  return roles.find(r => ["admin", "user", "volunteer"].includes(r)) || "user";
 }
 
 export function getRole() {
