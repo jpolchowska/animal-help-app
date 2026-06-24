@@ -9,7 +9,8 @@ const ITEMS = [
   { icon: "fa-paw", label: "Zwierzęta", href: "/animals" },
   { icon: "fa-heart", label: "Adopcje", href: "/adoptions" },
   { icon: "fa-handshake-angle", label: "Wolontariat", href: "/volunteer" },
-  { icon: "fa-user", label: "Profil", href: "/profile" }
+  { icon: "fa-user", label: "Profil", href: "/profile" },
+  { icon: "fa-gear", label: "Ustawienia", href: "http://localhost:8080/realms/animal-help-app/account", external: true },
 ];
 
 export default function Sidebar() {
@@ -23,6 +24,21 @@ export default function Sidebar() {
             item.href === "/"
               ? pathname === "/"
               : pathname.startsWith(item.href);
+
+          if (item.external) {
+            return (
+              <a
+                key={item.href}
+                href={item.href}
+                className={styles.item}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <i className={`fa-solid ${item.icon}`} />
+                <span className={styles.label}>{item.label}</span>
+              </a>
+            );
+          }
 
           return (
             <Link

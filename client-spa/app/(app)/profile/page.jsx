@@ -15,21 +15,26 @@ function formatDate(date) {
 
 const ROLE_LABELS = { admin: "Administrator", volunteer: "Wolontariusz", user: "Użytkownik" };
 
+const KEYCLOAK_ACCOUNT_URL = "http://localhost:8080/realms/animal-help-app/account";
+
 const QUICK_LINKS = {
   admin: [
-    { icon: "fa-paw",             label: "Zwierzęta",    href: "/animals"   },
-    { icon: "fa-heart",           label: "Adopcje",       href: "/adoptions" },
-    { icon: "fa-handshake-angle", label: "Wolontariat",   href: "/volunteer" },
+    { icon: "fa-paw",             label: "Zwierzęta",        href: "/animals"          },
+    { icon: "fa-heart",           label: "Adopcje",           href: "/adoptions"        },
+    { icon: "fa-handshake-angle", label: "Wolontariat",       href: "/volunteer"        },
+    { icon: "fa-gear",            label: "Ustawienia konta",  href: KEYCLOAK_ACCOUNT_URL, external: true },
   ],
   user: [
-    { icon: "fa-paw",             label: "Przeglądaj zwierzęta", href: "/animals"   },
-    { icon: "fa-heart",           label: "Moje adopcje",          href: "/adoptions" },
-    { icon: "fa-handshake-angle", label: "Wolontariat",            href: "/volunteer" },
+    { icon: "fa-paw",             label: "Przeglądaj zwierzęta", href: "/animals"          },
+    { icon: "fa-heart",           label: "Moje adopcje",          href: "/adoptions"        },
+    { icon: "fa-handshake-angle", label: "Wolontariat",            href: "/volunteer"        },
+    { icon: "fa-gear",            label: "Ustawienia konta",       href: KEYCLOAK_ACCOUNT_URL, external: true },
   ],
   volunteer: [
-    { icon: "fa-paw",             label: "Zwierzęta",     href: "/animals"   },
-    { icon: "fa-handshake-angle", label: "Moje zadania",  href: "/volunteer" },
-    { icon: "fa-heart",           label: "Adopcje",        href: "/adoptions" },
+    { icon: "fa-paw",             label: "Zwierzęta",        href: "/animals"          },
+    { icon: "fa-handshake-angle", label: "Moje zadania",     href: "/volunteer"        },
+    { icon: "fa-heart",           label: "Adopcje",           href: "/adoptions"        },
+    { icon: "fa-gear",            label: "Ustawienia konta",  href: KEYCLOAK_ACCOUNT_URL, external: true },
   ],
 };
 
@@ -109,7 +114,15 @@ export default function ProfilePage() {
         <div className={styles.card}>
           <p className={styles.sectionLabel}>Szybkie akcje</p>
           <div className={styles.linksList}>
-            {links.map((l) => (
+            {links.map((l) => l.external ? (
+              <a key={l.href} href={l.href} className={styles.linkRow} target="_blank" rel="noopener noreferrer">
+                <div className={styles.linkIcon}>
+                  <i className={`fa-solid ${l.icon}`} />
+                </div>
+                <span className={styles.linkLabel}>{l.label}</span>
+                <i className={`fa-solid fa-chevron-right ${styles.linkChevron}`} />
+              </a>
+            ) : (
               <Link key={l.href} href={l.href} className={styles.linkRow}>
                 <div className={styles.linkIcon}>
                   <i className={`fa-solid ${l.icon}`} />
