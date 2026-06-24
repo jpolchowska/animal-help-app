@@ -10,7 +10,7 @@ Aplikacja wieloserwisowa dla schroniska dla zwierząt — zarządzanie adopcjami
 - dashboard z statystykami schroniska
 - obsługa zdjęć — upload przy dodawaniu zwierzęcia, przechowywanie na wolumenie
 - logowanie i rejestracja przez Keycloak (OAuth2 + OpenID Connect)
-- logowanie przez Google OAuth2 z podglądem profilu (Google People API)
+- logowanie przez Google OAuth2 z podglądem profilu
 - dwuskładnikowe uwierzytelnianie (2FA / OTP)
 
 ## Stack
@@ -24,8 +24,6 @@ Aplikacja wieloserwisowa dla schroniska dla zwierząt — zarządzanie adopcjami
 - **Infrastruktura** — Docker Compose
 
 ## Uruchomienie
-
-### Docker Compose
 
 ```bash
 cp .env.example .env
@@ -42,17 +40,15 @@ GOOGLE_CLIENT_ID=         # Client ID z Google Cloud Console
 GOOGLE_CLIENT_SECRET=     # Client Secret z Google Cloud Console
 ```
 
+## Serwisy
+
 | Serwis | URL |
 |---|---|
 | SPA | http://localhost:3000 |
 | Resource Server | http://localhost:3001 |
 | SSR | http://localhost:3002 |
-| B2B (raport) | http://localhost:3003 |
+| B2B | http://localhost:3003 |
 | Keycloak | http://localhost:8080 |
-
-### Kubernetes
-
-Konfiguracja klastra dostępna w [docs/KUBERNETES.md](docs/KUBERNETES.md) — pozostałości po poprzedniej wersji aplikacji, chwilowo niedziałające.
 
 ## Struktura projektu
 
@@ -88,4 +84,9 @@ animal-help-app/
 | client-b2b | Confidential Client | Client Credentials |
 
 Szczegółowa dokumentacja implementacji OAuth2: [docs/OAUTH2.md](docs/OAUTH2.md).
+
+## Elementy wymagające aktualizacji
+
+- **Kubernetes** — konfiguracja klastra w [docs/KUBERNETES.md](docs/KUBERNETES.md) pochodzi z poprzedniej wersji aplikacji i jest nieaktualna; wymaga dostosowania do obecnej architektury wieloserwisowej
+- **CI/CD** — pipeline GitHub Actions jest tymczasowo wyłączony; wymaga przepisania pod aktualny stack i środowisko
 

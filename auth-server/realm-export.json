@@ -1570,7 +1570,20 @@
     "xXSSProtection": "1; mode=block",
     "strictTransportSecurity": "max-age=31536000; includeSubDomains"
   },
-  "smtpServer": {},
+  "smtpServer": {
+    "replyToDisplayName": "",
+    "starttls": "true",
+    "auth": "true",
+    "envelopeFrom": "",
+    "ssl": "false",
+    "password": "**********",
+    "port": "587",
+    "host": "sandbox.smtp.mailtrap.io",
+    "replyTo": "",
+    "from": "noreply@animalhelp.app",
+    "fromDisplayName": "Animal Help App",
+    "user": "84b1fa39863121"
+  },
   "eventsEnabled": false,
   "eventsListeners": [
     "jboss-logging"
