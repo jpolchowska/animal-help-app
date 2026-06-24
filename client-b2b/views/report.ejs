@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Raport schroniska</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <span class="topbar-brand">Animal Help App</span>
+  <span class="topbar-time"><%= new Date(report.generatedAt).toLocaleString('pl-PL') %></span>
+</div>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <h1>Raport Operacyjny Schroniska</h1>
+  </div>
+</div>
+
+<div class="content">
+  <%
+    const speciesEntries = Object.entries(species);
+    const animalsTotal   = report.animals.total;
+    const adoptionTotal  = report.adoptions.total;
+    const bySex          = report.animals.bySex || [];
+    const maxSex         = Math.max(...bySex.map(r => r.count), 1);
+    const maxSpecies     = Math.max(...speciesEntries.map(([,s]) => s.total), 1);
+  %>
+
+  <!-- RZĄD 1: Podopieczni -->
+  <div class="section">
+    <div class="section-label">Podopieczni</div>
+    <div class="g4">
+      <div class="stat-card">
+        <div class="stat-num"><%= animalsTotal %></div>
+        <div class="stat-lbl">Łącznie</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num green"><%= derived.available %></div>
+        <div class="stat-lbl">Do adopcji</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num"><%= derived.adopted %></div>
+        <div class="stat-lbl">Zaadoptowanych</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num"><%= derived.treatment %></div>
+        <div class="stat-lbl">W leczeniu</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RZĄD 2: Społeczność -->
+  <div class="section">
+    <div class="section-label">Społeczność</div>
+    <div class="g4">
+      <div class="stat-card">
+        <div class="stat-num"><%= report.users.total %></div>
+        <div class="stat-lbl">Użytkowników</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num"><%= report.users.byRole['volunteer'] || 0 %></div>
+        <div class="stat-lbl">Wolontariuszy</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num"><%= report.tasks %></div>
+        <div class="stat-lbl">Zadań wolontariackich</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num green"><%= report.adoptions.successRate %>%</div>
+        <div class="stat-lbl">Skuteczność adopcji</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RZĄD 3: Zwierzęta — 4 osobne karty -->
+  <div class="section">
+    <div class="section-label">Zwierzęta</div>
+    <div class="g4">
+
+      <!-- Podział na gatunek -->
+      <div class="card">
+        <div class="card-title">Podział na gatunek</div>
+        <% speciesEntries.forEach(([name, s]) => { %>
+          <div class="bar-row">
+            <div class="bar-row-head">
+              <span class="bar-name"><%= name %></span>
+              <span class="bar-count"><%= s.total %></span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill bar-fill-green" data-pct="<%= Math.round((s.total/maxSpecies)*100) %>"></div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+
+      <!-- Podział na płeć (ogółem) -->
+      <div class="card">
+        <div class="card-title">Podział na płeć</div>
+        <% bySex.forEach(r => { %>
+          <div class="bar-row">
+            <div class="bar-row-head">
+              <span class="bar-name"><%= r.sex %></span>
+              <span class="bar-count"><%= r.count %></span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill bar-fill-muted" data-pct="<%= Math.round((r.count/maxSex)*100) %>"></div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+
+      <!-- Płeć per gatunek — karta 1 i 2 -->
+      <% speciesEntries.slice(0, 2).forEach(([name, s]) => { %>
+        <% const sexT = (s.male || 0) + (s.female || 0); %>
+        <div class="card">
+          <div class="card-title">Płeć — <%= name %></div>
+          <div class="bar-row">
+            <div class="bar-row-head">
+              <span class="bar-name">Samce</span>
+              <span class="bar-count"><%= s.male || 0 %></span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill bar-fill-green" data-pct="<%= sexT>0?Math.round((s.male||0)/sexT*100):0 %>"></div>
+            </div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-row-head">
+              <span class="bar-name">Samice</span>
+              <span class="bar-count"><%= s.female || 0 %></span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill bar-fill-light" data-pct="<%= sexT>0?Math.round((s.female||0)/sexT*100):0 %>"></div>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+
+    </div>
+  </div>
+
+  <!-- RZĄD 4: Adopcje + Użytkownicy -->
+  <div class="section">
+    <div class="g2">
+
+      <div class="card">
+        <div class="card-title">Adopcje</div>
+        <div class="data-row">
+          <span class="dr-key">Złożone</span>
+          <span class="dr-val"><%= report.adoptions.total %></span>
+        </div>
+        <div class="data-row">
+          <span class="dr-key">Oczekujące</span>
+          <span class="dr-val amber"><%= report.adoptions.pending %></span>
+        </div>
+        <div class="data-row">
+          <span class="dr-key">Zaakceptowane</span>
+          <span class="dr-val green"><%= report.adoptions.approved %></span>
+        </div>
+        <div class="data-row">
+          <span class="dr-key">Odrzucone</span>
+          <span class="dr-val red"><%= report.adoptions.rejected %></span>
+        </div>
+        <div class="card-divider"></div>
+        <div class="data-row">
+          <span class="dr-key">Skuteczność adopcji</span>
+          <span class="dr-val green big"><%= report.adoptions.successRate %>%</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Użytkownicy</div>
+        <div class="role-row">
+          <div class="role-left">
+            <div class="dot" style="background:#387534"></div>
+            <span class="role-name">Administratorzy</span>
+          </div>
+          <span class="role-num"><%= report.users.byRole['admin'] || 0 %></span>
+        </div>
+        <div class="role-row">
+          <div class="role-left">
+            <div class="dot" style="background:#82ae7f"></div>
+            <span class="role-name">Wolontariusze</span>
+          </div>
+          <span class="role-num"><%= report.users.byRole['volunteer'] || 0 %></span>
+        </div>
+        <div class="role-row">
+          <div class="role-left">
+            <div class="dot" style="background:#d0d0cc"></div>
+            <span class="role-name">Użytkownicy</span>
+          </div>
+          <span class="role-num"><%= report.users.byRole['user'] || 0 %></span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TOKEN -->
+  <div class="token-block">
+    <div class="token-lbl">Bearer Access Token · grant_type: client_credentials</div>
+    <div class="token-val"><%= fullToken %></div>
+    <div class="token-foot">zweryfikuj na jwt.io · azp: <%= report.client %></div>
+  </div>
+
+</div>
+<script>
+  document.querySelectorAll('[data-pct]').forEach(function(el) {
+    el.style.width = el.getAttribute('data-pct') + '%';
+  });
+</script>
+</body>
+</html>

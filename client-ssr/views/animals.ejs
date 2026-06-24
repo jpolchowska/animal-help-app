@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zwierzęta — Animal Help App</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="/" class="navbar-brand">
+        <img src="/logo.svg" alt="logo" width="32" height="32">
+        <span>Animal Help App</span>
+      </a>
+      <nav class="navbar-nav">
+        <a href="/animals">Zwierzęta</a>
+        <a href="/#adoption">Adopcja</a>
+        <a href="/#volunteer">Wolontariat</a>
+        <% if (user) { %><a href="/my-adoptions">Moje adopcje</a><% } %>
+      </nav>
+      <div class="navbar-right">
+        <% if (user) { %>
+          <div class="navbar-profile">
+            <div class="avatar"><%= user.name.charAt(0).toUpperCase() %></div>
+            <span class="user-name"><%= user.name %></span>
+          </div>
+          <div class="navbar-divider"></div>
+          <a href="/logout" class="btn-nav-login">Wyloguj</a>
+        <% } else { %>
+          <a href="/login" class="btn-nav-login">
+            <i class="fa-solid fa-user"></i> Zaloguj się
+          </a>
+        <% } %>
+      </div>
+    </div>
+  </nav>
+
+  <!-- CONTENT -->
+  <div class="animals-page">
+    <h1 class="page-title">Zwierzęta do adopcji</h1>
+    <p class="page-subtitle">Poznaj naszych podopiecznych szukających kochającego domu.</p>
+
+    <div class="portal-banner">
+      <p><strong>Chcesz adoptować?</strong> Zaloguj się w naszym panelu, aby złożyć wniosek adopcyjny.</p>
+      <a href="<%= portalUrl %>" target="_blank" class="btn-primary btn-sm">
+        Przejdź do panelu <i class="fa-solid fa-arrow-up-right-from-square"></i>
+      </a>
+    </div>
+
+    <% if (animals.length > 0) { %>
+      <div class="animals-grid">
+        <% animals.forEach(animal => { %>
+          <div class="animal-card">
+            <div class="animal-photo">
+              <% if (animal.image) { %>
+                <img src="<%= apiPublicUrl %><%= animal.image %>" alt="<%= animal.name %>">
+              <% } %>
+            </div>
+            <div class="animal-content">
+              <div class="animal-name"><%= animal.name %></div>
+              <div class="animal-meta">
+                <span class="badge badge-type"><%= animal.type %></span>
+                <span class="badge badge-<%= statusClass(animal.status) %>"><%= statusLabel(animal.status) %></span>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <div class="empty-state">
+        <i class="fa-solid fa-paw"></i>
+        <p>Brak zwierząt w bazie.</p>
+        <a href="/" class="btn-primary">Wróć na stronę główną</a>
+      </div>
+    <% } %>
+  </div>
+
+</body>
+</html>

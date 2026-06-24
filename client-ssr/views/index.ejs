@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Animal Help App — Schronisko dla zwierząt</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="/" class="navbar-brand">
+        <img src="/logo.svg" alt="logo" width="32" height="32">
+        <span>Animal Help App</span>
+      </a>
+      <nav class="navbar-nav">
+        <a href="#animals">Zwierzęta</a>
+        <a href="#adoption">Adopcja</a>
+        <a href="#volunteer">Wolontariat</a>
+        <% if (user) { %><a href="/my-adoptions">Moje adopcje</a><% } %>
+      </nav>
+      <div class="navbar-right">
+        <% if (user) { %>
+          <div class="navbar-profile">
+            <div class="avatar"><%= user.name.charAt(0).toUpperCase() %></div>
+            <span class="user-name"><%= user.name %></span>
+          </div>
+          <div class="navbar-divider"></div>
+          <a href="/logout" class="btn-nav-login">Wyloguj</a>
+        <% } else { %>
+          <a href="/login" class="btn-nav-login">
+            <i class="fa-solid fa-user"></i> Zaloguj się
+          </a>
+          <a href="/google" class="btn-nav-login" style="margin-left:8px;">
+            <i class="fa-brands fa-google"></i> Google
+          </a>
+        <% } %>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-left">
+        <span class="hero-tag">Razem tworzymy lepszy świat dla zwierząt</span>
+        <h1 class="hero-title">Pomagamy zwierzętom<br>znaleźć kochający dom</h1>
+        <p class="hero-sub">Adoptuj, pomagaj i wspieraj lokalne schroniska.<br>Każde zwierzę zasługuje na drugą szansę.</p>
+        <div class="hero-ctas">
+          <a href="/animals" class="btn-primary">Przeglądaj zwierzęta</a>
+          <% if (!user) { %>
+            <a href="/login" class="btn-outline-green">Zaloguj się</a>
+          <% } else { %>
+            <a href="/my-adoptions" class="btn-outline-green">Moje adopcje</a>
+          <% } %>
+        </div>
+      </div>
+      <div class="hero-right">
+        <img src="/hero-animals.png" alt="Pies i kot" class="hero-img">
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="stats-section">
+    <div class="container">
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-icon" style="background: var(--c-teal-bg); color: var(--c-teal);">
+            <i class="fa-solid fa-paw"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value"><%= stats.total %></span>
+            <span class="stat-label">Zwierząt w bazie</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: var(--c-blue-bg); color: var(--c-blue);">
+            <i class="fa-solid fa-heart"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value"><%= stats.available %></span>
+            <span class="stat-label">Do adopcji</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: var(--c-purple-bg); color: var(--c-purple);">
+            <i class="fa-solid fa-house-chimney"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value"><%= stats.adopted %></span>
+            <span class="stat-label">Zaadoptowanych</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: var(--c-orange-bg); color: var(--c-orange);">
+            <i class="fa-solid fa-people-group"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value"><%= stats.volunteers %></span>
+            <span class="stat-label">Wolontariuszy</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ANIMALS -->
+  <section class="section-animals" id="animals">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Nasi podopieczni</h2>
+      </div>
+      <% if (animals.length > 0) { %>
+        <div class="animals-scroll">
+          <% animals.forEach(animal => { %>
+            <div class="animal-card">
+              <div class="animal-photo">
+                <% if (animal.image) { %>
+                  <img src="<%= apiPublicUrl %><%= animal.image %>" alt="<%= animal.name %>">
+                <% } %>
+              </div>
+              <div class="animal-content">
+                <div class="animal-name"><%= animal.name %></div>
+                <div class="animal-meta">
+                  <span class="badge badge-type"><%= animal.type %></span>
+                  <span class="badge badge-<%= statusClass(animal.status) %>"><%= statusLabel(animal.status) %></span>
+                </div>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      <% } %>
+      <div class="see-all-wrap">
+        <a href="/animals" class="btn-outline">
+          Zobacz wszystkie zwierzęta <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="steps-section" id="adoption">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Jak działa adopcja?</h2>
+      </div>
+      <div class="steps-grid">
+        <div class="step">
+          <div class="step-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
+          <div class="step-title">1. Znajdź zwierzę</div>
+          <div class="step-desc">Przeglądaj profile zwierząt i wybierz swojego przyszłego przyjaciela.</div>
+        </div>
+        <div class="step">
+          <div class="step-circle"><i class="fa-solid fa-file-lines"></i></div>
+          <div class="step-title">2. Wyślij zgłoszenie</div>
+          <div class="step-desc">Wypełnij formularz adopcyjny i opowiedz nam o sobie.</div>
+        </div>
+        <div class="step">
+          <div class="step-circle"><i class="fa-solid fa-handshake"></i></div>
+          <div class="step-title">3. Poznaj pupila</div>
+          <div class="step-desc">Umów się na spotkanie i poznaj zwierzaka w schronisku.</div>
+        </div>
+        <div class="step">
+          <div class="step-circle"><i class="fa-solid fa-heart"></i></div>
+          <div class="step-title">4. Adoptuj</div>
+          <div class="step-desc">Podpisz umowę i podaruj zwierzęciu nowy, kochający dom.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VOLUNTEER -->
+  <section class="volunteer-section" id="volunteer">
+    <div class="container">
+      <div class="volunteer-inner">
+        <div>
+          <span class="volunteer-tag">Wolontariat</span>
+          <h2 class="volunteer-title">Pomóż nam pomagać zwierzętom</h2>
+          <p class="volunteer-sub">Zostań wolontariuszem i wspieraj schronisko każdego dnia. Twoja pomoc ma ogromne znaczenie dla zwierząt, które czekają na dom.</p>
+          <a href="/login" class="btn-primary">
+            Zostań wolontariuszem
+          </a>
+        </div>
+        <div class="volunteer-activities">
+          <div class="volunteer-activity">
+            <div class="volunteer-activity-icon" style="background: var(--c-teal-bg); color: var(--c-teal);">
+              <i class="fa-solid fa-bowl-food"></i>
+            </div>
+            <div>
+              <div class="volunteer-activity-title">Karmienie zwierząt</div>
+              <div class="volunteer-activity-desc">Pomoc w codziennym karmieniu i pojeniu podopiecznych</div>
+            </div>
+          </div>
+          <div class="volunteer-activity">
+            <div class="volunteer-activity-icon" style="background: var(--c-blue-bg); color: var(--c-blue);">
+              <i class="fa-solid fa-person-walking-arrow-right"></i>
+            </div>
+            <div>
+              <div class="volunteer-activity-title">Spacery z psami</div>
+              <div class="volunteer-activity-desc">Regularne spacery i socjalizacja psów ze schroniska</div>
+            </div>
+          </div>
+          <div class="volunteer-activity">
+            <div class="volunteer-activity-icon" style="background: var(--c-purple-bg); color: var(--c-purple);">
+              <i class="fa-solid fa-camera"></i>
+            </div>
+            <div>
+              <div class="volunteer-activity-title">Promocja adopcji</div>
+              <div class="volunteer-activity-desc">Zdjęcia, posty i pomoc w znajdowaniu domów dla zwierząt</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="final-cta">
+    <div class="final-cta-inner">
+      <div class="final-cta-left">
+        <h2>Dołącz do naszej społeczności</h2>
+        <p>Razem możemy więcej. Adoptuj, pomagaj, udostępniaj<br>i twórz lepszy świat dla zwierząt.</p>
+        <div class="cta-buttons">
+          <% if (!user) { %>
+            <a href="/login" class="btn-primary">Dołącz do nas</a>
+            <a href="/animals" class="btn-outline">Przeglądaj zwierzęta</a>
+          <% } else { %>
+            <a href="/my-adoptions" class="btn-primary">Moje adopcje</a>
+            <a href="/animals" class="btn-outline">Przeglądaj zwierzęta</a>
+          <% } %>
+        </div>
+      </div>
+      <div class="final-cta-img">
+        <img src="/cta-animals.png" alt="Pies i kot">
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-brand">
+            <img src="/logo.svg" alt="logo" width="28" height="28">
+            <span>Animal Help App</span>
+          </div>
+          <p class="footer-desc">Tworzymy lepszą przyszłość dla zwierząt.<br>Dziękujemy, że jesteś z nami.</p>
+          <div class="footer-socials">
+            <a><i class="fa-brands fa-facebook-f"></i></a>
+            <a><i class="fa-brands fa-instagram"></i></a>
+            <a><i class="fa-brands fa-youtube"></i></a>
+          </div>
+        </div>
+        <div>
+          <div class="footer-heading">Nawigacja</div>
+          <div class="footer-links">
+            <a>O nas</a>
+            <a>Zwierzęta</a>
+            <a>Wolontariat</a>
+            <a>Kontakt</a>
+          </div>
+        </div>
+        <div>
+          <div class="footer-heading">Pomoc</div>
+          <div class="footer-links">
+            <a>FAQ</a>
+            <a>Jak adoptować?</a>
+            <a>Regulamin</a>
+            <a>Polityka prywatności</a>
+          </div>
+        </div>
+        <div>
+          <div class="footer-heading">Kontakt</div>
+          <div class="footer-contact-item">
+            <i class="fa-solid fa-envelope"></i>
+            kontakt@animalhelp.app
+          </div>
+          <div class="footer-contact-item">
+            <i class="fa-solid fa-phone"></i>
+            +48 123 456 789
+          </div>
+          <div class="footer-contact-item">
+            <i class="fa-solid fa-location-dot"></i>
+            ul. Schroniskowa 1<br>81-123 Gdynia
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span class="footer-copy">© 2026 Animal Help App. Wszelkie prawa zastrzeżone.</span>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

@@ -8,27 +8,64 @@ services:
       POSTGRES_DB: postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./backend/init.sql:/docker-entrypoint-initdb.d/01-init.sql
-      - ./backend/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql
+      - ./resource-server/init.sql:/docker-entrypoint-initdb.d/01-init.sql
+      - ./resource-server/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
       timeout: 5s
       retries: 5
 
-  backend:
-    build: ./backend
+  keycloak-postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: secret
+    volumes:
+      - keycloak_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U keycloak"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0
+    command: start-dev --import-realm
+    volumes:
+      - ./auth-server/realm-export.json:/opt/keycloak/data/import/realm-export.json
+    environment:
+      KC_DB: postgres
+      KC_DB_URL_HOST: keycloak-postgres
+      KC_DB_URL_DATABASE: keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: secret
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8080:8080"
+    depends_on:
+      keycloak-postgres:
+        condition: service_healthy
+
+  resource-server:
+    build: ./resource-server
     environment:
       DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/postgres
-      JWT_SECRET: ${JWT_SECRET}
+      KEYCLOAK_URL: http://keycloak:8080
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
       PORT: 3001
     volumes:
-      - ./backend/images:/app/images
+      - ./resource-server/images:/app/images
     ports:
       - "3001:3001"
     depends_on:
       postgres:
         condition: service_healthy
+      keycloak:
+        condition: service_started
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://localhost:3001/healthz || exit 1"]
       interval: 10s
@@ -36,16 +73,58 @@ services:
       retries: 3
       start_period: 10s
 
-  frontend:
+  client-spa:
     build:
-      context: ./frontend
+      context: ./client-spa
       args:
         NEXT_PUBLIC_API_URL: http://localhost:3001
+        NEXT_PUBLIC_KEYCLOAK_URL: http://localhost:8080
     ports:
       - "3000:3000"
     depends_on:
-      backend:
+      resource-server:
         condition: service_healthy
+
+  client-ssr:
+    build: ./client-ssr
+    environment:
+      PORT: 3002
+      API_URL: http://resource-server:3001
+      KEYCLOAK_EXTERNAL_URL: http://localhost:8080
+      KEYCLOAK_INTERNAL_URL: http://keycloak:8080
+      CLIENT_ID: ssr-client
+      CLIENT_SECRET: ${SSR_CLIENT_SECRET}
+      REDIRECT_URI: http://localhost:3002/callback
+      SESSION_SECRET: ${SESSION_SECRET:-dev-secret}
+      API_PUBLIC_URL: http://localhost:3001
+      PORTAL_URL: http://localhost:3000
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      GOOGLE_REDIRECT_URI: http://localhost:3002/google/callback
+    ports:
+      - "3002:3002"
+    depends_on:
+      resource-server:
+        condition: service_healthy
+      keycloak:
+        condition: service_started
+
+  client-b2b:
+    build: ./client-b2b
+    environment:
+      PORT: 3003
+      API_URL: http://resource-server:3001
+      KEYCLOAK_INTERNAL_URL: http://keycloak:8080
+      CLIENT_ID: b2b-client
+      CLIENT_SECRET: ${B2B_CLIENT_SECRET}
+    ports:
+      - "3003:3003"
+    depends_on:
+      resource-server:
+        condition: service_healthy
+      keycloak:
+        condition: service_started
 
 volumes:
   postgres_data:
+  keycloak_postgres_data:
