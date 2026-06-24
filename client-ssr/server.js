@@ -24,6 +24,10 @@ const CLIENT_ID = process.env.CLIENT_ID || 'ssr-client';
 const CLIENT_SECRET = process.env.CLIENT_SECRET || '';
 const REDIRECT_URI = process.env.REDIRECT_URI || 'http://localhost:3002/callback';
 
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || 'http://localhost:3002/google/callback';
+
 const AUTH_ENDPOINT = `${KEYCLOAK_EXTERNAL_URL}/realms/${REALM}/protocol/openid-connect/auth`;
 const TOKEN_ENDPOINT = `${KEYCLOAK_INTERNAL_URL}/realms/${REALM}/protocol/openid-connect/token`;
 
@@ -193,6 +197,52 @@ app.get('/callback', async (req, res) => {
 app.get('/logout', (req, res) => {
   req.session.destroy();
   res.redirect('/');
+});
+
+app.get('/google', (req, res) => {
+  const state = crypto.randomBytes(16).toString('hex');
+  req.session.googleState = state;
+
+  const authUrl = 'https://accounts.google.com/o/oauth2/v2/auth?' + new URLSearchParams({
+    client_id: GOOGLE_CLIENT_ID,
+    redirect_uri: GOOGLE_REDIRECT_URI,
+    response_type: 'code',
+    scope: 'openid profile email',
+    state,
+    access_type: 'offline',
+  });
+
+  res.redirect(authUrl);
+});
+
+app.get('/google/callback', async (req, res) => {
+  const { code, state } = req.query;
+
+  if (state !== req.session.googleState) {
+    return res.redirect('/');
+  }
+  delete req.session.googleState;
+
+  try {
+    const tokenRes = await axios.post('https://oauth2.googleapis.com/token', new URLSearchParams({
+      grant_type: 'authorization_code',
+      code,
+      client_id: GOOGLE_CLIENT_ID,
+      client_secret: GOOGLE_CLIENT_SECRET,
+      redirect_uri: GOOGLE_REDIRECT_URI,
+    }));
+
+    const { access_token } = tokenRes.data;
+
+    const profileRes = await axios.get('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
+
+    res.render('google-profile', { profile: profileRes.data });
+  } catch (err) {
+    console.error('Google OAuth error:', err.message);
+    res.redirect('/');
+  }
 });
 
 app.listen(PORT, () => {

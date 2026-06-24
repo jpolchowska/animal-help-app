@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Animal Help App — Profil Google</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="/" class="navbar-brand">
+        <img src="/logo.svg" alt="logo" width="32" height="32">
+        <span>Animal Help App</span>
+      </a>
+      <nav class="navbar-nav">
+        <a href="/">Strona główna</a>
+        <a href="/animals">Zwierzęta</a>
+      </nav>
+      <div class="navbar-right">
+        <% if (user) { %>
+          <div class="navbar-profile">
+            <div class="avatar"><%= user.name.charAt(0).toUpperCase() %></div>
+            <span class="user-name"><%= user.name %></span>
+          </div>
+          <div class="navbar-divider"></div>
+          <a href="/logout" class="btn-nav-login">Wyloguj</a>
+        <% } else { %>
+          <a href="/login" class="btn-nav-login">
+            <i class="fa-solid fa-user"></i> Zaloguj się
+          </a>
+        <% } %>
+      </div>
+    </div>
+  </nav>
+
+  <main style="max-width:600px; margin:60px auto; padding:0 20px;">
+    <h1 style="margin-bottom:32px;">Profil Google</h1>
+
+    <div style="background:#fff; border-radius:12px; padding:32px; box-shadow:0 2px 12px rgba(0,0,0,0.08); display:flex; gap:24px; align-items:center;">
+      <% if (profile.picture) { %>
+        <img src="<%= profile.picture %>" alt="avatar" style="width:80px; height:80px; border-radius:50%; object-fit:cover;">
+      <% } %>
+      <div>
+        <p style="font-size:1.2rem; font-weight:600; margin:0 0 8px;"><%= profile.name %></p>
+        <p style="color:#666; margin:0 0 4px;"><i class="fa-solid fa-envelope" style="margin-right:8px;"></i><%= profile.email %></p>
+        <% if (profile.email_verified) { %>
+          <p style="color:#4a7c59; margin:0; font-size:0.9rem;"><i class="fa-solid fa-circle-check" style="margin-right:6px;"></i>Email zweryfikowany</p>
+        <% } %>
+      </div>
+    </div>
+
+    <a href="/" style="display:inline-block; margin-top:24px; color:#4a7c59;">← Wróć na stronę główną</a>
+  </main>
+
+</body>
+</html>

@@ -96,6 +96,9 @@ services:
       SESSION_SECRET: ${SESSION_SECRET:-dev-secret}
       API_PUBLIC_URL: http://localhost:3001
       PORTAL_URL: http://localhost:3000
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      GOOGLE_REDIRECT_URI: http://localhost:3002/google/callback
     ports:
       - "3002:3002"
     depends_on:
