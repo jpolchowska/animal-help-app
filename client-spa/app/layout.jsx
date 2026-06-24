@@ -2,7 +2,7 @@ import "./globals.css";
 import KeycloakProvider from "@/components/providers/KeycloakProvider";
 
 export const metadata = {
-  title: "Animal Help App",
+  title: "Animal Help App — SPA",
 };
 
 export default function RootLayout({ children }) {
