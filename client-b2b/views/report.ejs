@@ -10,7 +10,7 @@
 
 <div class="topbar">
   <span class="topbar-brand">Animal Help App</span>
-  <span class="topbar-time"><%= new Date(report.generatedAt).toLocaleString('pl-PL') %></span>
+  <span class="topbar-time"><%= new Date(report.generatedAt).toLocaleString('pl-PL', { timeZone: 'Europe/Warsaw' }) %></span>
 </div>
 
 <div class="page-header">
@@ -198,12 +198,6 @@
     </div>
   </div>
 
-  <!-- TOKEN -->
-  <div class="token-block">
-    <div class="token-lbl">Bearer Access Token · grant_type: client_credentials</div>
-    <div class="token-val"><%= fullToken %></div>
-    <div class="token-foot">zweryfikuj na jwt.io · azp: <%= report.client %></div>
-  </div>
 
 </div>
 <script>

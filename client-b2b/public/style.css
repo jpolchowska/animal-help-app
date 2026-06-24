@@ -143,7 +143,3 @@ body {
 .role-num  { font-size: 14px; font-weight: 700; color: #1c1c1a; }
 
 /* TOKEN */
-.token-block { background: #1a2818; border-radius: 10px; padding: 18px 22px; margin-top: 24px; }
-.token-lbl { font-size: 10px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(255,255,255,0.22); margin-bottom: 8px; }
-.token-val { font-family: 'SF Mono','Fira Code','Courier New',monospace; font-size: 11px; color: #7ec87a; word-break: break-all; line-height: 1.7; }
-.token-foot { margin-top: 8px; font-size: 11px; color: rgba(255,255,255,0.16); }
