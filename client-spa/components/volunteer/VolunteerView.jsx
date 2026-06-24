@@ -14,6 +14,7 @@ export default function VolunteerView() {
   const [tasks,           setTasks]           = useState([]);
   const [signedUpTaskIds, setSignedUpTaskIds] = useState(new Set());
   const [selectedDate,    setSelectedDate]    = useState(null);
+  const [myTasksKey,      setMyTasksKey]      = useState(0);
   const tasksRef = useRef(null);
 
   useEffect(() => {
@@ -72,8 +73,12 @@ export default function VolunteerView() {
       </div>
 
       <div ref={tasksRef}>
-        <VolunteerTasks selectedDate={selectedDate} signedUpTaskIds={signedUpTaskIds} />
-        <MyTasks />
+        <VolunteerTasks
+          selectedDate={selectedDate}
+          signedUpTaskIds={signedUpTaskIds}
+          onSignup={() => setMyTasksKey(k => k + 1)}
+        />
+        <MyTasks key={myTasksKey} />
       </div>
     </section>
   );

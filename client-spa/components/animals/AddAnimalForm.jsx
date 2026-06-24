@@ -5,14 +5,29 @@ import { authFetch } from "@/utils/api";
 import styles from "./AddAnimalForm.module.css";
 import { API_URL } from "@/utils/config";
 
+const TRAIT_OPTIONS = [
+  "Łagodny", "Towarzyski", "Spokojny", "Ciekawy", "Delikatny",
+  "Niezależny", "Energiczny", "Wesoły", "Czuły", "Aktywny",
+  "Przyjazny", "Radosny", "Nieśmiały",
+];
+
 export default function AddAnimalForm({ onAdd, onClose }) {
   const [form, setForm] = useState({
     name: "",
     type: "",
-    status: "Do adopcji"
+    status: "Do adopcji",
+    age: "",
+    sex: "",
+    description: "",
   });
-
+  const [traits, setTraits] = useState([]);
   const [file, setFile] = useState(null);
+
+  function toggleTrait(trait) {
+    setTraits(prev =>
+      prev.includes(trait) ? prev.filter(t => t !== trait) : [...prev, trait]
+    );
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -27,15 +42,16 @@ export default function AddAnimalForm({ onAdd, onClose }) {
     formData.append("type", form.type);
     formData.append("status", form.status);
     formData.append("image", file);
+    if (form.age) formData.append("age", form.age);
+    if (form.sex) formData.append("sex", form.sex);
+    if (form.description) formData.append("description", form.description);
+    if (traits.length > 0) formData.append("traits", JSON.stringify(traits));
 
-    const res = await authFetch(
-      `${API_URL}/animals`,
-      {
-        method: "POST",
-        body: formData,
-        isFormData: true
-      }
-    );
+    const res = await authFetch(`${API_URL}/animals`, {
+      method: "POST",
+      body: formData,
+      isFormData: true,
+    });
 
     if (!res.ok) {
       const err = await res.text();
@@ -45,9 +61,8 @@ export default function AddAnimalForm({ onAdd, onClose }) {
     }
 
     const data = await res.json();
-
     onAdd(data);
-    onClose()
+    onClose();
   }
 
   return (
@@ -55,31 +70,35 @@ export default function AddAnimalForm({ onAdd, onClose }) {
       <h3>Dodaj zwierzę</h3>
 
       <input
-        placeholder="Imię"
+        placeholder="Imię *"
         required
         value={form.name}
         onChange={e => setForm({ ...form, name: e.target.value })}
       />
 
       <input
-        placeholder="Typ (pies, kot...)"
+        placeholder="Typ (pies, kot…) *"
         required
         value={form.type}
         onChange={e => setForm({ ...form, type: e.target.value })}
       />
 
-      <label className={styles.fileUpload}>
+      <div className={styles.row}>
         <input
-          type="file"
-          accept="image/*"
-          onChange={e => setFile(e.target.files[0])}
-          hidden
+          placeholder="Wiek (np. 2 lata)"
+          value={form.age}
+          onChange={e => setForm({ ...form, age: e.target.value })}
         />
-        <i className="fa-solid fa-image" />
-        <span>
-          {file ? file.name : "Wybierz zdjęcie"}
-        </span>
-      </label>
+        <select
+          value={form.sex}
+          onChange={e => setForm({ ...form, sex: e.target.value })}
+        >
+          <option value="">Płeć (opcjonalnie)</option>
+          <option value="Samiec">Samiec</option>
+          <option value="Samica">Samica</option>
+          <option value="Nieznana">Nieznana</option>
+        </select>
+      </div>
 
       <select
         value={form.status}
@@ -90,7 +109,46 @@ export default function AddAnimalForm({ onAdd, onClose }) {
         <option>Adoptowane</option>
       </select>
 
-      <button>Dodaj zwierzę</button>
+      <textarea
+        className={styles.textarea}
+        placeholder="Opis zwierzęcia (opcjonalnie)"
+        rows={3}
+        value={form.description}
+        onChange={e => setForm({ ...form, description: e.target.value })}
+      />
+
+      <div>
+        <p className={styles.traitsLabel}>Charakter (opcjonalnie)</p>
+        <div className={styles.traitsGrid}>
+          {TRAIT_OPTIONS.map(trait => (
+            <label
+              key={trait}
+              className={`${styles.traitTag} ${traits.includes(trait) ? styles.traitActive : ""}`}
+            >
+              <input
+                type="checkbox"
+                checked={traits.includes(trait)}
+                onChange={() => toggleTrait(trait)}
+                hidden
+              />
+              {trait}
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <label className={styles.fileUpload}>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={e => setFile(e.target.files[0])}
+          hidden
+        />
+        <i className="fa-solid fa-image" />
+        <span>{file ? file.name : "Wybierz zdjęcie *"}</span>
+      </label>
+
+      <button type="submit">Dodaj zwierzę</button>
     </form>
   );
 }

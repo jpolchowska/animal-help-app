@@ -12,7 +12,7 @@ function formatPolishDate(dateStr) {
   return f.charAt(0).toUpperCase() + f.slice(1);
 }
 
-export default function VolunteerTasks({ selectedDate, signedUpTaskIds = new Set() } = {}) {
+export default function VolunteerTasks({ selectedDate, signedUpTaskIds = new Set(), onSignup } = {}) {
   const [tasks,    setTasks]    = useState([]);
   const [signedUp, setSignedUp] = useState(new Set());
   const [loading,  setLoading]  = useState(new Set());
@@ -35,6 +35,7 @@ export default function VolunteerTasks({ selectedDate, signedUpTaskIds = new Set
       });
       if (res.ok) {
         setSignedUp(prev => new Set(prev).add(id));
+        onSignup?.();
       }
     } finally {
       inFlight.current.delete(id);

@@ -1,19 +1,19 @@
 "use client";
 
 import styles from "./AnimalCard.module.css";
-import { authFetch, getAuth } from "@/utils/api";
-import Link from "next/link";
+import { getAuth } from "@/utils/api";
+import { useRouter } from "next/navigation";
 import { API_URL } from "@/utils/config";
 
 export default function AnimalCard({ animal, onDelete, onStatusChange }) {
+  const router = useRouter();
   const auth = getAuth();
   const role = auth?.user?.role;
 
   const isAdmin = role === "admin";
-  const canAdopt = role === "user" || role === "volunteer";
 
   return (
-    <Link href={`/animals/${animal.id}`} className={styles.card}>
+    <div className={styles.card} onClick={() => router.push(`/animals/${animal.id}`)} style={{ cursor: "pointer" }}>
       {isAdmin && (
         <div className={styles.cardActions}>
           <i
@@ -48,10 +48,6 @@ export default function AnimalCard({ animal, onDelete, onStatusChange }) {
 
         <div className={styles.footer}>
           <div className={styles.meta}>
-            {/* <div className={styles.type}>
-              {animal.type.toUpperCase()}
-            </div> */}
-
             <span
               className={`${styles.status} ${
                 animal.status === "Do adopcji"
@@ -67,6 +63,6 @@ export default function AnimalCard({ animal, onDelete, onStatusChange }) {
 
         </div>
       </div>
-    </Link>
+    </div>
   );
 }
