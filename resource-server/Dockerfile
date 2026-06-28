@@ -13,7 +13,7 @@ FROM node:20-alpine AS runner
 WORKDIR /app
 
 COPY --from=deps --chown=node:node /app/node_modules ./node_modules
-COPY --chown=node:node server.js ./
+COPY --chown=node:node src ./src
 COPY --chown=node:node package*.json ./
 COPY --chown=node:node images ./images
 
@@ -23,4 +23,4 @@ EXPOSE 3001
 
 USER node
 
-CMD ["node", "server.js"]
+CMD ["node", "src/server.js"]
