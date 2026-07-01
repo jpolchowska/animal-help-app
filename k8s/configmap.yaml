@@ -4,6 +4,17 @@ metadata:
   name: animal-help-config
   namespace: animal-help-app
 data:
-  PORT: "3001"
+  PORT_RESOURCE: "3001"
+  PORT_SSR: "3002"
+  PORT_B2B: "3003"
   NODE_ENV: "production"
+  KEYCLOAK_INTERNAL_URL: "http://keycloak-service:8080"
+  KEYCLOAK_EXTERNAL_URL: "http://keycloak.animal-help-app.local"
+  API_URL: "http://resource-server-service:3001"
+  API_PUBLIC_URL: "http://api.animal-help-app.local"
+  PORTAL_URL: "http://spa.animal-help-app.local"
+  REDIRECT_URI: "http://ssr.animal-help-app.local/callback"
+  CLIENT_ID_SSR: "ssr-client"
+  CLIENT_ID_B2B: "b2b-client"
   NEXT_PUBLIC_API_URL: "http://api.animal-help-app.local"
+  NEXT_PUBLIC_KEYCLOAK_URL: "http://keycloak.animal-help-app.local"

@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: backend
+  name: resource-server
   namespace: animal-help-app
 spec:
   replicas: 2
@@ -12,11 +12,11 @@ spec:
       maxUnavailable: 0
   selector:
     matchLabels:
-      app: backend
+      app: resource-server
   template:
     metadata:
       labels:
-        app: backend
+        app: resource-server
     spec:
       securityContext:
         fsGroup: 1000
@@ -27,8 +27,14 @@ spec:
             - /bin/sh
             - -c
             - until pg_isready -h postgres-service -U postgres; do echo "waiting for postgres..."; sleep 2; done
+        - name: wait-for-keycloak
+          image: curlimages/curl:latest
+          command:
+            - /bin/sh
+            - -c
+            - until curl -sf http://keycloak-service:8080/realms/master; do echo "waiting for keycloak..."; sleep 5; done
         - name: seed-images
-          image: ghcr.io/jpolchowska/animal-help-backend:latest
+          image: ghcr.io/jpolchowska/animal-help-resource-server:latest
           imagePullPolicy: Always
           command:
             - /bin/sh
@@ -45,8 +51,8 @@ spec:
             - name: images-storage
               mountPath: /mnt/images
       containers:
-        - name: backend
-          image: ghcr.io/jpolchowska/animal-help-backend:latest
+        - name: resource-server
+          image: ghcr.io/jpolchowska/animal-help-resource-server:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 3001
@@ -55,7 +61,7 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   name: animal-help-config
-                  key: PORT
+                  key: PORT_RESOURCE
             - name: NODE_ENV
               valueFrom:
                 configMapKeyRef:
@@ -66,11 +72,21 @@ spec:
                 secretKeyRef:
                   name: animal-help-secret
                   key: DATABASE_URL
-            - name: JWT_SECRET
+            - name: KEYCLOAK_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: animal-help-config
+                  key: KEYCLOAK_INTERNAL_URL
+            - name: KEYCLOAK_ADMIN
               valueFrom:
                 secretKeyRef:
                   name: animal-help-secret
-                  key: JWT_SECRET
+                  key: KEYCLOAK_ADMIN
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: animal-help-secret
+                  key: KEYCLOAK_ADMIN_PASSWORD
           volumeMounts:
             - name: images-storage
               mountPath: /app/images
@@ -105,4 +121,4 @@ spec:
       volumes:
         - name: images-storage
           persistentVolumeClaim:
-            claimName: backend-images-pvc
+            claimName: resource-server-images-pvc

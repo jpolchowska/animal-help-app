@@ -1,12 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: backend-service
+  name: resource-server-service
   namespace: animal-help-app
 spec:
   selector:
-    app: backend
+    app: resource-server
   ports:
     - port: 3001
       targetPort: 3001
-  type: ClusterIP

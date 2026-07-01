@@ -1,21 +1,28 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: frontend
+  name: client-spa
   namespace: animal-help-app
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: frontend
+      app: client-spa
   template:
     metadata:
       labels:
-        app: frontend
+        app: client-spa
     spec:
+      initContainers:
+        - name: wait-for-resource-server
+          image: curlimages/curl:latest
+          command:
+            - /bin/sh
+            - -c
+            - until curl -sf http://resource-server-service:3001/healthz; do echo "waiting for resource-server..."; sleep 5; done
       containers:
-        - name: frontend
-          image: ghcr.io/jpolchowska/animal-help-frontend:latest
+        - name: client-spa
+          image: ghcr.io/jpolchowska/animal-help-client-spa:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 3000

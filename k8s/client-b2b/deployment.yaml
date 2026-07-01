@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client-b2b
+  namespace: animal-help-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: client-b2b
+  template:
+    metadata:
+      labels:
+        app: client-b2b
+    spec:
+      initContainers:
+        - name: wait-for-resource-server
+          image: curlimages/curl:latest
+          command:
+            - /bin/sh
+            - -c
+            - until curl -sf http://resource-server-service:3001/healthz; do echo "waiting for resource-server..."; sleep 5; done
+        - name: wait-for-keycloak
+          image: curlimages/curl:latest
+          command:
+            - /bin/sh
+            - -c
+            - until curl -sf http://keycloak-service:8080/realms/master; do echo "waiting for keycloak..."; sleep 5; done
+      containers:
+        - name: client-b2b
+          image: ghcr.io/jpolchowska/animal-help-client-b2b:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3003
+          env:
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: animal-help-config
+                  key: PORT_B2B
+            - name: API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: animal-help-config
+                  key: API_URL
+            - name: KEYCLOAK_INTERNAL_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: animal-help-config
+                  key: KEYCLOAK_INTERNAL_URL
+            - name: CLIENT_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: animal-help-config
+                  key: CLIENT_ID_B2B
+            - name: CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: animal-help-secret
+                  key: B2B_CLIENT_SECRET
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3003
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3003
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "128Mi"
+            limits:
+              cpu: "200m"
+              memory: "128Mi"
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
