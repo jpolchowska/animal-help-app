@@ -1,17 +1,17 @@
 # Animal Help App
 
-Aplikacja wieloserwisowa dla schroniska dla zwierząt — zarządzanie adopcjami, wolontariatem i zadaniami. Zbudowana w architekturze OAuth2 z Keycloak jako Authorization Server. Działa przez Docker Compose.
+A multi-service application for an animal shelter — managing adoptions, volunteering, and tasks. Built on an OAuth2 architecture with Keycloak as the Authorization Server. Runs via Docker Compose.
 
-## Funkcjonalności
+## Features
 
-- przeglądanie zwierząt dostępnych do adopcji oraz składanie wniosków adopcyjnych
-- panel admina — dodawanie zwierząt, zmiana statusów, akceptowanie i odrzucanie adopcji
-- system wolontariatu — admin tworzy zadania, wolontariusze się na nie zapisują
-- dashboard z statystykami schroniska
-- obsługa zdjęć — upload przy dodawaniu zwierzęcia, przechowywanie na wolumenie
-- logowanie i rejestracja przez Keycloak (OAuth2 + OpenID Connect)
-- logowanie przez Google OAuth2 z podglądem profilu
-- dwuskładnikowe uwierzytelnianie (2FA / OTP)
+- browse animals available for adoption and submit adoption applications
+- admin panel — add animals, change statuses, accept and reject adoptions
+- volunteer system — admin creates tasks, volunteers sign up for them
+- dashboard with shelter statistics
+- photo handling — upload when adding an animal, stored on a volume
+- login and registration via Keycloak (OAuth2 + OpenID Connect)
+- Google OAuth2 login with profile preview
+- two-factor authentication (2FA / OTP)
 
 ## Stack
 
@@ -20,29 +20,29 @@ Aplikacja wieloserwisowa dla schroniska dla zwierząt — zarządzanie adopcjami
 - **Client SPA** — Next.js (App Router) + keycloak-js
 - **Client SSR** — Node.js / Express + EJS
 - **Client B2B** — Node.js (Client Credentials Flow)
-- **Baza danych** — PostgreSQL 17
-- **Infrastruktura** — Docker Compose
+- **Database** — PostgreSQL 17
+- **Infrastructure** — Docker Compose
 
-## Uruchomienie
+## Getting Started
 
 ```bash
 cp .env.example .env
 docker compose up --build
 ```
 
-Uzupełnij `.env` własnymi wartościami:
+Fill in `.env` with your own values:
 
 ```env
-POSTGRES_PASSWORD=        # hasło do bazy danych PostgreSQL
-SSR_CLIENT_SECRET=        # client secret klienta SSR z Keycloak
-B2B_CLIENT_SECRET=        # client secret klienta B2B z Keycloak
-GOOGLE_CLIENT_ID=         # Client ID z Google Cloud Console
-GOOGLE_CLIENT_SECRET=     # Client Secret z Google Cloud Console
+POSTGRES_PASSWORD=        # PostgreSQL database password
+SSR_CLIENT_SECRET=        # SSR client secret from Keycloak
+B2B_CLIENT_SECRET=        # B2B client secret from Keycloak
+GOOGLE_CLIENT_ID=         # Client ID from Google Cloud Console
+GOOGLE_CLIENT_SECRET=     # Client Secret from Google Cloud Console
 ```
 
-## Serwisy
+## Services
 
-| Serwis | URL |
+| Service | URL |
 |---|---|
 | SPA | http://localhost:3000 |
 | Resource Server | http://localhost:3001 |
@@ -50,32 +50,32 @@ GOOGLE_CLIENT_SECRET=     # Client Secret z Google Cloud Console
 | B2B | http://localhost:3003 |
 | Keycloak | http://localhost:8080 |
 
-## Struktura projektu
+## Project Structure
 
 ```
 animal-help-app/
-├── auth-server/          # konfiguracja Keycloak (realm-export.json)
-├── resource-server/      # API REST, walidacja JWT, PostgreSQL
-├── client-spa/           # klient SPA (Next.js + keycloak-js, PKCE)
-├── client-ssr/           # klient SSR (Express + EJS, Authorization Code)
-├── client-b2b/           # klient B2B (Client Credentials)
-├── k8s/                  # konfiguracja Kubernetes
-├── docs/                 # dokumentacja dodatkowa
+├── auth-server/          # Keycloak configuration (realm-export.json)
+├── resource-server/      # REST API, JWT validation, PostgreSQL
+├── client-spa/           # SPA client (Next.js + keycloak-js, PKCE)
+├── client-ssr/           # SSR client (Express + EJS, Authorization Code)
+├── client-b2b/           # B2B client (Client Credentials)
+├── k8s/                  # Kubernetes manifests
+├── docs/                 # Additional documentation
 ├── .github/workflows/    # CI/CD — GitHub Actions
 ├── docker-compose.yml
 ├── .env.example
 └── README.md
 ```
 
-## Role użytkowników
+## User Roles
 
-- **Admin** — zarządzanie zwierzętami, adopcjami, zadaniami i wolontariuszami
-- **Wolontariusz** — przeglądanie zadań i zapisywanie się na nie
-- **Użytkownik** — przeglądanie zwierząt i składanie wniosków o adopcję
+- **Admin** — manage animals, adoptions, tasks, and volunteers
+- **Volunteer** — browse tasks and sign up for them
+- **User** — browse animals and submit adoption applications
 
-## Architektura OAuth2
+## OAuth2 Architecture
 
-| Moduł | Rola OAuth2 | Flow |
+| Module | OAuth2 Role | Flow |
 |---|---|---|
 | Keycloak | Authorization Server | — |
 | resource-server | Resource Server | JWT / JWKS |
@@ -83,10 +83,9 @@ animal-help-app/
 | client-ssr | Confidential Client | Authorization Code + PKCE |
 | client-b2b | Confidential Client | Client Credentials |
 
-Szczegółowa dokumentacja implementacji OAuth2: [docs/OAUTH2.md](docs/OAUTH2.md).
+Detailed OAuth2 implementation documentation: [docs/OAUTH2.md](docs/OAUTH2.md).
 
-## Elementy wymagające aktualizacji
+## Pending Updates
 
-- **Kubernetes** — konfiguracja klastra w [docs/KUBERNETES.md](docs/KUBERNETES.md) pochodzi z poprzedniej wersji aplikacji i jest nieaktualna; wymaga dostosowania do obecnej architektury wieloserwisowej
-- **CI/CD** — pipeline GitHub Actions jest tymczasowo wyłączony; wymaga przepisania pod aktualny stack i środowisko
-
+- **Kubernetes** — cluster configuration in [docs/KUBERNETES.md](docs/KUBERNETES.md) is from a previous version of the application and is outdated; needs to be updated for the current multi-service architecture
+- **CI/CD** — GitHub Actions pipeline is temporarily disabled; needs to be rewritten for the current stack and environment
