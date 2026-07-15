@@ -1,55 +1,55 @@
-# OAuth2 — Bezpieczeństwo aplikacji webowych
+# OAuth2 — Web Application Security
 
-Dokumentacja implementacji OAuth2 na potrzeby projektu zaliczeniowego.
+OAuth2 implementation documentation for the project.
 
-## Zrealizowane wymagania
+## Implemented Features
 
 ### Authorization Server
-- Keycloak 24 jako Authorization Server
-- Realm `animal-help-app` z klientami: `spa-client`, `ssr-client`, `b2b-client`
-- Role realmowe: `admin`, `volunteer`, `user`
-- Rejestracja użytkowników przez Keycloak (domyślna rola `user`)
-- Reset hasła (Forgot password)
-- 2FA / MFA przez Google Authenticator (OTP)
-- Eksport konfiguracji realm (`auth-server/realm-export.json`) — auto-import przy starcie
+- Keycloak 24 as the Authorization Server
+- Realm `animal-help-app` with clients: `frontend-spa`, `ssr-client`, `b2b-client`
+- Realm roles: `admin`, `volunteer`, `user`
+- User registration via Keycloak (default role `user`)
+- Password reset (Forgot password)
+- 2FA / MFA via Google Authenticator (OTP)
+- Realm configuration export (`auth-server/realm-export.json`) — auto-imported on startup
 
 ### Resource Server
-- Walidacja tokenów JWT przez JWKS (bez bibliotek, ręczna weryfikacja podpisu RS256)
-- Endpoint JWKS: `http://keycloak:8080/realms/animal-help-app/protocol/openid-connect/certs`
-- JIT provisioning użytkowników (INSERT ON CONFLICT)
-- Zarządzanie rolami przez Keycloak Admin REST API
+- JWT token validation via JWKS (no libraries — manual RS256 signature verification)
+- JWKS endpoint: `http://keycloak:8080/realms/animal-help-app/protocol/openid-connect/certs`
+- JIT user provisioning (INSERT ON CONFLICT)
+- Role management via Keycloak Admin REST API
 
 ### Client SPA (Next.js)
-- Authorization Code Flow + PKCE przez `keycloak-js`
-- Automatyczne odświeżanie tokenów (`updateToken`)
-- Widoki warunkowe w zależności od roli
+- Authorization Code Flow + PKCE via `keycloak-js`
+- Automatic token refresh (`updateToken`)
+- Conditional views based on user role
 
 ### Client SSR (Node.js + Express)
 - Authorization Code Flow + PKCE (Confidential Client)
-- Sesja serwerowa (`express-session`)
-- Integracja z Google OAuth2 — Authorization Code Flow → Google People API
+- Server-side session (`express-session`)
+- Google OAuth2 integration — Authorization Code Flow → Google UserInfo API
 
 ### Client B2B (Node.js)
 - Client Credentials Flow
-- Raport analityczny ze schroniska (dostęp maszynowy do resource server)
+- Analytical shelter report (machine-to-machine access to resource server)
 
-## Zewnętrzne API OAuth2
+## External OAuth2 API
 
-Klient SSR (`client-ssr`) integruje się z Google OAuth2:
+The SSR client (`client-ssr`) integrates with Google OAuth2:
 
-1. `GET /google` — przekierowanie do Google Authorization Server
-2. Google zwraca `code` na `GET /google/callback`
-3. Wymiana `code` na `access_token` (`https://oauth2.googleapis.com/token`)
-4. Wywołanie Google People API (`https://www.googleapis.com/oauth2/v3/userinfo`)
-5. Wyświetlenie danych profilu użytkownika
+1. `GET /google` — redirect to Google Authorization Server
+2. Google returns `code` to `GET /google/callback`
+3. Exchange `code` for `access_token` (`https://oauth2.googleapis.com/token`)
+4. Call Google UserInfo API (`https://www.googleapis.com/oauth2/v3/userinfo`)
+5. Display user profile data
 
-## Uruchomienie od zera
+## Running from Scratch
 
 ```bash
 git clone <repo>
 cp .env.example .env
-# Uzupełnij .env
+# Fill in .env
 docker compose up --build
 ```
 
-Keycloak automatycznie importuje realm `animal-help-app` z `auth-server/realm-export.json`.
+Keycloak automatically imports the `animal-help-app` realm from `auth-server/realm-export.json`.
