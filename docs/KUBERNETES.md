@@ -1,23 +1,23 @@
 # Kubernetes — Animal Help App
 
-## Wymagania wstępne
+## Prerequisites
 
-- Docker Desktop z włączonym Kubernetes
+- Docker Desktop with Kubernetes enabled
 - `kubectl`
 - Git
 
-> Przetestowano na **Docker Desktop (kind)** na macOS i Windows.
+> Tested on **Docker Desktop (kind)** on macOS and Windows.
 
-## Uruchomienie
+## Getting Started
 
-### 1. Sklonuj repozytorium
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/jpolchowska/animal-help-app.git
 cd animal-help-app
 ```
 
-### 2. Zainstaluj nginx Ingress Controller
+### 2. Install nginx Ingress Controller
 
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.12.0/deploy/static/provider/cloud/deploy.yaml
@@ -28,19 +28,19 @@ kubectl wait --namespace ingress-nginx \
   --timeout=90s
 ```
 
-### 3. Dodaj wpisy do /etc/hosts
+### 3. Add entries to /etc/hosts
 
 **macOS / Linux:**
 ```bash
 echo "127.0.0.1 animal-help-app.local api.animal-help-app.local" | sudo tee -a /etc/hosts
 ```
 
-**Windows** (Administrator) — dodaj do `C:\Windows\System32\drivers\etc\hosts`:
+**Windows** (Administrator) — add to `C:\Windows\System32\drivers\etc\hosts`:
 ```
 127.0.0.1 animal-help-app.local api.animal-help-app.local
 ```
 
-### 4. Zaaplikuj manifesty
+### 4. Apply manifests
 
 ```bash
 kubectl apply -f k8s/namespace.yaml
@@ -53,13 +53,13 @@ kubectl apply -f k8s/ingress.yaml
 kubectl apply -f k8s/pdb.yaml
 ```
 
-### 5. Sprawdź gotowość podów
+### 5. Check pod readiness
 
 ```bash
 kubectl get pods -n animal-help-app
 ```
 
-### 6. Otwórz aplikację
+### 6. Open the application
 
 ```
 http://animal-help-app.local
@@ -67,53 +67,53 @@ http://animal-help-app.local
 
 ---
 
-## Zasoby Kubernetes
+## Kubernetes Resources
 
-| Zasób | Nazwa | Port / Szczegóły |
+| Resource | Name | Port / Details |
 |-------|-------|-----------------|
 | Namespace | animal-help-app | — |
 | Secret | animal-help-secret | DATABASE_URL, JWT_SECRET, POSTGRES_PASSWORD |
 | ConfigMap | animal-help-config | PORT, NODE_ENV, NEXT_PUBLIC_API_URL |
-| ConfigMap | postgres-init | schemat SQL + dane startowe |
+| ConfigMap | postgres-init | SQL schema + seed data |
 | PVC | postgres-pvc | 1Gi |
 | PVC | backend-images-pvc | 500Mi |
-| Deployment | backend | 3001 · image: `animal-help-backend` · 2 repliki |
+| Deployment | backend | 3001 · image: `animal-help-backend` · 2 replicas |
 | Deployment | frontend | 3000 · image: `animal-help-frontend` |
 | Deployment | postgres | 5432 |
 | Service | backend-service | ClusterIP · 3001 |
 | Service | frontend-service | ClusterIP · 3000 |
-| Service | postgres-service | ClusterIP · 5432 (tylko wewnętrznie) |
+| Service | postgres-service | ClusterIP · 5432 (internal only) |
 | Ingress | animal-help-ingress | `animal-help-app.local` · `api.animal-help-app.local` |
 | PodDisruptionBudget | backend-pdb | minAvailable: 1 |
 
 
-> **Baza danych jako Deployment zamiast StatefulSet:** aplikacja wymaga jednej instancji PostgreSQL bez replikacji. Trwałość danych zapewnia PVC (`postgres-pvc`).
+> **Database as Deployment instead of StatefulSet:** the application requires a single PostgreSQL instance without replication. Data persistence is ensured by the PVC (`postgres-pvc`).
 
 ---
 
-## Komendy kubectl
+## kubectl Commands
 
 ```bash
-# Czy klaster działa?
+# Is the cluster running?
 kubectl get nodes
 
-# Dostępne namespace'y
+# Available namespaces
 kubectl get ns
 
 
-# Wszystkie zasoby aplikacji
+# All application resources
 kubectl get all -n animal-help-app
 
-# Deploymenty
+# Deployments
 kubectl get deploy -n animal-help-app
 
-# Service
+# Services
 kubectl get svc -n animal-help-app
 
 # Ingress
 kubectl get ingress -n animal-help-app
 
-# PVC (PersistentVolumeClaim - trwałe dane)
+# PVC (PersistentVolumeClaim - persistent data)
 kubectl get pvc -n animal-help-app
 
 # ConfigMap
@@ -126,14 +126,14 @@ kubectl get secret -n animal-help-app
 kubectl get pdb -n animal-help-app
 
 
-# Lista podów
+# List pods
 kubectl get pods -n animal-help-app
 
-# Szczegóły konkretnego poda
+# Details of a specific pod
 kubectl describe pod <POD_NAME> -n animal-help-app
 
 
-# SPRAWDZENIE ROLLOUTÓW
+# CHECK ROLLOUTS
 
 # Backend
 kubectl rollout status deployment/backend -n animal-help-app
@@ -145,7 +145,7 @@ kubectl rollout status deployment/frontend -n animal-help-app
 kubectl rollout status deployment/postgres -n animal-help-app
 
 
-# SPRAWDZENIE DEPLOYMENTÓW
+# CHECK DEPLOYMENTS
 
 # Backend
 kubectl describe deployment backend -n animal-help-app
@@ -157,51 +157,51 @@ kubectl describe deployment frontend -n animal-help-app
 kubectl describe deployment postgres -n animal-help-app
 
 
-# LOGI
+# LOGS
 
-# Logi backendu
+# Backend logs
 kubectl logs -n animal-help-app deployment/backend
 
-# Logi backendu na żywo
+# Backend logs (live)
 kubectl logs -f -n animal-help-app deployment/backend
 
-# Logi frontendu
+# Frontend logs
 kubectl logs -n animal-help-app deployment/frontend
 
-# Logi PostgreSQL
+# PostgreSQL logs
 kubectl logs -n animal-help-app deployment/postgres
 
 
 # POSTGRES
 
-# Wejście do PostgreSQL
+# Connect to PostgreSQL
 kubectl exec -it deployment/postgres -n animal-help-app -- psql -U postgres
 
-# Lista tabel
+# List tables
 \dt
 
-# Zwierzęta
+# Animals
 SELECT COUNT(*) FROM animals;
 
-# Użytkownicy
+# Users
 SELECT COUNT(*) FROM users;
 
-# Zadania wolontariuszy
+# Volunteer tasks
 SELECT COUNT(*) FROM tasks;
 
-# Wyjście z PostgreSQL
+# Exit PostgreSQL
 \q
 
 
-# TEST TRWAŁOŚCI DANYCH (PVC)
+# TEST DATA PERSISTENCE (PVC)
 
-# Usuń pod PostgreSQL
+# Delete PostgreSQL pod
 kubectl delete pod -n animal-help-app -l app=postgres
 
-# Zaczekaj na odtworzenie podów
+# Wait for pod to be recreated
 kubectl get pods -n animal-help-app
 
-# Sprawdź ponownie bazę:
+# Check the database again:
 kubectl exec -it deployment/postgres -n animal-help-app -- psql -U postgres
 
 SELECT COUNT(*) FROM animals;
@@ -209,34 +209,34 @@ SELECT COUNT(*) FROM animals;
 
 # CONFIGMAP
 
-# Szczegóły ConfigMap aplikacji
+# Application ConfigMap details
 kubectl describe configmap animal-help-config -n animal-help-app
 
-# Skrypty inicjalizujące PostgreSQL
+# PostgreSQL init scripts
 kubectl describe configmap postgres-init -n animal-help-app
 
 
-# Szczegóły Secret
+# Secret details
 kubectl describe secret animal-help-secret -n animal-help-app
 
 
-# Szczegóły PodDisruptionBudget
+# PodDisruptionBudget details
 kubectl describe pdb backend-pdb -n animal-help-app
 
 
-# HEALTHCHECK BACKENDU
+# BACKEND HEALTHCHECK
 
-# Port-forward do backendu
+# Port-forward to backend
 kubectl port-forward -n animal-help-app service/backend-service 3001:3001
 
-# W drugim terminalu:
+# In a second terminal:
 curl http://localhost:3001/healthz
 
-# Oczekiwany wynik:
+# Expected result:
 # {"status":"ok","database":"connected"}
 
 
-# ZWIĘKSZENIE LICZBY REPLIK BACKENDU
+# SCALE BACKEND REPLICAS
 
 kubectl scale deployment backend \
 --replicas=3 \
@@ -245,7 +245,7 @@ kubectl scale deployment backend \
 kubectl get deploy -n animal-help-app
 
 
-# AKTUALIZACJA OBRAZU
+# UPDATE IMAGE
 
 kubectl rollout restart deployment/backend \
 -n animal-help-app
@@ -254,19 +254,19 @@ kubectl rollout status deployment/backend \
 -n animal-help-app
 
 
-# USUNIĘCIE WSZYSTKICH PODÓW APLIKACJI
+# DELETE ALL APPLICATION PODS
 
 kubectl delete pods --all -n animal-help-app
 
 
-# USUNIĘCIE KONKRETNEGO PODA
+# DELETE A SPECIFIC POD
 
-kubectl delete pod <NAZWA_PODA> -n animal-help-app
+kubectl delete pod <POD_NAME> -n animal-help-app
 ```
 
 ---
 
-## Weryfikacja funkcjonalności (curl)
+## Functional Verification (curl)
 
 ### Health check
 
@@ -277,7 +277,7 @@ curl http://api.animal-help-app.local/healthz
 {"status":"ok","database":"connected"}
 ```
 
-### Odczyt zwierząt (zasób publiczny)
+### Read animals (public resource)
 
 ```bash
 curl http://api.animal-help-app.local/animals
@@ -288,27 +288,27 @@ curl http://api.animal-help-app.local/animals
 
 ---
 
-## Test trwałości danych
+## Data Persistence Test
 
 ```bash
-# Sprawdź dane przed restartem
+# Check data before restart
 curl http://api.animal-help-app.local/metrics
 
-# Usuń pod bazy
+# Delete database pod
 kubectl delete pod -n animal-help-app -l app=postgres
 
-# Poczekaj aż wróci
+# Wait for it to come back
 kubectl wait --for=condition=ready pod -l app=postgres -n animal-help-app --timeout=60s
 
-# Dane nadal dostępne
+# Data still available
 curl http://api.animal-help-app.local/metrics
 ```
 
-Liczba rekordów przed i po restarcie powinna być identyczna.
+Record count before and after restart should be identical.
 
 ---
 
-## Statystyki systemu
+## System Metrics
 
 ```bash
 curl http://api.animal-help-app.local/metrics
@@ -326,25 +326,25 @@ kubectl logs -n animal-help-app deployment/postgres
 
 ## CI/CD — GitHub Actions
 
-Workflow uruchamia się automatycznie przy każdym push do gałęzi `main`.
+The workflow runs automatically on every push to the `main` branch.
 
-Kroki:
-1. Buduje obrazy Docker (backend i frontend)
-2. Pushuje do GitHub Container Registry (GHCR)
-3. Waliduje manifesty (`--dry-run`)
-4. Aplikuje manifesty na klastrze kind
-5. Weryfikuje rollout i health check
+Steps:
+1. Builds Docker images (backend and frontend)
+2. Pushes to GitHub Container Registry (GHCR)
+3. Validates manifests (`--dry-run`)
+4. Applies manifests to the kind cluster
+5. Verifies rollout and health check
 
-Obrazy:
+Images:
 - `ghcr.io/jpolchowska/animal-help-backend:latest`
 - `ghcr.io/jpolchowska/animal-help-frontend:latest`
 
-**Link do ostatniego udanego workflow:**
+**Link to last successful workflow:**
 https://github.com/jpolchowska/animal-help-app/actions/runs/26822164741
 
 ---
 
-## Czyszczenie
+## Cleanup
 
 ```bash
 kubectl delete namespace animal-help-app
